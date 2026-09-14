@@ -53,6 +53,8 @@ ruby -ryaml -e '
   end
   raise "environment file is not protected" unless body.include?("install -o root -g root -m 600")
   raise "existing keys are not preserved" unless body.include?("awk")
+  root_staging = "staged=" + 36.chr + "(sudo mktemp"
+  raise "protected staging file is not root-owned" unless body.include?(root_staging)
   raise "runner files are not cleaned" unless body.include?("rm -f")
   derived_host = "database_host=" + "$" + "{database_url#*@}"
   raise "database host is not derived from DATABASE_URL" unless body.include?(derived_host)

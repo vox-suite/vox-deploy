@@ -52,8 +52,8 @@ jobs:
             set -eu
             update=/tmp/vox-supabase-public.env
             merged=$(mktemp)
-            staged=$(mktemp)
-            trap "rm -f \"$update\" \"$merged\" \"$staged\" /tmp/vox-merge-env.sh" EXIT
+            staged=$(sudo mktemp /tmp/vox-env.XXXXXX)
+            trap "rm -f \"$update\" \"$merged\" /tmp/vox-merge-env.sh; sudo rm -f \"$staged\"" EXIT
             if ! sudo test -f /etc/vox.env; then
               sudo install -o root -g root -m 600 /dev/null /etc/vox.env
             fi
