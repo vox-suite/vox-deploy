@@ -1,0 +1,66 @@
+name: vox
+
+services:
+  redis:
+    image: redis@sha256:becdda6c7f4b3fb42e42fd7f120bbf5c54c4caaaf16f26da24e4563d2c1f0576
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec"]
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  core-api:
+    image: ${CORE_IMAGE:?CORE_IMAGE is required}
+    command: ["/usr/local/bin/vox-core-api"]
+    restart: unless-stopped
+    env_file: ${VOX_ENV_FILE:-/etc/vox.env}
+    environment:
+      VOX_CORE_BIND_ADDRESS: 0.0.0.0:3001
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:3001/health/ready"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+
+  bridge:
+    image: ${BRIDGE_IMAGE:?BRIDGE_IMAGE is required}
+    restart: unless-stopped
+    env_file: ${VOX_ENV_FILE:-/etc/vox.env}
+    environment:
+      VOX_CORE_URL: http://core-api:3001
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      core-api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+
+  core-worker:
+    image: ${CORE_IMAGE:?CORE_IMAGE is required}
+    command: ["/usr/local/bin/vox-core-worker"]
+    restart: unless-stopped
+    env_file: ${VOX_ENV_FILE:-/etc/vox.env}
+    environment:
+      VOX_CORE_BIND_ADDRESS: 0.0.0.0:3001
+      VOX_BRIDGE_URL: http://bridge:3000
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      core-api:
+        condition: service_healthy
+      bridge:
+        condition: service_healthy
+
+volumes:
+  redis-data:
