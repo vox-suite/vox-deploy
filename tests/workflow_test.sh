@@ -41,7 +41,7 @@ ruby -ryaml -e '
   job = sync.fetch("jobs").fetch("sync")
   raise "sync must use production environment" unless job.fetch("environment") == "production"
   body = job.fetch("steps").map { |step| step["run"] }.compact.join("\n")
-  %w[NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY].each do |key|
+  %w[DATABASE_URL NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY].each do |key|
     raise "missing #{key}" unless body.include?(key)
   end
   raise "environment file is not protected" unless body.include?("install -o root -g root -m 600")

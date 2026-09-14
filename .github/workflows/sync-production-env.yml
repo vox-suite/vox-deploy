@@ -16,16 +16,19 @@ jobs:
     steps:
       - name: Prepare protected files
         env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
           set -euo pipefail
+          [[ "$DATABASE_URL" =~ ^postgresql://postgres:[^@[:space:]]+@db\.[a-z0-9]+\.supabase\.co:5432/postgres(\?.*)?$ ]]
           [[ "$NEXT_PUBLIC_SUPABASE_URL" =~ ^https://[a-z0-9]+\.supabase\.co$ ]]
           [[ "$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY" =~ ^sb_publishable_[A-Za-z0-9_-]+$ ]]
           test -n "$SSH_PRIVATE_KEY"
-          printf 'NEXT_PUBLIC_SUPABASE_URL=%s\nNEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=%s\n' \
-            "$NEXT_PUBLIC_SUPABASE_URL" "$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY" >"$VOX_ENV_UPDATE_FILE"
+          printf 'DATABASE_URL=%s\nNEXT_PUBLIC_SUPABASE_URL=%s\nNEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=%s\n' \
+            "$DATABASE_URL" "$NEXT_PUBLIC_SUPABASE_URL" \
+            "$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY" >"$VOX_ENV_UPDATE_FILE"
           printf '%s\n' "$SSH_PRIVATE_KEY" >"$VOX_SSH_KEY_FILE"
           chmod 600 "$VOX_ENV_UPDATE_FILE" "$VOX_SSH_KEY_FILE"
 
@@ -49,12 +52,18 @@ jobs:
             if ! sudo test -f /etc/vox.env; then
               sudo install -o root -g root -m 600 /dev/null /etc/vox.env
             fi
-            sudo awk "!/^NEXT_PUBLIC_SUPABASE_URL=/ && !/^NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=/" /etc/vox.env >"$merged"
+            sudo awk "!/^DATABASE_URL=/ && !/^NEXT_PUBLIC_SUPABASE_URL=/ && !/^NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=/" /etc/vox.env >"$merged"
             cat "$update" >>"$merged"
             sudo install -o root -g root -m 600 "$merged" /etc/vox.env
             test "$(sudo stat -c "%U %a" /etc/vox.env)" = "root 600"
+            sudo grep -Eq "^DATABASE_URL=.+$" /etc/vox.env
             sudo grep -Eq "^NEXT_PUBLIC_SUPABASE_URL=.+$" /etc/vox.env
             sudo grep -Eq "^NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=.+$" /etc/vox.env
+            if timeout 5 bash -c "</dev/tcp/db.fdnwhzrojorrspvulsgk.supabase.co/5432" 2>/dev/null; then
+              echo "Supabase PostgreSQL endpoint is reachable"
+            else
+              echo "::warning::Supabase PostgreSQL endpoint is not reachable from this server"
+            fi
           '
 
       - name: Remove runner files
