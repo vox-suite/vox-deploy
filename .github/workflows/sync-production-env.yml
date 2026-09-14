@@ -59,7 +59,10 @@ jobs:
             sudo grep -Eq "^DATABASE_URL=.+$" /etc/vox.env
             sudo grep -Eq "^NEXT_PUBLIC_SUPABASE_URL=.+$" /etc/vox.env
             sudo grep -Eq "^NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=.+$" /etc/vox.env
-            if timeout 5 bash -c "</dev/tcp/db.fdnwhzrojorrspvulsgk.supabase.co/5432" 2>/dev/null; then
+            database_url=$(sed -n "s/^DATABASE_URL=//p" "$update")
+            database_host=${database_url#*@}
+            database_host=${database_host%%:*}
+            if test -n "$database_host" && timeout 5 bash -c "</dev/tcp/$database_host/5432" 2>/dev/null; then
               echo "Supabase PostgreSQL endpoint is reachable"
             else
               echo "::warning::Supabase PostgreSQL endpoint is not reachable from this server"
