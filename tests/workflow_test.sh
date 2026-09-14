@@ -9,6 +9,8 @@ ruby -ryaml -e '
   deploy_on = deploy["on"] || deploy[true]
   raise "missing repository dispatch" unless deploy_on.fetch("repository_dispatch").fetch("types") == ["component_ready"]
   raise "missing manual dispatch" unless deploy_on.key?("workflow_dispatch")
+  manual_inputs = deploy_on.fetch("workflow_dispatch").fetch("inputs")
+  raise "manual deploy is not safe by default" unless manual_inputs.fetch("deploy").fetch("default") == false
   raise "wrong permissions" unless deploy.fetch("permissions") == {"contents" => "read", "packages" => "write"}
   concurrency = deploy.fetch("concurrency")
   raise "wrong concurrency group" unless concurrency.fetch("group") == "production"
@@ -18,6 +20,8 @@ ruby -ryaml -e '
   step_names = job.fetch("steps").map { |step| step["name"] }.compact
   raise "Core is not built centrally" unless step_names.include?("Build and publish Core")
   raise "Bridge is not built centrally" unless step_names.include?("Build and publish Bridge")
+  deploy_step = job.fetch("steps").find { |step| step["name"] == "Deploy complete backend" }
+  raise "production deploy is not explicitly gated" unless deploy_step.fetch("if").include?("inputs.deploy")
   raise "credentials removed before release summary" unless step_names.index("Record release") < step_names.index("Remove runner credentials")
   raise "CI has no shell test" unless ci.fetch("jobs").values.any? { |value| value.fetch("steps").any? { |step| step["run"]&.include?("tests/run.sh") } }
 ' "$repo_dir/.github/workflows/ci.yml" "$repo_dir/.github/workflows/deploy.yml"

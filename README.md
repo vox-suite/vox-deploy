@@ -43,7 +43,7 @@ The deployment supplies all internal service URLs. Do not put `REDIS_URL`, `VOX_
 
 ## First production release
 
-Run the `deploy-production` workflow through `workflow_dispatch`. Supply the full tested Core and Bridge commit SHAs. Vox Deploy builds both images, pins their registry digests, and rolls them out as one backend release.
+Run the `deploy-production` workflow through `workflow_dispatch`. Supply the full tested Core and Bridge commit SHAs and set `deploy` to `true`. Vox Deploy builds both images, pins their registry digests, and rolls them out as one backend release. Leave `deploy` at its safe default of `false` to verify checkout and image publication without touching production.
 
 The first release starts Redis and Core before stopping `vox-bridge.service`. If containerized Bridge fails, deployment automatically restarts the systemd service. After deployment passes, make one incoming call and trigger one autonomous outbound call before enabling automatic dispatch.
 

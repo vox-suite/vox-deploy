@@ -13,6 +13,11 @@ on:
         description: Full Bridge commit SHA
         required: true
         type: string
+      deploy:
+        description: Deploy the built release to production
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -131,6 +136,7 @@ jobs:
           chmod 600 "$VOX_DEPLOY_REQUEST"
 
       - name: Prepare encrypted credentials
+        if: github.event_name == 'repository_dispatch' || inputs.deploy
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           GHCR_PULL_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -143,6 +149,7 @@ jobs:
           chmod 600 "$VOX_SSH_KEY_FILE" "$VOX_GHCR_TOKEN_FILE"
 
       - name: Deploy complete backend
+        if: github.event_name == 'repository_dispatch' || inputs.deploy
         env:
           SERVER_HOST: ${{ secrets.SERVER_HOST }}
           SERVER_USER: ${{ secrets.SERVER_USER }}
@@ -160,7 +167,7 @@ jobs:
             'set -eu; trap "rm -f /tmp/vox-release-request /tmp/vox-ghcr-token" EXIT; sudo mkdir -p /opt/vox/scripts /opt/vox/state; sudo install -o root -g root -m 644 /tmp/compose.prod.yml /opt/vox/compose.prod.yml; sudo install -o root -g root -m 755 /tmp/release.sh /opt/vox/scripts/release.sh; sudo install -o root -g root -m 755 /tmp/deploy-vox.sh /opt/vox/scripts/deploy-vox.sh; sudo /opt/vox/scripts/deploy-vox.sh --request-file /tmp/vox-release-request --ghcr-token-file /tmp/vox-ghcr-token'
 
       - name: Record release
-        if: success()
+        if: success() && (github.event_name == 'repository_dispatch' || inputs.deploy)
         run: |
           {
             echo "## Vox production deployment"
