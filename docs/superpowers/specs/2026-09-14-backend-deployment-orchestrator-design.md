@@ -56,7 +56,7 @@ The server owns `/etc/vox.env` as root with mode `0600`. The deployment workflow
 
 Optional model and voice selections keep their application defaults. Compose supplies internal URLs such as `REDIS_URL`, `VOX_CORE_URL`, and `VOX_BRIDGE_URL` so operators cannot accidentally point containers at localhost.
 
-GitHub stores server SSH credentials, a GHCR pull credential, and the source-to-orchestrator dispatch credential as encrypted repository secrets. Secret values are passed through temporary mode-`0600` files, consumed through standard input where supported, and removed before the workflow finishes.
+GitHub stores server SSH credentials and the source-to-orchestrator dispatch credential as encrypted repository secrets. The orchestrator uses its short-lived `GITHUB_TOKEN` with explicit read access to both GHCR packages. Secret values are passed through temporary mode-`0600` files, consumed through standard input where supported, and removed before the workflow finishes.
 
 ## Deployment algorithm
 

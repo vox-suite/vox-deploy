@@ -9,8 +9,8 @@ Create a protected `production` environment and add these encrypted secrets:
 - `SERVER_HOST`: production server host.
 - `SERVER_USER`: SSH user with passwordless sudo for the deployment commands.
 - `SSH_PRIVATE_KEY`: private key accepted by the production server.
-- `GHCR_USER`: GitHub account used to pull private Vox images.
-- `GHCR_PULL_TOKEN`: token with read access to the Core and Bridge packages.
+
+The deployment job uses its short-lived `GITHUB_TOKEN` to pull Core and Bridge images. Grant `vox-deploy` Actions access to both GHCR packages; do not create a permanent server registry credential.
 
 Core and Bridge each need `VOX_DEPLOY_DISPATCH_TOKEN`, scoped to send repository dispatches to this private repository. Keep the `VOX_AUTO_DEPLOY` repository variable set to `false` until the first manual release passes real incoming and outbound call checks.
 

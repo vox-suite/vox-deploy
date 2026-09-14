@@ -152,7 +152,7 @@ CI runs all shell tests, ShellCheck, and Compose rendering. Deploy resolves even
 
 - [ ] **Step 4: Document bootstrap and recovery**
 
-README commands must create `/opt/vox`, install `/etc/vox.env` with exact required key names, describe repository secrets `SERVER_HOST`, `SERVER_USER`, `SSH_PRIVATE_KEY`, `GHCR_PULL_TOKEN`, and `GHCR_USER`, and show manual first deployment and explicit rollback inputs without containing credential examples.
+README commands must create `/opt/vox`, install `/etc/vox.env` with exact required key names, describe repository secrets `SERVER_HOST`, `SERVER_USER`, and `SSH_PRIVATE_KEY`, explain short-lived `GITHUB_TOKEN` package access, and show manual first deployment and explicit rollback inputs without containing credential examples.
 
 - [ ] **Step 5: Verify and commit**
 
