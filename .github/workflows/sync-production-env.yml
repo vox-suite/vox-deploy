@@ -1,0 +1,62 @@
+name: sync-production-env
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-24.04
+    environment: production
+    env:
+      VOX_ENV_UPDATE_FILE: /tmp/vox-supabase-public.env
+      VOX_SSH_KEY_FILE: /tmp/vox-deploy-key
+    steps:
+      - name: Prepare protected files
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          [[ "$NEXT_PUBLIC_SUPABASE_URL" =~ ^https://[a-z0-9]+\.supabase\.co$ ]]
+          [[ "$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY" =~ ^sb_publishable_[A-Za-z0-9_-]+$ ]]
+          test -n "$SSH_PRIVATE_KEY"
+          printf 'NEXT_PUBLIC_SUPABASE_URL=%s\nNEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=%s\n' \
+            "$NEXT_PUBLIC_SUPABASE_URL" "$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY" >"$VOX_ENV_UPDATE_FILE"
+          printf '%s\n' "$SSH_PRIVATE_KEY" >"$VOX_SSH_KEY_FILE"
+          chmod 600 "$VOX_ENV_UPDATE_FILE" "$VOX_SSH_KEY_FILE"
+
+      - name: Merge production environment
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+        run: |
+          set -euo pipefail
+          test -n "$SERVER_HOST"
+          test -n "$SERVER_USER"
+          mkdir -p ~/.ssh
+          ssh-keyscan -H "$SERVER_HOST" >>~/.ssh/known_hosts 2>/dev/null
+          scp -i "$VOX_SSH_KEY_FILE" "$VOX_ENV_UPDATE_FILE" \
+            "$SERVER_USER@$SERVER_HOST:/tmp/vox-supabase-public.env"
+          ssh -i "$VOX_SSH_KEY_FILE" "$SERVER_USER@$SERVER_HOST" '
+            set -eu
+            update=/tmp/vox-supabase-public.env
+            merged=$(mktemp)
+            trap "rm -f \"$update\" \"$merged\"" EXIT
+            if ! sudo test -f /etc/vox.env; then
+              sudo install -o root -g root -m 600 /dev/null /etc/vox.env
+            fi
+            sudo awk "!/^NEXT_PUBLIC_SUPABASE_URL=/ && !/^NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=/" /etc/vox.env >"$merged"
+            cat "$update" >>"$merged"
+            sudo install -o root -g root -m 600 "$merged" /etc/vox.env
+            test "$(sudo stat -c "%U %a" /etc/vox.env)" = "root 600"
+            sudo grep -Eq "^NEXT_PUBLIC_SUPABASE_URL=.+$" /etc/vox.env
+            sudo grep -Eq "^NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=.+$" /etc/vox.env
+          '
+
+      - name: Remove runner files
+        if: always()
+        run: rm -f "$VOX_ENV_UPDATE_FILE" "$VOX_SSH_KEY_FILE"

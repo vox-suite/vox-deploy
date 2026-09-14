@@ -2,6 +2,12 @@
 set -euo pipefail
 
 repo_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+sync_workflow="$repo_dir/.github/workflows/sync-production-env.yml"
+
+if [[ ! -f $sync_workflow ]]; then
+  echo "production environment sync workflow is missing" >&2
+  exit 1
+fi
 
 ruby -ryaml -e '
   ci = YAML.load_file(ARGV[0])
@@ -26,6 +32,22 @@ ruby -ryaml -e '
   raise "credentials removed before release summary" unless step_names.index("Record release") < step_names.index("Remove runner credentials")
   raise "CI has no shell test" unless ci.fetch("jobs").values.any? { |value| value.fetch("steps").any? { |step| step["run"]&.include?("tests/run.sh") } }
 ' "$repo_dir/.github/workflows/ci.yml" "$repo_dir/.github/workflows/deploy.yml"
+
+ruby -ryaml -e '
+  sync = YAML.load_file(ARGV[0])
+  sync_on = sync["on"] || sync[true]
+  raise "sync must be manual-only" unless sync_on.keys == ["workflow_dispatch"]
+  raise "wrong sync permissions" unless sync.fetch("permissions") == {"contents" => "read"}
+  job = sync.fetch("jobs").fetch("sync")
+  raise "sync must use production environment" unless job.fetch("environment") == "production"
+  body = job.fetch("steps").map { |step| step["run"] }.compact.join("\n")
+  %w[NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY].each do |key|
+    raise "missing #{key}" unless body.include?(key)
+  end
+  raise "environment file is not protected" unless body.include?("install -o root -g root -m 600")
+  raise "existing keys are not preserved" unless body.include?("awk")
+  raise "runner files are not cleaned" unless body.include?("rm -f")
+' "$sync_workflow"
 
 grep -q 'VOX_DEPLOY_REQUEST' "$repo_dir/.github/workflows/deploy.yml"
 grep -q 'rm -f /tmp/vox-release-request /tmp/vox-ghcr-token' "$repo_dir/.github/workflows/deploy.yml"
