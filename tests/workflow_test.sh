@@ -69,6 +69,8 @@ ruby -ryaml -e '
   raise "inspection must use production environment" unless job.fetch("environment") == "production"
   body = job.fetch("steps").map { |step| step["run"] }.compact.join("\n")
   raise "inspection does not run the safe status script" unless body.include?("config-status.sh")
+  raise "inspection does not report runtime health" unless body.include?("docker inspect") && body.include?("systemctl is-active vox-bridge.service")
+  raise "runtime log output is not sanitized" unless body.include?("[REDACTED]")
   raise "inspection does not clean remote script" unless body.include?("rm -f /tmp/vox-config-status.sh")
   runner_cleanup = "rm -f \"" + 36.chr + "VOX_SSH_KEY_FILE\""
   raise "inspection does not clean runner key" unless body.include?(runner_cleanup)
