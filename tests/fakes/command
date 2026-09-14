@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+name=$(basename "$0")
+printf '%s %s\n' "$name" "$*" >>"$VOX_COMMAND_LOG"
+
+case $name in
+  flock)
+    exit 0
+    ;;
+  systemctl)
+    if [[ ${1-} == is-active ]]; then
+      [[ ${VOX_SYSTEMD_ACTIVE:-0} == 1 ]]
+    fi
+    ;;
+  curl)
+    [[ ${VOX_FAKE_FAILURE:-} != public-health ]]
+    ;;
+  docker)
+    if [[ $* == *" login "* ]]; then
+      read -r _ || true
+    fi
+    if [[ ${VOX_FAKE_FAILURE:-} == pull && $* == *" compose "*" pull"* ]]; then
+      exit 1
+    fi
+    if [[ ${VOX_FAKE_FAILURE:-} == bridge-health && $* == *" up "*" bridge"* ]]; then
+      exit 1
+    fi
+    if [[ $* == *" ps --status running --services"* ]]; then
+      echo core-worker
+    fi
+    ;;
+  *)
+    echo "unsupported fake command: $name" >&2
+    exit 1
+    ;;
+esac
