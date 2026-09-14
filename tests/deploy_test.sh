@@ -81,6 +81,10 @@ fi
 ! grep -q '^systemctl ' "$command_log" || fail "missing config touched systemd"
 
 setup_case
+sed -i.bak -e '/^GOOGLE_MAPS_API_KEY=/d' -e '/^TWILIO_ACCOUNT_SID=/d' -e '/^TWILIO_FROM_NUMBER=/d' "$env_file"
+deploy_full
+
+setup_case
 if VOX_FAKE_FAILURE=pull deploy_full; then
   fail "failed pull was accepted"
 fi

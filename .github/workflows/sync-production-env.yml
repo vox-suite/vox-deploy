@@ -44,17 +44,24 @@ jobs:
           ssh-keyscan -H "$SERVER_HOST" >>~/.ssh/known_hosts 2>/dev/null
           scp -i "$VOX_SSH_KEY_FILE" "$VOX_ENV_UPDATE_FILE" \
             "$SERVER_USER@$SERVER_HOST:/tmp/vox-supabase-public.env"
+          scp -i "$VOX_SSH_KEY_FILE" scripts/merge-env.sh \
+            "$SERVER_USER@$SERVER_HOST:/tmp/vox-merge-env.sh"
           ssh -i "$VOX_SSH_KEY_FILE" "$SERVER_USER@$SERVER_HOST" '
             set -eu
             update=/tmp/vox-supabase-public.env
             merged=$(mktemp)
-            trap "rm -f \"$update\" \"$merged\"" EXIT
+            staged=$(mktemp)
+            trap "rm -f \"$update\" \"$merged\" \"$staged\" /tmp/vox-merge-env.sh" EXIT
             if ! sudo test -f /etc/vox.env; then
               sudo install -o root -g root -m 600 /dev/null /etc/vox.env
             fi
             sudo awk "!/^DATABASE_URL=/ && !/^NEXT_PUBLIC_SUPABASE_URL=/ && !/^NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=/" /etc/vox.env >"$merged"
             cat "$update" >>"$merged"
-            sudo install -o root -g root -m 600 "$merged" /etc/vox.env
+            sudo bash /tmp/vox-merge-env.sh "$merged" /etc/vox-bridge.env "$staged" \
+              VOX_CORE_SERVICE_TOKEN GEMINI_API_KEY EXA_API_KEY GOOGLE_MAPS_API_KEY \
+              TWILIO_ACCOUNT_SID TWILIO_AUTH_TOKEN TWILIO_FROM_NUMBER \
+              ASSEMBLYAI_API_KEY SARVAM_API_KEY
+            sudo install -o root -g root -m 600 "$staged" /etc/vox.env
             test "$(sudo stat -c "%U %a" /etc/vox.env)" = "root 600"
             sudo grep -Eq "^DATABASE_URL=.+$" /etc/vox.env
             sudo grep -Eq "^NEXT_PUBLIC_SUPABASE_URL=.+$" /etc/vox.env

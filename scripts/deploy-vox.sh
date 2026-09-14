@@ -92,10 +92,7 @@ require_configuration() {
     VOX_CORE_SERVICE_TOKEN \
     GEMINI_API_KEY \
     EXA_API_KEY \
-    GOOGLE_MAPS_API_KEY \
-    TWILIO_ACCOUNT_SID \
     TWILIO_AUTH_TOKEN \
-    TWILIO_FROM_NUMBER \
     ASSEMBLYAI_API_KEY \
     SARVAM_API_KEY; do
     grep -Eq "^${key}=.+$" "$env_file" || {
