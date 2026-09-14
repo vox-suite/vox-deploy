@@ -1,0 +1,119 @@
+name: deploy-production
+
+on:
+  repository_dispatch:
+    types: [component_published]
+  workflow_dispatch:
+    inputs:
+      core_sha:
+        description: Full Core commit SHA
+        required: true
+        type: string
+      core_image:
+        description: Core image pinned to its sha256 digest
+        required: true
+        type: string
+      bridge_sha:
+        description: Full Bridge commit SHA
+        required: true
+        type: string
+      bridge_image:
+        description: Bridge image pinned to its sha256 digest
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    environment: production
+    env:
+      VOX_DEPLOY_REQUEST: /tmp/vox-release-request
+      VOX_GHCR_TOKEN_FILE: /tmp/vox-ghcr-token
+      VOX_SSH_KEY_FILE: /tmp/vox-deploy-key
+      GHCR_USER: ${{ secrets.GHCR_USER }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Validate release request
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_COMPONENT: ${{ github.event.client_payload.component }}
+          EVENT_SHA: ${{ github.event.client_payload.sha }}
+          EVENT_IMAGE: ${{ github.event.client_payload.image }}
+          INPUT_CORE_SHA: ${{ inputs.core_sha }}
+          INPUT_CORE_IMAGE: ${{ inputs.core_image }}
+          INPUT_BRIDGE_SHA: ${{ inputs.bridge_sha }}
+          INPUT_BRIDGE_IMAGE: ${{ inputs.bridge_image }}
+        run: |
+          set -euo pipefail
+          source scripts/release.sh
+          [[ "$GHCR_USER" =~ ^[A-Za-z0-9][A-Za-z0-9-]{0,38}$ ]]
+          if [[ "$EVENT_NAME" == repository_dispatch ]]; then
+            validate_component "$EVENT_COMPONENT"
+            validate_sha "$EVENT_SHA"
+            validate_image "$EVENT_COMPONENT" "$EVENT_IMAGE"
+            printf 'COMPONENT=%s\nSHA=%s\nIMAGE=%s\nGHCR_USER=%s\n' \
+              "$EVENT_COMPONENT" "$EVENT_SHA" "$EVENT_IMAGE" "$GHCR_USER" >"$VOX_DEPLOY_REQUEST"
+          else
+            validate_sha "$INPUT_CORE_SHA"
+            validate_image core "$INPUT_CORE_IMAGE"
+            validate_sha "$INPUT_BRIDGE_SHA"
+            validate_image bridge "$INPUT_BRIDGE_IMAGE"
+            printf 'CORE_SHA=%s\nCORE_IMAGE=%s\nBRIDGE_SHA=%s\nBRIDGE_IMAGE=%s\nGHCR_USER=%s\n' \
+              "$INPUT_CORE_SHA" "$INPUT_CORE_IMAGE" \
+              "$INPUT_BRIDGE_SHA" "$INPUT_BRIDGE_IMAGE" \
+              "$GHCR_USER" >"$VOX_DEPLOY_REQUEST"
+          fi
+          chmod 600 "$VOX_DEPLOY_REQUEST"
+
+      - name: Prepare encrypted credentials
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          GHCR_PULL_TOKEN: ${{ secrets.GHCR_PULL_TOKEN }}
+        run: |
+          set -euo pipefail
+          test -n "$SSH_PRIVATE_KEY"
+          test -n "$GHCR_PULL_TOKEN"
+          printf '%s\n' "$SSH_PRIVATE_KEY" >"$VOX_SSH_KEY_FILE"
+          printf '%s' "$GHCR_PULL_TOKEN" >"$VOX_GHCR_TOKEN_FILE"
+          chmod 600 "$VOX_SSH_KEY_FILE" "$VOX_GHCR_TOKEN_FILE"
+
+      - name: Deploy complete backend
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+        run: |
+          set -euo pipefail
+          test -n "$SERVER_HOST"
+          test -n "$SERVER_USER"
+          mkdir -p ~/.ssh
+          ssh-keyscan -H "$SERVER_HOST" >>~/.ssh/known_hosts 2>/dev/null
+          scp -i "$VOX_SSH_KEY_FILE" \
+            compose.prod.yml scripts/release.sh scripts/deploy-vox.sh \
+            "$VOX_DEPLOY_REQUEST" "$VOX_GHCR_TOKEN_FILE" \
+            "$SERVER_USER@$SERVER_HOST:/tmp/"
+          ssh -i "$VOX_SSH_KEY_FILE" "$SERVER_USER@$SERVER_HOST" \
+            'set -eu; trap "rm -f /tmp/vox-release-request /tmp/vox-ghcr-token" EXIT; sudo mkdir -p /opt/vox/scripts /opt/vox/state; sudo install -o root -g root -m 644 /tmp/compose.prod.yml /opt/vox/compose.prod.yml; sudo install -o root -g root -m 755 /tmp/release.sh /opt/vox/scripts/release.sh; sudo install -o root -g root -m 755 /tmp/deploy-vox.sh /opt/vox/scripts/deploy-vox.sh; sudo /opt/vox/scripts/deploy-vox.sh --request-file /tmp/vox-release-request --ghcr-token-file /tmp/vox-ghcr-token'
+
+      - name: Record release
+        if: success()
+        run: |
+          {
+            echo "## Vox production deployment"
+            while IFS='=' read -r key value; do
+              case "$key" in
+                COMPONENT | SHA | CORE_SHA | BRIDGE_SHA) printf -- "- %s: \`%s\`\n" "$key" "$value" ;;
+              esac
+            done <"$VOX_DEPLOY_REQUEST"
+          } >>"$GITHUB_STEP_SUMMARY"
+
+      - name: Remove runner credentials
+        if: always()
+        run: rm -f "$VOX_DEPLOY_REQUEST" "$VOX_GHCR_TOKEN_FILE" "$VOX_SSH_KEY_FILE"

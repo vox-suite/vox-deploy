@@ -97,6 +97,18 @@ grep -q "CORE_SHA=$sha_core" "$case_dir/root/state/current.env" || fail "Core re
 grep -q "BRIDGE_SHA=$sha_bridge" "$case_dir/root/state/current.env" || fail "Bridge release was not promoted"
 
 setup_case
+request_file="$case_dir/request.env"
+cat >"$request_file" <<EOF
+CORE_SHA=$sha_core
+CORE_IMAGE=$image_core
+BRIDGE_SHA=$sha_bridge
+BRIDGE_IMAGE=$image_bridge
+GHCR_USER=vox-deploy
+EOF
+VOX_SYSTEMD_ACTIVE=1 deploy --request-file "$request_file" --ghcr-token-file "$token_file"
+grep -q "CORE_SHA=$sha_core" "$case_dir/root/state/current.env" || fail "request file was not deployed"
+
+setup_case
 if VOX_SYSTEMD_ACTIVE=1 VOX_FAKE_FAILURE=bridge-health deploy_full; then
   fail "failed first Bridge rollout was accepted"
 fi

@@ -17,7 +17,7 @@ systemd_was_active=0
 docker_config=
 
 usage() {
-  echo "usage: deploy-vox.sh (--component core|bridge --sha SHA --image IMAGE | --core-sha SHA --core-image IMAGE --bridge-sha SHA --bridge-image IMAGE) --ghcr-user USER --ghcr-token-file FILE" >&2
+  echo "usage: deploy-vox.sh (--request-file FILE | --component core|bridge --sha SHA --image IMAGE --ghcr-user USER | --core-sha SHA --core-image IMAGE --bridge-sha SHA --bridge-image IMAGE --ghcr-user USER) --ghcr-token-file FILE" >&2
   exit 2
 }
 
@@ -30,6 +30,7 @@ bridge_sha=
 bridge_image=
 ghcr_user=
 ghcr_token_file=
+request_file=
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -42,11 +43,31 @@ while [[ $# -gt 0 ]]; do
     --bridge-image) bridge_image=${2-}; shift 2 ;;
     --ghcr-user) ghcr_user=${2-}; shift 2 ;;
     --ghcr-token-file) ghcr_token_file=${2-}; shift 2 ;;
+    --request-file) request_file=${2-}; shift 2 ;;
     *) usage ;;
   esac
 done
 
+if [[ -n $request_file ]]; then
+  [[ -f $request_file ]] || usage
+  [[ -z $component && -z $sha && -z $image && -z $core_sha && -z $core_image && -z $bridge_sha && -z $bridge_image && -z $ghcr_user ]] || usage
+  while IFS='=' read -r key value; do
+    case $key in
+      COMPONENT) [[ -z $component ]] || usage; component=$value ;;
+      SHA) [[ -z $sha ]] || usage; sha=$value ;;
+      IMAGE) [[ -z $image ]] || usage; image=$value ;;
+      CORE_SHA) [[ -z $core_sha ]] || usage; core_sha=$value ;;
+      CORE_IMAGE) [[ -z $core_image ]] || usage; core_image=$value ;;
+      BRIDGE_SHA) [[ -z $bridge_sha ]] || usage; bridge_sha=$value ;;
+      BRIDGE_IMAGE) [[ -z $bridge_image ]] || usage; bridge_image=$value ;;
+      GHCR_USER) [[ -z $ghcr_user ]] || usage; ghcr_user=$value ;;
+      *) usage ;;
+    esac
+  done <"$request_file"
+fi
+
 [[ -n $ghcr_user && -s $ghcr_token_file ]] || usage
+[[ $ghcr_user =~ ^[A-Za-z0-9][A-Za-z0-9-]{0,38}$ ]] || usage
 if [[ -n $component || -n $sha || -n $image ]]; then
   [[ -n $component && -n $sha && -n $image ]] || usage
   [[ -z $core_sha && -z $core_image && -z $bridge_sha && -z $bridge_image ]] || usage
