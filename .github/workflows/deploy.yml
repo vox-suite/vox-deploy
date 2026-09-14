@@ -18,6 +18,11 @@ on:
         required: true
         default: false
         type: boolean
+      reuse_images:
+        description: Reuse images already published for these commits
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -101,6 +106,7 @@ jobs:
 
       - name: Build and publish Core
         id: core
+        if: github.event_name == 'repository_dispatch' || inputs.reuse_images != true
         uses: docker/build-push-action@v7
         with:
           context: sources/core
@@ -111,6 +117,7 @@ jobs:
 
       - name: Build and publish Bridge
         id: bridge
+        if: github.event_name == 'repository_dispatch' || inputs.reuse_images != true
         uses: docker/build-push-action@v7
         with:
           context: sources/bridge
@@ -119,10 +126,28 @@ jobs:
           tags: ghcr.io/vox-suite/vox-deploy/bridge:${{ env.BRIDGE_SHA }}
           labels: org.opencontainers.image.source=https://github.com/vox-suite/vox-deploy
 
-      - name: Validate release request
+      - name: Select release images
         env:
-          CORE_IMAGE: ghcr.io/vox-suite/vox-deploy/core@${{ steps.core.outputs.digest }}
-          BRIDGE_IMAGE: ghcr.io/vox-suite/vox-deploy/bridge@${{ steps.bridge.outputs.digest }}
+          REUSE_IMAGES: ${{ inputs.reuse_images }}
+          BUILT_CORE_DIGEST: ${{ steps.core.outputs.digest }}
+          BUILT_BRIDGE_DIGEST: ${{ steps.bridge.outputs.digest }}
+        run: |
+          set -euo pipefail
+          if [[ "$REUSE_IMAGES" == true ]]; then
+            core_manifest=$(docker buildx imagetools inspect \
+              "ghcr.io/vox-suite/vox-deploy/core:$CORE_SHA" --format '{{json .Manifest}}')
+            bridge_manifest=$(docker buildx imagetools inspect \
+              "ghcr.io/vox-suite/vox-deploy/bridge:$BRIDGE_SHA" --format '{{json .Manifest}}')
+            core_digest=$(jq -er '.digest | select(startswith("sha256:"))' <<<"$core_manifest")
+            bridge_digest=$(jq -er '.digest | select(startswith("sha256:"))' <<<"$bridge_manifest")
+          else
+            core_digest=$BUILT_CORE_DIGEST
+            bridge_digest=$BUILT_BRIDGE_DIGEST
+          fi
+          printf 'CORE_IMAGE=ghcr.io/vox-suite/vox-deploy/core@%s\n' "$core_digest" >>"$GITHUB_ENV"
+          printf 'BRIDGE_IMAGE=ghcr.io/vox-suite/vox-deploy/bridge@%s\n' "$bridge_digest" >>"$GITHUB_ENV"
+
+      - name: Validate release request
         run: |
           set -euo pipefail
           source scripts/release.sh
