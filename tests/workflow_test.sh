@@ -3,9 +3,15 @@ set -euo pipefail
 
 repo_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 sync_workflow="$repo_dir/.github/workflows/sync-production-env.yml"
+inspect_workflow="$repo_dir/.github/workflows/inspect-production.yml"
 
 if [[ ! -f $sync_workflow ]]; then
   echo "production environment sync workflow is missing" >&2
+  exit 1
+fi
+
+if [[ ! -f $inspect_workflow ]]; then
+  echo "production inspection workflow is missing" >&2
   exit 1
 fi
 
@@ -50,6 +56,20 @@ ruby -ryaml -e '
   derived_host = "database_host=" + "$" + "{database_url#*@}"
   raise "database host is not derived from DATABASE_URL" unless body.include?(derived_host)
 ' "$sync_workflow"
+
+ruby -ryaml -e '
+  inspect = YAML.load_file(ARGV[0])
+  inspect_on = inspect["on"] || inspect[true]
+  raise "inspection must be manual-only" unless inspect_on.keys == ["workflow_dispatch"]
+  raise "wrong inspection permissions" unless inspect.fetch("permissions") == {"contents" => "read"}
+  job = inspect.fetch("jobs").fetch("inspect")
+  raise "inspection must use production environment" unless job.fetch("environment") == "production"
+  body = job.fetch("steps").map { |step| step["run"] }.compact.join("\n")
+  raise "inspection does not run the safe status script" unless body.include?("config-status.sh")
+  raise "inspection does not clean remote script" unless body.include?("rm -f /tmp/vox-config-status.sh")
+  runner_cleanup = "rm -f \"" + 36.chr + "VOX_SSH_KEY_FILE\""
+  raise "inspection does not clean runner key" unless body.include?(runner_cleanup)
+' "$inspect_workflow"
 
 grep -q 'VOX_DEPLOY_REQUEST' "$repo_dir/.github/workflows/deploy.yml"
 grep -q 'rm -f /tmp/vox-release-request /tmp/vox-ghcr-token' "$repo_dir/.github/workflows/deploy.yml"

@@ -1,0 +1,44 @@
+name: inspect-production
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    environment: production
+    env:
+      VOX_SSH_KEY_FILE: /tmp/vox-deploy-key
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Prepare SSH key
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          test -n "$SSH_PRIVATE_KEY"
+          printf '%s\n' "$SSH_PRIVATE_KEY" >"$VOX_SSH_KEY_FILE"
+          chmod 600 "$VOX_SSH_KEY_FILE"
+
+      - name: Inspect configuration presence
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+        run: |
+          set -euo pipefail
+          test -n "$SERVER_HOST"
+          test -n "$SERVER_USER"
+          mkdir -p ~/.ssh
+          ssh-keyscan -H "$SERVER_HOST" >>~/.ssh/known_hosts 2>/dev/null
+          scp -i "$VOX_SSH_KEY_FILE" scripts/config-status.sh \
+            "$SERVER_USER@$SERVER_HOST:/tmp/vox-config-status.sh"
+          ssh -i "$VOX_SSH_KEY_FILE" "$SERVER_USER@$SERVER_HOST" \
+            'set -eu; trap "rm -f /tmp/vox-config-status.sh" EXIT; sudo bash /tmp/vox-config-status.sh /etc/vox.env /etc/vox-bridge.env DATABASE_URL VOX_CORE_SERVICE_TOKEN GEMINI_API_KEY EXA_API_KEY GOOGLE_MAPS_API_KEY TWILIO_ACCOUNT_SID TWILIO_AUTH_TOKEN TWILIO_FROM_NUMBER ASSEMBLYAI_API_KEY SARVAM_API_KEY'
+
+      - name: Remove runner credentials
+        if: always()
+        run: rm -f "$VOX_SSH_KEY_FILE"
