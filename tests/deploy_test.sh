@@ -12,9 +12,9 @@ done
 sha_core=1111111111111111111111111111111111111111
 sha_bridge=2222222222222222222222222222222222222222
 sha_bridge_next=3333333333333333333333333333333333333333
-image_core="ghcr.io/vox-suite/vox-core@sha256:$(printf 'a%.0s' {1..64})"
-image_bridge="ghcr.io/vox-suite/vox-bridge@sha256:$(printf 'b%.0s' {1..64})"
-image_bridge_next="ghcr.io/vox-suite/vox-bridge@sha256:$(printf 'c%.0s' {1..64})"
+image_core="ghcr.io/vox-suite/vox-deploy/core@sha256:$(printf 'a%.0s' {1..64})"
+image_bridge="ghcr.io/vox-suite/vox-deploy/bridge@sha256:$(printf 'b%.0s' {1..64})"
+image_bridge_next="ghcr.io/vox-suite/vox-deploy/bridge@sha256:$(printf 'c%.0s' {1..64})"
 
 fail() {
   echo "FAIL: $1" >&2

@@ -2,29 +2,21 @@ name: deploy-production
 
 on:
   repository_dispatch:
-    types: [component_published]
+    types: [component_ready]
   workflow_dispatch:
     inputs:
       core_sha:
         description: Full Core commit SHA
         required: true
         type: string
-      core_image:
-        description: Core image pinned to its sha256 digest
-        required: true
-        type: string
       bridge_sha:
         description: Full Bridge commit SHA
-        required: true
-        type: string
-      bridge_image:
-        description: Bridge image pinned to its sha256 digest
         required: true
         type: string
 
 permissions:
   contents: read
-  packages: read
+  packages: write
 
 concurrency:
   group: production
@@ -42,36 +34,100 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Validate release request
+      - name: Resolve release commits
         env:
           EVENT_NAME: ${{ github.event_name }}
           EVENT_COMPONENT: ${{ github.event.client_payload.component }}
           EVENT_SHA: ${{ github.event.client_payload.sha }}
-          EVENT_IMAGE: ${{ github.event.client_payload.image }}
           INPUT_CORE_SHA: ${{ inputs.core_sha }}
-          INPUT_CORE_IMAGE: ${{ inputs.core_image }}
           INPUT_BRIDGE_SHA: ${{ inputs.bridge_sha }}
-          INPUT_BRIDGE_IMAGE: ${{ inputs.bridge_image }}
+          GH_TOKEN: ${{ secrets.SOURCE_REPO_TOKEN }}
+        run: |
+          set -euo pipefail
+          source scripts/release.sh
+          test -n "$GH_TOKEN"
+          if [[ "$EVENT_NAME" == repository_dispatch ]]; then
+            validate_component "$EVENT_COMPONENT"
+            validate_sha "$EVENT_SHA"
+            if [[ "$EVENT_COMPONENT" == core ]]; then
+              core_sha=$EVENT_SHA
+              bridge_sha=$(gh api repos/vox-suite/vox-bridge/commits/main --jq .sha)
+            else
+              core_sha=$(gh api repos/vox-suite/vox-core/commits/main --jq .sha)
+              bridge_sha=$EVENT_SHA
+            fi
+          else
+            core_sha=$INPUT_CORE_SHA
+            bridge_sha=$INPUT_BRIDGE_SHA
+          fi
+          validate_sha "$core_sha"
+          validate_sha "$bridge_sha"
+          {
+            printf 'CORE_SHA=%s\n' "$core_sha"
+            printf 'BRIDGE_SHA=%s\n' "$bridge_sha"
+          } >>"$GITHUB_ENV"
+
+      - name: Check out Core
+        uses: actions/checkout@v7
+        with:
+          repository: vox-suite/vox-core
+          ref: ${{ env.CORE_SHA }}
+          path: sources/core
+          token: ${{ secrets.SOURCE_REPO_TOKEN }}
+          persist-credentials: false
+
+      - name: Check out Bridge
+        uses: actions/checkout@v7
+        with:
+          repository: vox-suite/vox-bridge
+          ref: ${{ env.BRIDGE_SHA }}
+          path: sources/bridge
+          token: ${{ secrets.SOURCE_REPO_TOKEN }}
+          persist-credentials: false
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Build and publish Core
+        id: core
+        uses: docker/build-push-action@v7
+        with:
+          context: sources/core
+          platforms: linux/arm64
+          push: true
+          tags: ghcr.io/vox-suite/vox-deploy/core:${{ env.CORE_SHA }}
+          labels: org.opencontainers.image.source=https://github.com/vox-suite/vox-deploy
+
+      - name: Build and publish Bridge
+        id: bridge
+        uses: docker/build-push-action@v7
+        with:
+          context: sources/bridge
+          platforms: linux/arm64
+          push: true
+          tags: ghcr.io/vox-suite/vox-deploy/bridge:${{ env.BRIDGE_SHA }}
+          labels: org.opencontainers.image.source=https://github.com/vox-suite/vox-deploy
+
+      - name: Validate release request
+        env:
+          CORE_IMAGE: ghcr.io/vox-suite/vox-deploy/core@${{ steps.core.outputs.digest }}
+          BRIDGE_IMAGE: ghcr.io/vox-suite/vox-deploy/bridge@${{ steps.bridge.outputs.digest }}
         run: |
           set -euo pipefail
           source scripts/release.sh
           [[ "$GHCR_USER" =~ ^[A-Za-z0-9][A-Za-z0-9-]{0,38}$ ]]
-          if [[ "$EVENT_NAME" == repository_dispatch ]]; then
-            validate_component "$EVENT_COMPONENT"
-            validate_sha "$EVENT_SHA"
-            validate_image "$EVENT_COMPONENT" "$EVENT_IMAGE"
-            printf 'COMPONENT=%s\nSHA=%s\nIMAGE=%s\nGHCR_USER=%s\n' \
-              "$EVENT_COMPONENT" "$EVENT_SHA" "$EVENT_IMAGE" "$GHCR_USER" >"$VOX_DEPLOY_REQUEST"
-          else
-            validate_sha "$INPUT_CORE_SHA"
-            validate_image core "$INPUT_CORE_IMAGE"
-            validate_sha "$INPUT_BRIDGE_SHA"
-            validate_image bridge "$INPUT_BRIDGE_IMAGE"
-            printf 'CORE_SHA=%s\nCORE_IMAGE=%s\nBRIDGE_SHA=%s\nBRIDGE_IMAGE=%s\nGHCR_USER=%s\n' \
-              "$INPUT_CORE_SHA" "$INPUT_CORE_IMAGE" \
-              "$INPUT_BRIDGE_SHA" "$INPUT_BRIDGE_IMAGE" \
-              "$GHCR_USER" >"$VOX_DEPLOY_REQUEST"
-          fi
+          validate_sha "$CORE_SHA"
+          validate_image core "$CORE_IMAGE"
+          validate_sha "$BRIDGE_SHA"
+          validate_image bridge "$BRIDGE_IMAGE"
+          printf 'CORE_SHA=%s\nCORE_IMAGE=%s\nBRIDGE_SHA=%s\nBRIDGE_IMAGE=%s\nGHCR_USER=%s\n' \
+            "$CORE_SHA" "$CORE_IMAGE" "$BRIDGE_SHA" "$BRIDGE_IMAGE" "$GHCR_USER" >"$VOX_DEPLOY_REQUEST"
           chmod 600 "$VOX_DEPLOY_REQUEST"
 
       - name: Prepare encrypted credentials
@@ -110,7 +166,7 @@ jobs:
             echo "## Vox production deployment"
             while IFS='=' read -r key value; do
               case "$key" in
-                COMPONENT | SHA | CORE_SHA | BRIDGE_SHA) printf -- "- %s: \`%s\`\n" "$key" "$value" ;;
+                CORE_SHA | BRIDGE_SHA) printf -- '- %s: %s\n' "$key" "$value" ;;
               esac
             done <"$VOX_DEPLOY_REQUEST"
           } >>"$GITHUB_STEP_SUMMARY"

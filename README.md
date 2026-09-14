@@ -9,8 +9,9 @@ Create a protected `production` environment and add these encrypted secrets:
 - `SERVER_HOST`: production server host.
 - `SERVER_USER`: SSH user with passwordless sudo for the deployment commands.
 - `SSH_PRIVATE_KEY`: private key accepted by the production server.
+- `SOURCE_REPO_TOKEN`: token with read access to the private Core and Bridge repositories.
 
-The deployment job uses its short-lived `GITHUB_TOKEN` to pull Core and Bridge images. Grant `vox-deploy` Actions access to both GHCR packages; do not create a permanent server registry credential.
+The deployment repository checks out the exact Core and Bridge commits, builds both ARM64 images, and publishes them under its own GHCR namespace. Its short-lived `GITHUB_TOKEN` publishes the images and pulls them on the server; no permanent server registry credential or cross-repository package permission is needed.
 
 Core and Bridge each need `VOX_DEPLOY_DISPATCH_TOKEN`, scoped to send repository dispatches to this private repository. Keep the `VOX_AUTO_DEPLOY` repository variable set to `false` until the first manual release passes real incoming and outbound call checks.
 
@@ -42,17 +43,17 @@ The deployment supplies all internal service URLs. Do not put `REDIS_URL`, `VOX_
 
 ## First production release
 
-Run the `deploy-production` workflow through `workflow_dispatch`. Supply the full tested Core and Bridge commit SHAs and the corresponding `ghcr.io/vox-suite/...@sha256:...` image coordinates produced by their publication workflows.
+Run the `deploy-production` workflow through `workflow_dispatch`. Supply the full tested Core and Bridge commit SHAs. Vox Deploy builds both images, pins their registry digests, and rolls them out as one backend release.
 
 The first release starts Redis and Core before stopping `vox-bridge.service`. If containerized Bridge fails, deployment automatically restarts the systemd service. After deployment passes, make one incoming call and trigger one autonomous outbound call before enabling automatic dispatch.
 
 ## Automatic releases
 
-Set `VOX_AUTO_DEPLOY=true` in Core and Bridge after the first release is accepted. Each successful image publication then sends `component_published`; this workflow retains the healthy image for the unchanged component and deploys the complete Compose model.
+Set `VOX_AUTO_DEPLOY=true` in Core and Bridge after the first release is accepted. Each successful component validation then sends `component_ready`. Vox Deploy pairs that exact commit with the current main commit of the other backend repository, builds both images, and deploys the complete Compose model.
 
 ## Rollback
 
-Use `workflow_dispatch` with the Core and Bridge SHAs and digest-pinned image coordinates recorded by the last healthy workflow. The server also retains `/opt/vox/state/previous.env` for automatic rollback. Deployment never removes `/etc/vox.env`, PostgreSQL data, or the Redis volume.
+Use `workflow_dispatch` with the Core and Bridge SHAs recorded by the last healthy workflow. The deployment rebuilds those exact revisions, while the server retains `/opt/vox/state/previous.env` for automatic rollback. Deployment never removes `/etc/vox.env`, PostgreSQL data, or the Redis volume.
 
 ## Local verification
 

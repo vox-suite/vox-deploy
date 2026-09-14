@@ -20,8 +20,8 @@ EOF
 
 digest_core=$(printf 'a%.0s' {1..64})
 digest_bridge=$(printf 'b%.0s' {1..64})
-export CORE_IMAGE="ghcr.io/vox-suite/vox-core@sha256:$digest_core"
-export BRIDGE_IMAGE="ghcr.io/vox-suite/vox-bridge@sha256:$digest_bridge"
+export CORE_IMAGE="ghcr.io/vox-suite/vox-deploy/core@sha256:$digest_core"
+export BRIDGE_IMAGE="ghcr.io/vox-suite/vox-deploy/bridge@sha256:$digest_bridge"
 export VOX_ENV_FILE="$test_dir/vox.env"
 
 docker compose -f "$repo_dir/compose.prod.yml" config --format json >"$test_dir/compose.json"

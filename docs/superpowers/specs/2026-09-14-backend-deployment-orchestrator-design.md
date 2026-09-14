@@ -2,27 +2,26 @@
 
 ## Purpose
 
-`vox-deploy` is the single production release authority for the Vox backend. It receives successful image-publication events from `vox-core` and `vox-bridge`, deploys an exact pair of immutable image versions to the existing server, verifies the complete backend, and restores the last healthy release when verification fails.
+`vox-deploy` is the single production release authority for the Vox backend. It receives successful validation events from `vox-core` and `vox-bridge`, builds an exact pair of immutable image versions, deploys them to the existing server, verifies the complete backend, and restores the last healthy release when verification fails.
 
 `vox-web` is excluded because Vercel owns its deployment lifecycle.
 
 ## Repositories and responsibilities
 
-- `vox-core` tests Core, builds one Linux ARM64 image containing `vox-core-api` and `vox-core-worker`, publishes `ghcr.io/vox-suite/vox-core:<git-sha>`, and dispatches the published SHA to `vox-deploy`.
-- `vox-bridge` tests Bridge, publishes `ghcr.io/vox-suite/vox-bridge:<git-sha>`, and dispatches the published SHA to `vox-deploy`. Its existing direct systemd deployment is removed after the orchestrator is ready.
-- `vox-deploy` owns the production Compose definition, deployment script, release manifests, health gates, rollback, and the GitHub Actions workflow that reaches the server.
+- `vox-core` tests and validates Core, then dispatches its tested SHA to `vox-deploy` when automatic deployment is enabled.
+- `vox-bridge` tests and validates Bridge, then dispatches its tested SHA to `vox-deploy` when automatic deployment is enabled. Its existing direct systemd deployment becomes manual recovery only.
+- `vox-deploy` checks out exact source SHAs, builds both Linux ARM64 images under its own GHCR namespace, and owns the production Compose definition, deployment script, release manifests, health gates, rollback, and the GitHub Actions workflow that reaches the server.
 
 Source repositories never deploy production directly. Image tags use the full Git commit SHA and deployment uses the resulting image digest; `latest` is never deployed.
 
 ## Event and release model
 
-Each source repository sends a `repository_dispatch` event only after its tests, lint, release build, and image publication succeed. The payload contains:
+Each source repository sends a `repository_dispatch` event only after its tests, lint, and release build succeed. The payload contains:
 
 - `component`: `core` or `bridge`
 - `sha`: the 40-character source commit SHA
-- `image`: the expected GHCR repository pinned to the published `sha256` digest
 
-The orchestrator serializes production runs with the GitHub Actions `production` concurrency group and a server-side `flock`. An event updates only its component in the candidate release. The other component remains pinned to the currently deployed healthy SHA. A manual workflow accepts explicit Core and Bridge SHAs for coordinated releases and rollback.
+The orchestrator serializes production runs with the GitHub Actions `production` concurrency group and a server-side `flock`. An event pairs its exact component SHA with the current `main` SHA of the other backend repository. A manual workflow accepts explicit Core and Bridge SHAs for coordinated releases and rollback. Both source trees are built together and their resulting image digests become the candidate release.
 
 The server stores the active release in `/opt/vox/state/current.env` and the previous healthy release in `/opt/vox/state/previous.env`. These files contain image coordinates and commit SHAs, not credentials.
 
@@ -56,7 +55,7 @@ The server owns `/etc/vox.env` as root with mode `0600`. The deployment workflow
 
 Optional model and voice selections keep their application defaults. Compose supplies internal URLs such as `REDIS_URL`, `VOX_CORE_URL`, and `VOX_BRIDGE_URL` so operators cannot accidentally point containers at localhost.
 
-GitHub stores server SSH credentials and the source-to-orchestrator dispatch credential as encrypted repository secrets. The orchestrator uses its short-lived `GITHUB_TOKEN` with explicit read access to both GHCR packages. Secret values are passed through temporary mode-`0600` files, consumed through standard input where supported, and removed before the workflow finishes.
+GitHub stores server SSH credentials, the cross-repository source-read credential, and the source-to-orchestrator dispatch credential as encrypted repository secrets. The orchestrator publishes both packages under its own namespace and uses its short-lived `GITHUB_TOKEN` for registry access. Secret values are passed through temporary mode-`0600` files, consumed through standard input where supported, and removed before the workflow finishes.
 
 ## Deployment algorithm
 

@@ -37,9 +37,9 @@
 Test literal valid and invalid component names, SHA lengths and characters, first-release requirements, and preservation of the unchanged component. Assert an exact candidate file:
 
 ```text
-CORE_IMAGE=ghcr.io/vox-suite/vox-core@sha256:core-digest
+CORE_IMAGE=ghcr.io/vox-suite/vox-deploy/core@sha256:core-digest
 CORE_SHA=1111111111111111111111111111111111111111
-BRIDGE_IMAGE=ghcr.io/vox-suite/vox-bridge@sha256:bridge-digest
+BRIDGE_IMAGE=ghcr.io/vox-suite/vox-deploy/bridge@sha256:bridge-digest
 BRIDGE_SHA=2222222222222222222222222222222222222222
 ```
 
@@ -133,7 +133,7 @@ Commit: `feat: add rollback-safe deployment engine`
 - Create: `README.md`
 
 **Interfaces:**
-- Consumes: `repository_dispatch` type `component_published` and manual `core_sha` plus `bridge_sha`; GitHub production environment secrets.
+- Consumes: `repository_dispatch` type `component_ready` and manual `core_sha` plus `bridge_sha`; GitHub production environment secrets.
 - Produces: one serialized SSH invocation of `deploy-vox.sh` and a GitHub deployment summary containing only repository names and SHAs.
 
 - [ ] **Step 1: Write failing workflow contract tests**
@@ -160,7 +160,7 @@ Run: `bash tests/workflow_test.sh && bash tests/release_test.sh && bash tests/co
 
 Commit: `feat: orchestrate production releases`
 
-### Task 5: Core image publication
+### Task 5: Core release validation
 
 **Files:**
 - Create in `../vox-core`: `.github/workflows/publish.yml`
@@ -168,11 +168,11 @@ Commit: `feat: orchestrate production releases`
 
 **Interfaces:**
 - Consumes: Core `main`, `GITHUB_TOKEN`, `VOX_DEPLOY_DISPATCH_TOKEN`, and repository variable `VOX_AUTO_DEPLOY`.
-- Produces: `ghcr.io/vox-suite/vox-core:<sha>` for Linux ARM64 and an optional `component_published` dispatch.
+- Produces: an optional `component_ready` dispatch after validation.
 
 - [ ] **Step 1: Write a failing workflow contract test**
 
-Assert push-to-main and manual triggers, tests plus strict Clippy before publication, ARM64 platform, full SHA tag, package write permission, digest output, and dispatch gated by `VOX_AUTO_DEPLOY == 'true'`.
+Assert push-to-main and manual triggers, tests plus strict Clippy before dispatch, and dispatch gated by `VOX_AUTO_DEPLOY == 'true'`.
 
 - [ ] **Step 2: Verify the test fails**
 
@@ -186,7 +186,7 @@ Run: `cargo test --locked && cargo clippy --locked --all-targets --all-features 
 
 Commit: `ci: publish Core release images`
 
-### Task 6: Bridge image publication and legacy transition
+### Task 6: Bridge release validation and legacy transition
 
 **Files:**
 - Create in `../vox-bridge`: `.github/workflows/publish.yml`
@@ -199,7 +199,7 @@ Commit: `ci: publish Core release images`
 
 - [ ] **Step 1: Write a failing workflow contract test**
 
-Assert the same publication gates as Core and require the legacy systemd workflow to be manual-only, preventing future source pushes from bypassing `vox-deploy`.
+Assert the same validation gates as Core and require the legacy systemd workflow to be manual-only, preventing future source pushes from bypassing `vox-deploy`.
 
 - [ ] **Step 2: Verify the test fails**
 
@@ -220,7 +220,7 @@ Commit: `ci: hand releases to Vox Deploy`
 
 **Interfaces:**
 - Consumes: the authenticated `vox-suite` GitHub account and existing server SSH configuration.
-- Produces: private `vox-suite/vox-deploy`, source dispatch secrets, GHCR package access, and a manual first-release workflow ready to run.
+- Produces: private `vox-suite/vox-deploy`, source dispatch and checkout secrets, deployment-owned GHCR packages, and a manual first-release workflow ready to run.
 
 - [ ] **Step 1: Publish the repository**
 

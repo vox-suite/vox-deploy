@@ -15,7 +15,7 @@ validate_image() {
   local component=${1-}
   local image=${2-}
   validate_component "$component" || return 1
-  [[ $image =~ ^ghcr\.io/vox-suite/vox-${component}@sha256:[0-9a-f]{64}$ ]]
+  [[ $image =~ ^ghcr\.io/vox-suite/vox-deploy/${component}@sha256:[0-9a-f]{64}$ ]]
 }
 
 load_release() {

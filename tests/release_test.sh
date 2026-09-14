@@ -25,8 +25,8 @@ sha_core=1111111111111111111111111111111111111111
 sha_bridge=2222222222222222222222222222222222222222
 digest_core=$(printf 'a%.0s' {1..64})
 digest_bridge=$(printf 'b%.0s' {1..64})
-image_core="ghcr.io/vox-suite/vox-core@sha256:$digest_core"
-image_bridge="ghcr.io/vox-suite/vox-bridge@sha256:$digest_bridge"
+image_core="ghcr.io/vox-suite/vox-deploy/core@sha256:$digest_core"
+image_bridge="ghcr.io/vox-suite/vox-deploy/bridge@sha256:$digest_bridge"
 
 validate_component core
 validate_component bridge
@@ -37,7 +37,7 @@ assert_rejected validate_sha Z111111111111111111111111111111111111111
 validate_image core "$image_core"
 validate_image bridge "$image_bridge"
 assert_rejected validate_image core "$image_bridge"
-assert_rejected validate_image core ghcr.io/vox-suite/vox-core:latest
+assert_rejected validate_image core ghcr.io/vox-suite/vox-deploy/core:latest
 
 test_dir=$(mktemp -d)
 trap 'rm -rf "$test_dir"' EXIT
@@ -57,7 +57,7 @@ assert_file "$test_dir/expected.env" "$test_dir/current.env"
 
 next_bridge_sha=3333333333333333333333333333333333333333
 next_bridge_digest=$(printf 'c%.0s' {1..64})
-next_bridge_image="ghcr.io/vox-suite/vox-bridge@sha256:$next_bridge_digest"
+next_bridge_image="ghcr.io/vox-suite/vox-deploy/bridge@sha256:$next_bridge_digest"
 write_candidate_release \
   bridge "$next_bridge_sha" "$next_bridge_image" \
   "$test_dir/current.env" "$test_dir/candidate.env"
