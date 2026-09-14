@@ -2,6 +2,7 @@
 set -euo pipefail
 
 script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+# shellcheck source-path=SCRIPTDIR
 source "$script_dir/release.sh"
 
 vox_root=${VOX_ROOT:-/opt/vox}
