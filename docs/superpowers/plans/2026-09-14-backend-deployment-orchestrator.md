@@ -13,7 +13,7 @@
 ## Global Constraints
 
 - `vox-web` remains deployed by Vercel and is not referenced by this repository.
-- Production images use full 40-character Git SHAs; never deploy `latest`.
+- Production image tags use full 40-character Git SHAs and releases pin their published `sha256` digests; never deploy `latest`.
 - Caddy remains on the host and proxies Bridge at `127.0.0.1:3000`.
 - `/etc/vox.env` is root-owned mode `0600` and is never printed or overwritten by deployment.
 - PostgreSQL and the Redis volume are never deleted by deployment or rollback.

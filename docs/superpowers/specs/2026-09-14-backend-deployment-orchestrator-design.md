@@ -12,7 +12,7 @@
 - `vox-bridge` tests Bridge, publishes `ghcr.io/vox-suite/vox-bridge:<git-sha>`, and dispatches the published SHA to `vox-deploy`. Its existing direct systemd deployment is removed after the orchestrator is ready.
 - `vox-deploy` owns the production Compose definition, deployment script, release manifests, health gates, rollback, and the GitHub Actions workflow that reaches the server.
 
-Source repositories never deploy production directly. Images are addressed only by full Git commit SHA; `latest` is never deployed.
+Source repositories never deploy production directly. Image tags use the full Git commit SHA and deployment uses the resulting image digest; `latest` is never deployed.
 
 ## Event and release model
 
@@ -20,7 +20,7 @@ Each source repository sends a `repository_dispatch` event only after its tests,
 
 - `component`: `core` or `bridge`
 - `sha`: the 40-character source commit SHA
-- `image`: the expected GHCR repository
+- `image`: the expected GHCR repository pinned to the published `sha256` digest
 
 The orchestrator serializes production runs with the GitHub Actions `production` concurrency group and a server-side `flock`. An event updates only its component in the candidate release. The other component remains pinned to the currently deployed healthy SHA. A manual workflow accepts explicit Core and Bridge SHAs for coordinated releases and rollback.
 
