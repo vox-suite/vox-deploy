@@ -71,7 +71,7 @@ Commit: `feat: add immutable release contract`
 
 - [ ] **Step 1: Write the failing Compose contract test**
 
-Render with literal image digests and a temporary environment file. Assert that only `127.0.0.1:3000:3000` is published, Redis has AOF plus a named volume, Core API and Bridge have health checks, Worker has no port, and internal URLs equal `redis://redis:6379`, `http://core-api:3001`, and `http://bridge:3000`.
+Render with literal image digests and a temporary environment file. Assert that Bridge publishes only `127.0.0.1:3000:3000`, Core API publishes only `127.0.0.1:3001:3001`, Redis has AOF plus a named volume, Core API and Bridge have health checks, Worker has no port, and internal URLs equal `redis://redis:6379`, `http://core-api:3001`, and `http://bridge:3000`.
 
 - [ ] **Step 2: Verify the test fails**
 

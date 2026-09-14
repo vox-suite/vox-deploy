@@ -30,7 +30,8 @@ jq -e '.name == "vox"' "$test_dir/compose.json" >/dev/null
 jq -e '.services.redis.command == ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec"]' "$test_dir/compose.json" >/dev/null
 jq -e '.services.redis.volumes[0].source == "redis-data"' "$test_dir/compose.json" >/dev/null
 jq -e '.services.bridge.ports == [{"mode":"ingress","target":3000,"published":"3000","protocol":"tcp","host_ip":"127.0.0.1"}]' "$test_dir/compose.json" >/dev/null
-jq -e '.services["core-api"].ports == null and .services["core-worker"].ports == null' "$test_dir/compose.json" >/dev/null
+jq -e '.services["core-api"].ports == [{"mode":"ingress","target":3001,"published":"3001","protocol":"tcp","host_ip":"127.0.0.1"}]' "$test_dir/compose.json" >/dev/null
+jq -e '.services["core-worker"].ports == null' "$test_dir/compose.json" >/dev/null
 jq -e '.services["core-api"].environment.REDIS_URL == "redis://redis:6379"' "$test_dir/compose.json" >/dev/null
 jq -e '.services.bridge.environment.VOX_CORE_URL == "http://core-api:3001"' "$test_dir/compose.json" >/dev/null
 jq -e '.services["core-worker"].environment.VOX_BRIDGE_URL == "http://bridge:3000"' "$test_dir/compose.json" >/dev/null

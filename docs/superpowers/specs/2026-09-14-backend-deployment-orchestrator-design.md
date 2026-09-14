@@ -33,7 +33,7 @@ Caddy remains a host service and proxies `api.voxagent.in` to `127.0.0.1:3000`.
 Docker Compose runs:
 
 - `redis`: Redis 8 with AOF persistence in a named volume and no published port.
-- `core-api`: the Core image running `vox-core-api`, private container port 3001, with a readiness health check.
+- `core-api`: the Core image running `vox-core-api`, bound only to host loopback at `127.0.0.1:3001`, with a readiness health check. This lets the systemd Bridge reach Core during the first cutover without exposing Core publicly.
 - `core-worker`: the same Core image running `vox-core-worker`, with no published port and exactly one replica.
 - `bridge`: the Bridge image, publishing only `127.0.0.1:3000:3000`.
 
