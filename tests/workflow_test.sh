@@ -51,6 +51,7 @@ ruby -ryaml -e '
   %w[DATABASE_URL NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY].each do |key|
     raise "missing #{key}" unless body.include?(key)
   end
+  raise "session pooler database URLs are rejected" unless body.include?("pooler\\.supabase\\.com")
   raise "environment file is not protected" unless body.include?("install -o root -g root -m 600")
   raise "existing keys are not preserved" unless body.include?("awk")
   root_staging = "staged=" + 36.chr + "(sudo mktemp"

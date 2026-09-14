@@ -24,7 +24,7 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
         run: |
           set -euo pipefail
-          [[ "$DATABASE_URL" =~ ^postgresql://postgres:[^@[:space:]]+@db\.[a-z0-9]+\.supabase\.co:5432/postgres(\?.*)?$ ]]
+          [[ "$DATABASE_URL" =~ ^postgresql://postgres(\.[a-z0-9]+)?:[^@[:space:]]+@(db\.[a-z0-9]+\.supabase\.co|aws-[0-9]+-[a-z0-9-]+\.pooler\.supabase\.com):5432/postgres(\?.*)?$ ]]
           [[ "$NEXT_PUBLIC_SUPABASE_URL" =~ ^https://[a-z0-9]+\.supabase\.co$ ]]
           [[ "$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY" =~ ^sb_publishable_[A-Za-z0-9_-]+$ ]]
           test -n "$SSH_PRIVATE_KEY"
