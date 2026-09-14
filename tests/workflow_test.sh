@@ -46,6 +46,7 @@ ruby -ryaml -e '
   raise "wrong sync permissions" unless sync.fetch("permissions") == {"contents" => "read"}
   job = sync.fetch("jobs").fetch("sync")
   raise "sync must use production environment" unless job.fetch("environment") == "production"
+  raise "sync does not check out migration scripts" unless job.fetch("steps").any? { |step| step["uses"]&.start_with?("actions/checkout@") }
   body = job.fetch("steps").map { |step| step["run"] }.compact.join("\n")
   %w[DATABASE_URL NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY].each do |key|
     raise "missing #{key}" unless body.include?(key)

@@ -14,6 +14,8 @@ jobs:
       VOX_ENV_UPDATE_FILE: /tmp/vox-supabase-public.env
       VOX_SSH_KEY_FILE: /tmp/vox-deploy-key
     steps:
+      - uses: actions/checkout@v7
+
       - name: Prepare protected files
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
