@@ -1,6 +1,22 @@
 name: vox
 
 services:
+  caddy:
+    build: ./caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      bridge:
+        condition: service_healthy
+      core-api:
+        condition: service_healthy
+
   redis:
     image: redis@sha256:becdda6c7f4b3fb42e42fd7f120bbf5c54c4caaaf16f26da24e4563d2c1f0576
     command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec"]
@@ -66,3 +82,5 @@ services:
 
 volumes:
   redis-data:
+  caddy-data:
+  caddy-config:
