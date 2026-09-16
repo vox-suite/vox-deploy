@@ -6,12 +6,12 @@ on:
   workflow_dispatch:
     inputs:
       core_sha:
-        description: Full Core commit SHA
-        required: true
+        description: Full Core commit SHA (leave blank for latest main)
+        required: false
         type: string
       bridge_sha:
-        description: Full Bridge commit SHA
-        required: true
+        description: Full Bridge commit SHA (leave blank for latest main)
+        required: false
         type: string
       deploy:
         description: Deploy the built release to production
@@ -67,8 +67,14 @@ jobs:
               bridge_sha=$EVENT_SHA
             fi
           else
-            core_sha=$INPUT_CORE_SHA
-            bridge_sha=$INPUT_BRIDGE_SHA
+            core_sha=${INPUT_CORE_SHA:-}
+            bridge_sha=${INPUT_BRIDGE_SHA:-}
+            if [[ -z "$core_sha" || "$core_sha" == "latest" || "$core_sha" == "main" ]]; then
+              core_sha=$(gh api repos/vox-suite/vox-core/commits/main --jq .sha)
+            fi
+            if [[ -z "$bridge_sha" || "$bridge_sha" == "latest" || "$bridge_sha" == "main" ]]; then
+              bridge_sha=$(gh api repos/vox-suite/vox-bridge/commits/main --jq .sha)
+            fi
           fi
           validate_sha "$core_sha"
           validate_sha "$bridge_sha"
