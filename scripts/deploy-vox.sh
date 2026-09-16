@@ -131,9 +131,10 @@ restore_release() {
     export CORE_IMAGE=$RELEASE_CORE_IMAGE
     export BRIDGE_IMAGE=$RELEASE_BRIDGE_IMAGE
     compose up -d --wait redis core-api bridge
+    compose up -d --build caddy
     compose up -d core-worker
   elif [[ $systemd_was_active == 1 ]]; then
-    compose stop bridge core-worker
+    compose stop bridge core-worker caddy
     systemctl restart vox-bridge.service
   fi
   rm -f "$candidate_release"
@@ -192,7 +193,13 @@ elif [[ -f $current_release ]]; then
   rollback_needed=1
 fi
 
+if systemctl is-active --quiet caddy.service; then
+  systemctl stop caddy.service
+  systemctl disable caddy.service
+fi
+
 compose up -d --wait bridge
+compose up -d --build caddy
 compose up -d core-worker
 compose ps --status running --services | grep -Fx core-worker >/dev/null
 curl --fail --silent --show-error --max-time 15 "$public_health_url" >/dev/null

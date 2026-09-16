@@ -184,12 +184,12 @@ jobs:
           test -n "$SERVER_USER"
           mkdir -p ~/.ssh
           ssh-keyscan -H "$SERVER_HOST" >>~/.ssh/known_hosts 2>/dev/null
-          scp -i "$VOX_SSH_KEY_FILE" \
-            compose.prod.yml scripts/release.sh scripts/deploy-vox.sh \
+          scp -r -i "$VOX_SSH_KEY_FILE" \
+            compose.prod.yml scripts/release.sh scripts/deploy-vox.sh caddy \
             "$VOX_DEPLOY_REQUEST" "$VOX_GHCR_TOKEN_FILE" \
             "$SERVER_USER@$SERVER_HOST:/tmp/"
           ssh -i "$VOX_SSH_KEY_FILE" "$SERVER_USER@$SERVER_HOST" \
-            'set -eu; trap "rm -f /tmp/vox-release-request /tmp/vox-ghcr-token" EXIT; sudo mkdir -p /opt/vox/scripts /opt/vox/state; sudo install -o root -g root -m 644 /tmp/compose.prod.yml /opt/vox/compose.prod.yml; sudo install -o root -g root -m 755 /tmp/release.sh /opt/vox/scripts/release.sh; sudo install -o root -g root -m 755 /tmp/deploy-vox.sh /opt/vox/scripts/deploy-vox.sh; sudo /opt/vox/scripts/deploy-vox.sh --request-file /tmp/vox-release-request --ghcr-token-file /tmp/vox-ghcr-token'
+            'set -eu; trap "rm -f /tmp/vox-release-request /tmp/vox-ghcr-token; rm -rf /tmp/caddy" EXIT; sudo mkdir -p /opt/vox/scripts /opt/vox/state /opt/vox/caddy; sudo install -o root -g root -m 644 /tmp/compose.prod.yml /opt/vox/compose.prod.yml; sudo install -o root -g root -m 755 /tmp/release.sh /opt/vox/scripts/release.sh; sudo install -o root -g root -m 755 /tmp/deploy-vox.sh /opt/vox/scripts/deploy-vox.sh; sudo cp -r /tmp/caddy/. /opt/vox/caddy/; sudo /opt/vox/scripts/deploy-vox.sh --request-file /tmp/vox-release-request --ghcr-token-file /tmp/vox-ghcr-token'
 
       - name: Record release
         if: success() && (github.event_name == 'repository_dispatch' || inputs.deploy)
