@@ -36,7 +36,8 @@ services:
     env_file: ${VOX_ENV_FILE:-/etc/vox.env}
     environment:
       VOX_CORE_BIND_ADDRESS: 0.0.0.0:3001
-      REDIS_URL: redis://redis:6379
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      VOX_VOICE_SIMILARITY_THRESHOLD: ${VOX_VOICE_SIMILARITY_THRESHOLD:-0.50}
     ports:
       - "127.0.0.1:3001:3001"
     depends_on:
@@ -56,6 +57,8 @@ services:
       VOX_CORE_URL: http://core-api:3001
       VOX_SPEAKER_ONNX_PATH: /models/speaker.onnx
       VOX_SPEAKER_INPUT: fbank
+      VOX_VAD_THRESHOLD: ${VOX_VAD_THRESHOLD:-700}
+      VOX_VAD_CONSECUTIVE_ONSET: ${VOX_VAD_CONSECUTIVE_ONSET:-4}
     ports:
       - "127.0.0.1:3000:3000"
     depends_on:
@@ -75,7 +78,7 @@ services:
     environment:
       VOX_CORE_BIND_ADDRESS: 0.0.0.0:3001
       VOX_BRIDGE_URL: http://bridge:3000
-      REDIS_URL: redis://redis:6379
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
     depends_on:
       core-api:
         condition: service_healthy
