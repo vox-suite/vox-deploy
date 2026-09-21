@@ -54,6 +54,8 @@ services:
     env_file: ${VOX_ENV_FILE:-/etc/vox.env}
     environment:
       VOX_CORE_URL: http://core-api:3001
+      VOX_SPEAKER_ONNX_PATH: /models/speaker.onnx
+      VOX_SPEAKER_INPUT: fbank
     ports:
       - "127.0.0.1:3000:3000"
     depends_on:
