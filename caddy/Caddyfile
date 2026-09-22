@@ -9,6 +9,12 @@ api.voxagent.in {
 		reverse_proxy core-api:3001
 	}
 
+	# Host & Docker system telemetry
+	handle /v1/admin/system* {
+		header Cache-Control "no-store"
+		reverse_proxy 172.18.0.1:3002
+	}
+
 	# Explicit Voice Bridge routes
 	handle /bridge/* {
 		reverse_proxy bridge:3000
@@ -31,6 +37,6 @@ api.voxagent.in {
 
 	# Default catch-all for unknown routes
 	handle {
-		respond "Not Found" 404
+		respond 404
 	}
 }
