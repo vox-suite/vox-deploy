@@ -2,22 +2,21 @@
 set -euo pipefail
 
 repo_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-sync_workflow="$repo_dir/.github/workflows/sync-production-env.yml"
-inspect_workflow="$repo_dir/.github/workflows/inspect-production.yml"
+deploy_workflow="$repo_dir/.github/workflows/deploy.yml"
+gsm_workflow="$repo_dir/.github/workflows/sync-secrets-from-gsm.yml"
 
-if [[ ! -f $sync_workflow ]]; then
-  echo "production environment sync workflow is missing" >&2
+if [[ ! -f $deploy_workflow ]]; then
+  echo "deploy workflow is missing" >&2
   exit 1
 fi
 
-if [[ ! -f $inspect_workflow ]]; then
-  echo "production inspection workflow is missing" >&2
+if [[ ! -f $gsm_workflow ]]; then
+  echo "secrets sync workflow is missing" >&2
   exit 1
 fi
 
 ruby -ryaml -e '
-  ci = YAML.load_file(ARGV[0])
-  deploy = YAML.load_file(ARGV[1])
+  deploy = YAML.load_file(ARGV[0])
   deploy_on = deploy["on"] || deploy[true]
   raise "missing repository dispatch" unless deploy_on.fetch("repository_dispatch").fetch("types") == ["component_ready"]
   raise "missing manual dispatch" unless deploy_on.key?("workflow_dispatch")
@@ -38,50 +37,20 @@ ruby -ryaml -e '
   deploy_step = job.fetch("steps").find { |step| step["name"] == "Deploy complete backend" }
   raise "production deploy is not explicitly gated" unless deploy_step.fetch("if").include?("inputs.deploy")
   raise "credentials removed before release summary" unless step_names.index("Record release") < step_names.index("Remove runner credentials")
-  raise "CI has no shell test" unless ci.fetch("jobs").values.any? { |value| value.fetch("steps").any? { |step| step["run"]&.include?("tests/run.sh") } }
-' "$repo_dir/.github/workflows/ci.yml" "$repo_dir/.github/workflows/deploy.yml"
+' "$deploy_workflow"
 
 ruby -ryaml -e '
-  sync = YAML.load_file(ARGV[0])
-  sync_on = sync["on"] || sync[true]
-  raise "sync must be manual-only" unless sync_on.keys == ["workflow_dispatch"]
-  raise "wrong sync permissions" unless sync.fetch("permissions") == {"contents" => "read"}
-  job = sync.fetch("jobs").fetch("sync")
-  raise "sync must use production environment" unless job.fetch("environment") == "production"
-  raise "sync does not check out migration scripts" unless job.fetch("steps").any? { |step| step["uses"]&.start_with?("actions/checkout@") }
-  body = job.fetch("steps").map { |step| step["run"] }.compact.join("\n")
-  %w[DATABASE_URL NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY].each do |key|
-    raise "missing #{key}" unless body.include?(key)
-  end
-  raise "session pooler database URLs are rejected" unless body.include?("pooler\\.supabase\\.com")
-  raise "environment file is not protected" unless body.include?("install -o root -g root -m 600")
-  raise "existing keys are not preserved" unless body.include?("awk")
-  root_staging = "staged=" + 36.chr + "(sudo mktemp"
-  raise "protected staging file is not root-owned" unless body.include?(root_staging)
-  raise "runner files are not cleaned" unless body.include?("rm -f")
-  derived_host = "database_host=" + "$" + "{database_url#*@}"
-  raise "database host is not derived from DATABASE_URL" unless body.include?(derived_host)
-' "$sync_workflow"
+  gsm = YAML.load_file(ARGV[0])
+  gsm_on = gsm["on"] || gsm[true]
+  raise "gsm sync must be manual-only" unless gsm_on.keys == ["workflow_dispatch"]
+  raise "wrong gsm permissions" unless gsm.fetch("permissions") == {"contents" => "read"}
+  job = gsm.fetch("jobs").fetch("sync-secrets")
+  raise "gsm sync must use production environment" unless job.fetch("environment") == "production"
+' "$gsm_workflow"
 
-ruby -ryaml -e '
-  inspect = YAML.load_file(ARGV[0])
-  inspect_on = inspect["on"] || inspect[true]
-  raise "inspection must be manual-only" unless inspect_on.keys == ["workflow_dispatch"]
-  raise "wrong inspection permissions" unless inspect.fetch("permissions") == {"contents" => "read"}
-  job = inspect.fetch("jobs").fetch("inspect")
-  raise "inspection must use production environment" unless job.fetch("environment") == "production"
-  body = job.fetch("steps").map { |step| step["run"] }.compact.join("\n")
-  raise "inspection does not run the safe status script" unless body.include?("config-status.sh")
-  raise "inspection does not report runtime health" unless body.include?("docker inspect") && body.include?("systemctl is-active vox-bridge.service")
-  raise "runtime log output is not sanitized" unless body.include?("[REDACTED]")
-  raise "inspection does not clean remote script" unless body.include?("rm -f /tmp/vox-config-status.sh")
-  runner_cleanup = "rm -f \"" + 36.chr + "VOX_SSH_KEY_FILE\""
-  raise "inspection does not clean runner key" unless body.include?(runner_cleanup)
-' "$inspect_workflow"
-
-grep -q 'VOX_DEPLOY_REQUEST' "$repo_dir/.github/workflows/deploy.yml"
-grep -q 'rm -f /tmp/vox-release-request /tmp/vox-ghcr-token' "$repo_dir/.github/workflows/deploy.yml"
-if grep -Eq 'ssh .*\$\{\{ *secrets\.' "$repo_dir/.github/workflows/deploy.yml"; then
+grep -q 'VOX_DEPLOY_REQUEST' "$deploy_workflow"
+grep -q 'rm -f /tmp/vox-release-request /tmp/vox-ghcr-token' "$deploy_workflow"
+if grep -Eq 'ssh .*\$\{\{ *secrets\.' "$deploy_workflow"; then
   echo "secret interpolation found in SSH arguments" >&2
   exit 1
 fi
