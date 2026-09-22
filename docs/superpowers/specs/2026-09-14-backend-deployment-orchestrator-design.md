@@ -43,7 +43,7 @@ Core API, Core Worker, Bridge, and Redis share one private Compose network. Supa
 The server owns `/etc/vox.env` as root with mode `0600`. The deployment workflow never prints or replaces this file. It must contain:
 
 - `DATABASE_URL`
-- `VOX_CORE_SERVICE_TOKEN`
+- `VOX_AUTH_TOKEN`
 - `GEMINI_API_KEY`
 - `EXA_API_KEY`
 - `GOOGLE_MAPS_API_KEY`

@@ -32,7 +32,7 @@ setup_case() {
   env_file="$case_dir/vox.env"
   cat >"$env_file" <<'EOF'
 DATABASE_URL=postgresql://example.invalid/postgres
-VOX_CORE_SERVICE_TOKEN=test-token
+VOX_AUTH_TOKEN=test-token
 GEMINI_API_KEY=test-gemini
 EXA_API_KEY=test-exa
 GOOGLE_MAPS_API_KEY=test-maps

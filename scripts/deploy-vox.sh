@@ -89,7 +89,7 @@ require_configuration() {
   local key
   for key in \
     DATABASE_URL \
-    VOX_CORE_SERVICE_TOKEN \
+    VOX_AUTH_TOKEN \
     GEMINI_API_KEY \
     EXA_API_KEY \
     TWILIO_AUTH_TOKEN \

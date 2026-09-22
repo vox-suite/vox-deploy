@@ -28,7 +28,7 @@ The file requires non-empty values for:
 
 ```text
 DATABASE_URL
-VOX_CORE_SERVICE_TOKEN
+VOX_AUTH_TOKEN
 GEMINI_API_KEY
 EXA_API_KEY
 GOOGLE_MAPS_API_KEY
