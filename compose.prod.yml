@@ -55,10 +55,6 @@ services:
     env_file: ${VOX_ENV_FILE:-/etc/vox.env}
     environment:
       VOX_CORE_URL: http://core-api:3001
-      VOX_SPEAKER_ONNX_PATH: /models/speaker.onnx
-      VOX_SPEAKER_INPUT: fbank
-      VOX_VAD_THRESHOLD: ${VOX_VAD_THRESHOLD:-700}
-      VOX_VAD_CONSECUTIVE_ONSET: ${VOX_VAD_CONSECUTIVE_ONSET:-4}
     ports:
       - "127.0.0.1:3000:3000"
     depends_on:
@@ -86,6 +82,6 @@ services:
         condition: service_healthy
 
 volumes:
-  redis-data:
   caddy-data:
   caddy-config:
+  redis-data:
