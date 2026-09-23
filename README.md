@@ -37,16 +37,17 @@ TWILIO_AUTH_TOKEN
 TWILIO_FROM_NUMBER
 ASSEMBLYAI_API_KEY
 SARVAM_API_KEY
-SUPABASE_JWT_SECRET
+SUPABASE_URL
 ```
 
 Optional:
 
 ```text
 DESKTOP_AUTH_TOKEN
+SUPABASE_JWT_SECRET
 ```
 
-`SUPABASE_JWT_SECRET` is required for desktop and other clients that exchange Supabase sessions via `/v1/auth/exchange` and `/v1/me`. Caddy routes `/v1/*` to Core and `/bridge/*` to Bridge.
+`SUPABASE_URL` is required for desktop and other clients that exchange Supabase sessions via `/v1/auth/exchange` and `/v1/me`. Core verifies access tokens against `{SUPABASE_URL}/auth/v1/.well-known/jwks.json` (ES256 signing keys). Keep `SUPABASE_JWT_SECRET` only if you still issue legacy HS256 tokens. Caddy routes `/v1/*` to Core and `/bridge/*` to Bridge.
 
 The deployment supplies all internal service URLs. Do not put `REDIS_URL`, `VOX_CORE_URL`, or `VOX_BRIDGE_URL` in `/etc/vox.env`.
 
