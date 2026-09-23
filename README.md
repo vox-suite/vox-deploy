@@ -37,7 +37,16 @@ TWILIO_AUTH_TOKEN
 TWILIO_FROM_NUMBER
 ASSEMBLYAI_API_KEY
 SARVAM_API_KEY
+SUPABASE_JWT_SECRET
 ```
+
+Optional:
+
+```text
+DESKTOP_AUTH_TOKEN
+```
+
+`SUPABASE_JWT_SECRET` is required for desktop and other clients that exchange Supabase sessions via `/v1/auth/exchange` and `/v1/me`. Caddy routes `/v1/*` to Core and `/bridge/*` to Bridge.
 
 The deployment supplies all internal service URLs. Do not put `REDIS_URL`, `VOX_CORE_URL`, or `VOX_BRIDGE_URL` in `/etc/vox.env`.
 

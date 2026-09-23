@@ -15,6 +15,11 @@ api.voxagent.in {
 		reverse_proxy 172.18.0.1:3002
 	}
 
+	# Core public API (auth, me, tasks, devices, …)
+	handle /v1/* {
+		reverse_proxy core-api:3001
+	}
+
 	# Explicit Voice Bridge routes
 	handle /bridge/* {
 		reverse_proxy bridge:3000
