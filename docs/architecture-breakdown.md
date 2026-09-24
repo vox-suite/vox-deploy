@@ -27,7 +27,7 @@ The architecture strictly decouples **six core concepts** to prevent them from e
 
 The system is deployed as an open self-hosted reference stack consisting of 5 repositories plus independent reference hosts, operating strictly through authenticated public platform boundaries.
 
-> **Verification note (2026-09-24):** The previous version treated unit and simulated checks as public-release proof. The independent `feno-extension` repository is absent, its local acceptance script printed success without exercising a host, and the terminal deployment test simulated upgrade and restore. Those scripts now fail closed or require live evidence. The release dossier is checked by `vox-deploy/scripts/verify-platform-v1-release.sh`. Docker is unavailable in this workspace, so no clean-install or recovery rehearsal has been performed here. Fresh PostgreSQL tests prompted candidate fixes for connection disconnect, status persistence, privacy/export, audit events, execution policy, and duplicate scheduled/summary work. Webhook delivery and production secret custody remain incomplete. Unmeasured performance and provider claims below remain design intent.
+> **Verification note (2026-09-24):** The previous version treated unit and simulated checks as public-release proof. Its named Feno acceptance script did not exercise a real second host, and the terminal deployment test simulated upgrade and restore. The current second-host gate is product-neutral and requires a real independent host through public Core interfaces. Those scripts now fail closed or require live evidence. The release dossier is checked by `vox-deploy/scripts/verify-platform-v1-release.sh`. Docker is unavailable in this workspace, so no clean-install or recovery rehearsal has been performed here. Fresh PostgreSQL tests prompted candidate fixes for connection disconnect, status persistence, privacy/export, audit events, execution policy, and duplicate scheduled/summary work. Webhook delivery and production secret custody remain incomplete. Unmeasured performance and provider claims below remain design intent.
 
 ---
 
@@ -40,7 +40,7 @@ flowchart TD
   subgraph Ingress & Edge
     ClientWeb["Web Client / Consumer Portal"]
     PhoneUser["Phone Caller / WhatsApp User"]
-    ExtHost["External Host (e.g. Feno Extension)"]
+    ExtHost["Independent Second Host"]
     Caddy["Caddy Ingress & TLS (:80, :443)"]
   end
 

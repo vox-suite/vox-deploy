@@ -12,8 +12,8 @@ if VOX_RELEASE_EVIDENCE=/nonexistent python3 scripts/verify-v1-evidence.py >/dev
   echo "release verifier accepted missing evidence" >&2
   exit 1
 fi
-if FENO_HOST_REPO=/nonexistent FENO_HOST_SHA=1111111111111111111111111111111111111111 \
-  VOX_CORE_URL=http://127.0.0.1:3001 bash scripts/feno-acceptance-check.sh >/dev/null 2>&1; then
+if SECOND_HOST_REPO=/nonexistent SECOND_HOST_SHA=1111111111111111111111111111111111111111 \
+  VOX_CORE_URL=http://127.0.0.1:3001 bash scripts/second-host-acceptance-check.sh >/dev/null 2>&1; then
   echo "reference-host gate accepted a missing host" >&2
   exit 1
 fi

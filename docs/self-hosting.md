@@ -87,12 +87,12 @@ curl -f http://localhost:3000/health
 
 ---
 
-## 3. Independent Host (Feno) Acceptance
+## 3. Independent Second-Host Acceptance
 
-The reference stack supports independent external hosts (such as the Feno browser extension) communicating exclusively over Core's public API without private internals:
+The reference stack supports an independently implemented second host communicating exclusively over Core's public API without private internals:
 
 ```bash
-bash scripts/feno-acceptance-check.sh
+bash scripts/second-host-acceptance-check.sh
 ```
 
 ---

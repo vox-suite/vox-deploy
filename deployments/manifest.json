@@ -37,10 +37,11 @@
       "role": "portable-model-neutral-agent",
       "services": ["portable-agent"]
     },
-    "feno-extension": {
-      "status": "not_verified",
-      "specification": "PRD Section 11.21 & execution-order.md Wave 8.2",
-      "role": "independent-host-reference"
+    "vox-contracts": {
+      "commit": "119f2ea7ac53ebcf2d5150a488997ec49ceaca6c",
+      "branch": "main",
+      "role": "shared-product-contract-and-decisions",
+      "services": []
     }
   },
   "stack": {
