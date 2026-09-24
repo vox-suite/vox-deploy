@@ -30,20 +30,15 @@ api.voxagent.in {
 	handle /twilio/* {
 		reverse_proxy bridge:3000
 	}
-	handle /ws* {
-		reverse_proxy bridge:3000
-	}
 	handle /health* {
-		reverse_proxy bridge:3000
-	}
-	handle /internal/* {
 		reverse_proxy bridge:3000
 	}
 	handle_path / {
 		reverse_proxy bridge:3000
 	}
 
-	# Default catch-all for unknown routes
+	# Default catch-all. /internal/* and /channels/* (service-to-service) are
+	# deliberately not proxied: they are reachable only on the Docker network.
 	handle {
 		respond 404
 	}
