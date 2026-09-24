@@ -41,6 +41,7 @@ services:
       VOX_CORE_BIND_ADDRESS: 0.0.0.0:3001
       DATABASE_URL: ${DATABASE_URL:-postgres://${POSTGRES_USER:-vox}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-vox}}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      VOX_STATUS_WEBHOOK_KEY: ${VOX_STATUS_WEBHOOK_KEY:-}
     ports:
       - "127.0.0.1:3001:3001"
     depends_on:
@@ -63,6 +64,7 @@ services:
       VOX_CORE_BIND_ADDRESS: 0.0.0.0:3001
       DATABASE_URL: ${DATABASE_URL:-postgres://${POSTGRES_USER:-vox}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-vox}}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      VOX_STATUS_WEBHOOK_KEY: ${VOX_STATUS_WEBHOOK_KEY:-}
       VOX_BRIDGE_URL: http://bridge:3000
     depends_on:
       core-api:
