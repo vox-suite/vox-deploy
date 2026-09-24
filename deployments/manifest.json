@@ -2,29 +2,29 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "name": "vox-platform-v1-manifest",
   "version": "1.0.0",
-  "generated_at": "2026-09-24T03:30:00Z",
+  "generated_at": "2026-09-24T04:15:00Z",
   "description": "Immutable repository revision manifest for Vox Platform V1 self-hosted reference stack",
   "repositories": {
     "vox-core": {
-      "commit": "ec91a6d01fb2eb1295dfb6e49442240c78c7531c",
+      "commit": "9961cd3606cf91b748411623d3b58b538bb806f1",
       "branch": "main",
       "role": "platform-core-and-coordination",
       "services": ["core-api", "core-worker", "conformance-sandbox"]
     },
     "vox-bridge": {
-      "commit": "4d45f1e6ffbac0b5ce564256f157751c9360c3b4",
+      "commit": "029193d77a823eb247e95d3c1f5dfc999f78da97",
       "branch": "main",
       "role": "telephony-and-messaging-gateway",
       "services": ["bridge"]
     },
     "vox-web": {
-      "commit": "12910bdb4d38b413b18d23529d07a57f159937b7",
+      "commit": "7aafa8501c93732c8353044d8275d6c35c998e19",
       "branch": "main",
       "role": "consumer-portal-and-host-app",
       "services": ["vox-web"]
     },
     "vox-deploy": {
-      "commit": "54ec4a08152377a28ebf955eb076c8cffea4e177",
+      "commit": "bd44b75ce472641182e3d46ef34d68e945e015d9",
       "branch": "main",
       "role": "deployment-orchestration-and-release-authority",
       "services": ["caddy"]

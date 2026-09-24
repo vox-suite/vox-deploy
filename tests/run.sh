@@ -9,6 +9,7 @@ bash tests/compose_test.sh
 bash tests/deploy_test.sh
 bash tests/workflow_test.sh
 bash tests/self_hosted_stack_test.sh
+bash tests/terminal_release_gate_test.sh
 if command -v shellcheck >/dev/null 2>&1; then
     shellcheck -x -P scripts scripts/*.sh tests/*.sh tests/fakes/command
 fi
