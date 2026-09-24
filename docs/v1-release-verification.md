@@ -1,6 +1,6 @@
 # Platform V1 release verification
 
-The checked-in test suite verifies code and fail-closed gate behavior. It does **not** certify a public release. Run the terminal gate on a disposable Linux rehearsal host with Docker Compose, exact built image digests, PostgreSQL 17, Redis 7, and sibling checkouts of the five repositories. Record the host's CPU, RAM, OS, Docker version, model, and external provider versions. The single-user reference load is one active user and one request in flight; no capacity claim follows from it.
+The checked-in test suite verifies code and fail-closed gate behavior. It does **not** certify a public release. Run the terminal gate on a disposable Linux rehearsal host with Docker Compose, exact built image digests, PostgreSQL 17, Redis 7, and sibling checkouts of all seven repositories, including `feno-extension` and `vox-contracts`. Record the host's CPU, RAM, OS, Docker version, model, and external provider versions. The single-user reference load is one active user and one request in flight; no capacity claim follows from it.
 
 ## Evidence dossier
 
@@ -8,7 +8,7 @@ Generate `docs/v1-traceability.json` with `python3 scripts/generate-v1-traceabil
 
 Keep the final attestation and logs **outside** the repository. Set `VOX_RELEASE_EVIDENCE` to a JSON object with:
 
-- `source_commits`: exact 40-character commits for `vox-core`, `vox-web`, `vox-bridge`, `agents`, and `vox-deploy`.
+- `source_commits`: exact 40-character commits for `vox-core`, `vox-web`, `vox-bridge`, `agents`, `vox-deploy`, `feno-extension`, and `vox-contracts`. The last two must be pinned even though they do not produce a stack image. `vox-deploy` is pinned in the external attestation because its manifest cannot contain its own final commit.
 - `images`: digest-pinned local image references for `core-api`, `core-worker`, `bridge`, `vox-web`, `portable-agent`, and `conformance-sandbox`. Shared images may have the same digest.
 - `gates`: one object for each gate named in `scripts/verify-v1-evidence.py`. Each object needs `result: "pass"`, a timestamp, the exact command or review method, a relative log path, and the log's SHA-256. The `single-user-latency` gate also needs `run_json`, a relative path to measured timing data accepted by `scripts/check-single-user-latency.py`.
 - `requirements`: one object per traceability ID. Each needs `result: "pass"`, a named test assertion or accountable reviewer decision, and the corresponding evidence gate. A candidate test filename is insufficient.

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Fail-closed verifier for an externally produced Platform V1 release dossier.
 
-Run on the release rehearsal host, with sibling checkouts of the five repositories.
+Run on the release rehearsal host, with sibling checkouts of all seven repositories.
 The attestation is intentionally outside Git: this repository cannot contain its
 own final commit hash or the digest of an image that has not been built yet.
 """
@@ -18,7 +18,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SUITE = ROOT.parent
-REPOS = ("vox-core", "vox-web", "vox-bridge", "agents", "vox-deploy")
+REPOS = (
+    "vox-core", "vox-web", "vox-bridge", "agents", "vox-deploy",
+    "feno-extension", "vox-contracts",
+)
 IMAGES = ("core-api", "core-worker", "bridge", "vox-web", "portable-agent", "conformance-sandbox")
 SERVICES = (*IMAGES, "postgres", "redis")
 GATES = (
@@ -107,7 +110,7 @@ def verify() -> None:
         fail("single-user latency gate lacks its measured run JSON")
     command(sys.executable, "scripts/check-single-user-latency.py", str(latency_run))
 
-    prd = (SUITE / "docs/PRD.md").read_text()
+    prd = (SUITE / "vox-contracts/docs/PRD.md").read_text()
     required = set(re.findall(r"\bFR-[A-Z]+-\d{3} \(P0\)", prd))
     required = {item.split(" ", 1)[0] for item in required}
     required.update(re.findall(r"\bNFR-[A-Z]+-\d{3}\b", prd))

@@ -33,14 +33,14 @@ if [ ! -f "$MANIFEST" ]; then
     exit 1
 fi
 
-REQUIRED_REPOS=("vox-core" "vox-bridge" "vox-web" "vox-deploy" "agents")
+REQUIRED_REPOS=("vox-core" "vox-bridge" "vox-web" "vox-deploy" "agents" "feno-extension" "vox-contracts")
 for r in "${REQUIRED_REPOS[@]}"; do
     if ! grep -q "\"${r}\"" "$MANIFEST"; then
         echo "FAIL: repository '${r}' missing from $MANIFEST"
         exit 1
     fi
 done
-echo "✓ deployments/manifest.json contains verified repository entries"
+echo "✓ deployments/manifest.json contains all seven repository entries (release evidence still required)"
 
 # 3. Secret isolation check: ensure no secrets are hardcoded in compose or manifest
 PROHIBITED_STRINGS=("sk_live_" "ghp_" "supersecret")
