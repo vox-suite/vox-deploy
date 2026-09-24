@@ -46,3 +46,21 @@ Keep task, grant, connection, approval, proposal, and policy reads authoritative
 - Production webhook secret custody, delivery/retry, and audit sink proof. Core status and audit issues remain open.
 
 The release tracker is [`vox-deploy#3`](https://github.com/vox-suite/vox-deploy/issues/3). Candidate source fixes are tracked in the existing Core issues for [context migration](https://github.com/vox-suite/vox-core/issues/4), [execution policy](https://github.com/vox-suite/vox-core/issues/14), [execution](https://github.com/vox-suite/vox-core/issues/15), [status](https://github.com/vox-suite/vox-core/issues/25), [audit](https://github.com/vox-suite/vox-core/issues/28), [privacy/export](https://github.com/vox-suite/vox-core/issues/29), and [security conformance](https://github.com/vox-suite/vox-core/issues/30).
+
+## Later E25 candidate, same release decision
+
+Core [draft PR #67](https://github.com/vox-suite/vox-core/pull/67) at
+`917b15d` adds an encrypted webhook secret store, transactional status outbox,
+signed delivery with bounded retry, replay recording for verified provider
+events, and nonpublic destination rejection. Deploy
+[draft PR #6](https://github.com/vox-suite/vox-deploy/pull/6) at `5ad0c8e`
+passes the optional custody key only to Core API and worker services. Fresh
+PostgreSQL status, RLS, and migration tests, the Core non-ignored suite,
+formatting, Clippy, and Deploy static tests passed locally. The earlier status
+stub failure is addressed in this branch, but neither PR is release evidence
+until merged and independently verified against an HTTPS receiver and running
+reference stack. E25 and E52 remain open.
+
+GitHub SSH access was restored for the available repositories, but
+`vox-suite/feno-extension` still returned `Repository not found` on
+2026-09-24. That is a repository and independent-host gate, not a test skip.
