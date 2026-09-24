@@ -24,6 +24,11 @@ export CORE_IMAGE="ghcr.io/vox-suite/vox-deploy/core@sha256:$digest_core"
 export BRIDGE_IMAGE="ghcr.io/vox-suite/vox-deploy/bridge@sha256:$digest_bridge"
 export VOX_ENV_FILE="$test_dir/vox.env"
 
+if ! command -v docker >/dev/null 2>&1; then
+    echo "docker command not available; skipping live compose schema check"
+    exit 0
+fi
+
 docker compose -f "$repo_dir/compose.prod.yml" config --format json >"$test_dir/compose.json"
 
 jq -e '.name == "vox"' "$test_dir/compose.json" >/dev/null

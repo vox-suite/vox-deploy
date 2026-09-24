@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "name": "vox-platform-v1-manifest",
+  "version": "1.0.0",
+  "generated_at": "2026-09-24T03:30:00Z",
+  "description": "Immutable repository revision manifest for Vox Platform V1 self-hosted reference stack",
+  "repositories": {
+    "vox-core": {
+      "commit": "ec91a6d01fb2eb1295dfb6e49442240c78c7531c",
+      "branch": "main",
+      "role": "platform-core-and-coordination",
+      "services": ["core-api", "core-worker", "conformance-sandbox"]
+    },
+    "vox-bridge": {
+      "commit": "4d45f1e6ffbac0b5ce564256f157751c9360c3b4",
+      "branch": "main",
+      "role": "telephony-and-messaging-gateway",
+      "services": ["bridge"]
+    },
+    "vox-web": {
+      "commit": "12910bdb4d38b413b18d23529d07a57f159937b7",
+      "branch": "main",
+      "role": "consumer-portal-and-host-app",
+      "services": ["vox-web"]
+    },
+    "vox-deploy": {
+      "commit": "54ec4a08152377a28ebf955eb076c8cffea4e177",
+      "branch": "main",
+      "role": "deployment-orchestration-and-release-authority",
+      "services": ["caddy"]
+    },
+    "agents": {
+      "commit": "a10c703dce166aea19ab94e4bf1b727368e38ded",
+      "branch": "main",
+      "role": "portable-model-neutral-agent",
+      "services": ["portable-agent"]
+    },
+    "feno-extension": {
+      "status": "independent-reference-host-contract",
+      "specification": "PRD Section 11.21 & execution-order.md Wave 8.2",
+      "role": "independent-host-reference"
+    }
+  },
+  "stack": {
+    "orchestrator": "docker-compose",
+    "compose_file": "compose.self-hosted.yml",
+    "databases": [
+      {
+        "engine": "postgresql",
+        "version": "17-alpine",
+        "role": "durable-state-store"
+      },
+      {
+        "engine": "redis",
+        "version": "7-alpine",
+        "role": "cache-and-queues"
+      }
+    ]
+  },
+  "invariants": {
+    "zero_proprietary_dependencies": true,
+    "secrets_outside_source": true,
+    "durable_task_state_preserved_across_restart": true
+  }
+}
