@@ -1,0 +1,37 @@
+Vox Platform V1
+Copyright 2026 Vox Contributors
+
+This product includes software developed by the Vox Project
+(https://github.com/vox-suite).
+
+===============================================================================
+Third-Party Software Acknowledgments and Licenses
+===============================================================================
+
+1. PostgreSQL
+   Portions Copyright (c) 1996-2026, PostgreSQL Global Development Group
+   Licensed under the PostgreSQL License.
+
+2. Redis
+   Portions Copyright (c) 2006-present, Redis Ltd.
+   Licensed under the RSALv2 / SSPLv1 or BSD-3-Clause as applicable to container image.
+
+3. Caddy
+   Portions Copyright (c) 2015-present, Matthew Holt and The Caddy Authors
+   Licensed under the Apache License, Version 2.0.
+
+4. Rust Ecosystem Crates
+   - Axum, Tokio, Tower, Tracing (Licensed under MIT)
+   - Reqwest, Serde, SQLx (Licensed under MIT / Apache-2.0)
+   - Ed25519-dalek, Subtle (Licensed under BSD-3-Clause)
+   - Chrono, UUID (Licensed under MIT / Apache-2.0)
+
+5. Node.js Ecosystem Packages
+   - Next.js (Licensed under MIT)
+   - React, React-DOM (Licensed under MIT)
+   - Tailwind CSS (Licensed under MIT)
+   - Better Auth (Licensed under Apache-2.0 / MIT)
+   - Lucide React (Licensed under ISC)
+
+6. Python Ecosystem Packages
+   - FastAPI, Pydantic, HTTPX, Uvicorn (Licensed under MIT / BSD-3-Clause)
