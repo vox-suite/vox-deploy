@@ -38,7 +38,7 @@
       "services": ["portable-agent"]
     },
     "vox-contracts": {
-      "commit": "7e4037f5a61e61140671900f2844b6cff96ef27c",
+      "commit": "119f2ea7ac53ebcf2d5150a488997ec49ceaca6c",
       "branch": "main",
       "role": "shared-product-contract-and-decisions",
       "services": []
