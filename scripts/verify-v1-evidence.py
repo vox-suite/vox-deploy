@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Fail-closed verifier for an externally produced Platform V1 release dossier.
 
-Run on the release rehearsal host, with sibling checkouts of all seven repositories.
+Run on the release rehearsal host, with sibling checkouts of six Vox repositories.
 The attestation is intentionally outside Git: this repository cannot contain its
 own final commit hash or the digest of an image that has not been built yet.
 """
@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SUITE = ROOT.parent
 REPOS = (
     "vox-core", "vox-web", "vox-bridge", "agents", "vox-deploy",
-    "feno-extension", "vox-contracts",
+    "vox-contracts",
 )
 IMAGES = ("core-api", "core-worker", "bridge", "vox-web", "portable-agent", "conformance-sandbox")
 SERVICES = (*IMAGES, "postgres", "redis")
@@ -74,6 +74,12 @@ def verify() -> None:
         pinned = manifest["repositories"][repo].get("commit")
         if repo != "vox-deploy" and pinned != expected:
             fail(f"source manifest does not match {repo} commit")
+
+    second_host = evidence.get("second_host", {})
+    if (not isinstance(second_host.get("source"), str)
+            or not second_host["source"].strip()
+            or second_host.get("commit") != os.environ.get("SECOND_HOST_SHA")):
+        fail("missing independent second-host source or matching tested commit")
 
     images = evidence.get("images", {})
     for service in IMAGES:

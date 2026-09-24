@@ -33,14 +33,14 @@ if [ ! -f "$MANIFEST" ]; then
     exit 1
 fi
 
-REQUIRED_REPOS=("vox-core" "vox-bridge" "vox-web" "vox-deploy" "agents" "feno-extension" "vox-contracts")
+REQUIRED_REPOS=("vox-core" "vox-bridge" "vox-web" "vox-deploy" "agents" "vox-contracts")
 for r in "${REQUIRED_REPOS[@]}"; do
     if ! grep -q "\"${r}\"" "$MANIFEST"; then
         echo "FAIL: repository '${r}' missing from $MANIFEST"
         exit 1
     fi
 done
-echo "✓ deployments/manifest.json contains all seven repository entries (release evidence still required)"
+echo "✓ deployments/manifest.json contains all six Vox repository entries (release evidence still required)"
 
 # 3. Secret isolation check: ensure no secrets are hardcoded in compose or manifest
 PROHIBITED_STRINGS=("sk_live_" "ghp_" "supersecret")
@@ -61,7 +61,7 @@ echo "✓ .env.self-hosted.example exists"
 
 # 5. Real backup/restore and independent-host acceptance are terminal gates.
 # Their presence is checked here; running them requires a disposable live stack.
-for script in backup.sh restore.sh feno-acceptance-check.sh verify-platform-v1-release.sh; do
+for script in backup.sh restore.sh second-host-acceptance-check.sh verify-platform-v1-release.sh; do
     test -f "scripts/$script" || { echo "FAIL: missing scripts/$script" >&2; exit 1; }
 done
 echo "✓ Release rehearsal scripts present; live evidence is still required"
