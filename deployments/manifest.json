@@ -24,7 +24,7 @@
       "services": ["vox-web"]
     },
     "vox-deploy": {
-      "commit": "bd44b75ce472641182e3d46ef34d68e945e015d9",
+      "commit": "98094d9f43d31e6f94aa5d5e51a83a3cf20f6688",
       "branch": "main",
       "role": "deployment-orchestration-and-release-authority",
       "services": ["caddy"]
