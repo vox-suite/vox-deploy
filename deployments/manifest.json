@@ -3,28 +3,30 @@
   "name": "vox-platform-v1-manifest",
   "version": "1.0.0",
   "generated_at": "2026-09-24T04:15:00Z",
-  "description": "Immutable repository revision manifest for Vox Platform V1 self-hosted reference stack",
+  "description": "Source revision candidate; image digests and release evidence are recorded outside this repository after builds and rehearsals",
+  "release_status": "pending_evidence",
   "repositories": {
     "vox-core": {
-      "commit": "9961cd3606cf91b748411623d3b58b538bb806f1",
+      "commit": "8d47a040e341f9f96242cff5d209290a33b96447",
       "branch": "main",
       "role": "platform-core-and-coordination",
       "services": ["core-api", "core-worker", "conformance-sandbox"]
     },
     "vox-bridge": {
-      "commit": "029193d77a823eb247e95d3c1f5dfc999f78da97",
+      "commit": "e186a3fd436c4428db2ddf203a8820987c703dc2",
       "branch": "main",
       "role": "telephony-and-messaging-gateway",
       "services": ["bridge"]
     },
     "vox-web": {
-      "commit": "7aafa8501c93732c8353044d8275d6c35c998e19",
+      "commit": "3d8a957510fd9682612ebc106ebb7dbb356a9bf0",
       "branch": "main",
       "role": "consumer-portal-and-host-app",
       "services": ["vox-web"]
     },
     "vox-deploy": {
-      "commit": "98094d9f43d31e6f94aa5d5e51a83a3cf20f6688",
+      "commit": null,
+      "commit_source": "release-attestation (self-referential commits cannot be pinned inside this file)",
       "branch": "main",
       "role": "deployment-orchestration-and-release-authority",
       "services": ["caddy"]
@@ -36,7 +38,7 @@
       "services": ["portable-agent"]
     },
     "feno-extension": {
-      "status": "independent-reference-host-contract",
+      "status": "not_verified",
       "specification": "PRD Section 11.21 & execution-order.md Wave 8.2",
       "role": "independent-host-reference"
     }

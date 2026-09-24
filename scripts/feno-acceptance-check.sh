@@ -1,41 +1,27 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# ==============================================================================
-# Feno Independent Reference Host Acceptance Verification Script
-#
-# Verifies that an independent host using only public Core APIs can:
-# 1. Resolve authenticated user context
-# 2. Discover platform capabilities
-# 3. Create a durable task
-# 4. Check status and reconnect
-# 5. Propose and approve an exact action
-# ==============================================================================
+# The reference host must be a separate checkout with its own executable
+# public-boundary acceptance suite. An absent host is a release blocker.
+: "${FENO_HOST_REPO:?Set FENO_HOST_REPO to the independent reference-host checkout}"
+: "${FENO_HOST_SHA:?Set FENO_HOST_SHA to the tested 40-character commit}"
+: "${VOX_CORE_URL:?Set VOX_CORE_URL to the running Core API}"
 
-CORE_URL="${VOX_CORE_URL:-http://localhost:3001}"
-
-echo "Starting Feno Reference Host Acceptance Suite against: ${CORE_URL}"
-
-# 1. Health check
-if curl -sf "${CORE_URL}/health/live" >/dev/null 2>&1; then
-    echo "✓ Core service is live"
-else
-    echo "⚠ Core service not directly reachable on ${CORE_URL} (offline simulation mode)"
-fi
-
-echo "1. Authenticating host context through public boundary..."
-echo "✓ Host assertion signed and verified"
-
-echo "2. Discovering available capabilities for host context..."
-echo "✓ Discoverable capabilities: read, write, handoff"
-
-echo "3. Starting durable task via /v1/durable-tasks..."
-echo "✓ Task created and queued"
-
-echo "4. Testing client disconnect and reconnectable status inspection..."
-echo "✓ Task state durably inspected after reconnect"
-
-echo "5. Proposing exact action and executing authenticated approval..."
-echo "✓ Exact action proposed and approved with single-use consumption"
-
-echo "Feno Independent Reference Host Acceptance Suite PASSED."
+[[ $FENO_HOST_SHA =~ ^[0-9a-f]{40}$ ]] || {
+  echo "FENO_HOST_SHA must be a 40-character commit" >&2
+  exit 1
+}
+[[ -d $FENO_HOST_REPO/.git ]] || {
+  echo "Independent reference-host Git checkout is missing" >&2
+  exit 1
+}
+[[ $(git -C "$FENO_HOST_REPO" rev-parse HEAD) == "$FENO_HOST_SHA" ]] || {
+  echo "Reference-host checkout does not match FENO_HOST_SHA" >&2
+  exit 1
+}
+[[ -x $FENO_HOST_REPO/scripts/acceptance.sh ]] || {
+  echo "Reference host must supply executable scripts/acceptance.sh" >&2
+  exit 1
+}
+curl --fail --silent --show-error "$VOX_CORE_URL/health/ready" >/dev/null
+"$FENO_HOST_REPO/scripts/acceptance.sh"
