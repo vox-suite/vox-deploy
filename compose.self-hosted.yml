@@ -1,0 +1,135 @@
+name: vox-self-hosted
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-vox}
+      POSTGRES_USER: ${POSTGRES_USER:-vox}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-vox} -d ${POSTGRES_DB:-vox}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec"]
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+    ports:
+      - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  core-api:
+    image: ${CORE_IMAGE:-vox-suite/vox-core:latest}
+    command: ["/usr/local/bin/vox-core-api"]
+    restart: unless-stopped
+    env_file: ${VOX_ENV_FILE:-.env.self-hosted}
+    environment:
+      VOX_CORE_BIND_ADDRESS: 0.0.0.0:3001
+      DATABASE_URL: ${DATABASE_URL:-postgres://${POSTGRES_USER:-vox}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-vox}}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+    ports:
+      - "127.0.0.1:3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:3001/health/ready"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+
+  core-worker:
+    image: ${CORE_IMAGE:-vox-suite/vox-core:latest}
+    command: ["/usr/local/bin/vox-core-worker"]
+    restart: unless-stopped
+    env_file: ${VOX_ENV_FILE:-.env.self-hosted}
+    environment:
+      VOX_CORE_BIND_ADDRESS: 0.0.0.0:3001
+      DATABASE_URL: ${DATABASE_URL:-postgres://${POSTGRES_USER:-vox}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-vox}}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      VOX_BRIDGE_URL: http://bridge:3000
+    depends_on:
+      core-api:
+        condition: service_healthy
+
+  bridge:
+    image: ${BRIDGE_IMAGE:-vox-suite/vox-bridge:latest}
+    restart: unless-stopped
+    env_file: ${VOX_ENV_FILE:-.env.self-hosted}
+    environment:
+      VOX_CORE_URL: http://core-api:3001
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      core-api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+
+  vox-web:
+    image: ${WEB_IMAGE:-vox-suite/vox-web:latest}
+    restart: unless-stopped
+    env_file: ${VOX_ENV_FILE:-.env.self-hosted}
+    environment:
+      VOX_CORE_URL: http://core-api:3001
+      PORT: 3002
+    ports:
+      - "127.0.0.1:3002:3002"
+    depends_on:
+      core-api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:3002/api/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 12
+
+  conformance-sandbox:
+    image: ${CORE_IMAGE:-vox-suite/vox-core:latest}
+    command: ["/usr/local/bin/vox-core-sandbox"]
+    restart: unless-stopped
+    environment:
+      PORT: 3004
+      SANDBOX_SEED: ${SANDBOX_SEED:-seed-2026}
+    ports:
+      - "127.0.0.1:3004:3004"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:3004/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  portable-agent:
+    image: ${AGENT_IMAGE:-vox-suite/agents:latest}
+    restart: unless-stopped
+    environment:
+      VOX_CORE_URL: http://core-api:3001
+      AGENT_PORT: 3003
+    ports:
+      - "127.0.0.1:3003:3003"
+    depends_on:
+      core-api:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
+  redis-data:

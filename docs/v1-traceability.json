@@ -1,0 +1,1727 @@
+{
+  "source": "docs/PRD.md",
+  "requirements": {
+    "AS-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/capability_grants.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "AS-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/capability_grants.rs",
+        "vox-core/tests/approvals.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "AS-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/approvals.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "AS-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/approvals.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "AS-005": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/consequential_write.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "AS-006": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/consequential_write.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "AS-007": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/durable_tasks.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "AS-008": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/remote_extensions.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "AS-009": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/capability_grants.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "AS-010": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/user_context.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "AS-011": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/connections.rs",
+        "vox-core/tests/capability_grants.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "AS-012": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/remote_extensions.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "AS-013": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/provider_capability_proofs.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "AS-014": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/reminders.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "AS-015": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "agents/tests/test_portable_agent_acceptance.py"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "AS-016": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/remote_extensions.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "AS-017": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/privacy_lifecycle.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "AS-018": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/status_updates.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "AS-019": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/execution_policy.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "AS-020": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/provider_capability_proofs.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-AGT-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "agents/tests/test_portable_agent_acceptance.py",
+        "vox-core/tests/agent_registry.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-AGT-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "agents/tests/test_portable_agent_acceptance.py",
+        "vox-core/tests/agent_registry.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-AGT-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "agents/tests/test_portable_agent_acceptance.py",
+        "vox-core/tests/agent_registry.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-AGT-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "agents/tests/test_portable_agent_acceptance.py",
+        "vox-core/tests/agent_registry.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-AGT-005": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "agents/tests/test_portable_agent_acceptance.py",
+        "vox-core/tests/agent_registry.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-AGT-006": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "agents/tests/test_portable_agent_acceptance.py",
+        "vox-core/tests/agent_registry.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-AGT-007": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "agents/tests/test_portable_agent_acceptance.py",
+        "vox-core/tests/agent_registry.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-AGT-008": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "agents/tests/test_portable_agent_acceptance.py",
+        "vox-core/tests/agent_registry.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-APR-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/approvals.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-APR-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/approvals.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-APR-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/approvals.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-APR-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/approvals.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-APR-005": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/approvals.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-APR-006": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/approvals.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-APR-007": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/approvals.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-APR-008": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/approvals.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-APR-009": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/approvals.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-APR-010": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/approvals.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-APR-011": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/approvals.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-APR-012": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/approvals.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-AUD-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/audit.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-AUD-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/audit.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-AUD-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/audit.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-AUD-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/audit.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-AUD-005": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/audit.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-AUD-006": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/audit.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-AUD-007": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/audit.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-AUD-008": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/audit.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-AUD-009": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/audit.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-CON-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/connections.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-CON-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/connections.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-CON-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/connections.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-CON-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/connections.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-CON-005": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/connections.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-CON-006": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/connections.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-CON-007": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/connections.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-CON-008": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/connections.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-CON-009": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/connections.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-CON-010": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/connections.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-CON-011": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/connections.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-CON-012": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/connections.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-CON-013": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/connections.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-DAT-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/privacy_lifecycle.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-DAT-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/privacy_lifecycle.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-DAT-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/privacy_lifecycle.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-DAT-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/privacy_lifecycle.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-DAT-005": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/privacy_lifecycle.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-DAT-006": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/privacy_lifecycle.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-DAT-007": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/privacy_lifecycle.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-DAT-008": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/privacy_lifecycle.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-DAT-009": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/privacy_lifecycle.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-DEP-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/host_trust.rs",
+        "vox-deploy/tests/self_hosted_stack_test.sh"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-DEP-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/host_trust.rs",
+        "vox-deploy/tests/self_hosted_stack_test.sh"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-DEP-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/host_trust.rs",
+        "vox-deploy/tests/self_hosted_stack_test.sh"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-DEP-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/host_trust.rs",
+        "vox-deploy/tests/self_hosted_stack_test.sh"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-DEP-005": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/host_trust.rs",
+        "vox-deploy/tests/self_hosted_stack_test.sh"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-DEP-006": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/host_trust.rs",
+        "vox-deploy/tests/self_hosted_stack_test.sh"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-EVT-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/status_updates.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-EVT-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/status_updates.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-EVT-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/status_updates.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-EVT-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/status_updates.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-EVT-005": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/status_updates.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-EVT-006": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/status_updates.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-EVT-007": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/status_updates.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-EVT-008": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/status_updates.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-EVT-009": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/status_updates.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-EXE-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/consequential_write.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-EXE-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/consequential_write.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-EXE-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/consequential_write.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-EXE-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/consequential_write.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-EXE-005": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/consequential_write.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-EXE-006": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/consequential_write.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-EXE-007": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/consequential_write.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-EXE-008": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/consequential_write.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-EXT-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/remote_extensions.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-EXT-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/remote_extensions.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-EXT-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/remote_extensions.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-EXT-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/remote_extensions.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-EXT-005": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/remote_extensions.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-EXT-006": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/remote_extensions.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-EXT-007": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/remote_extensions.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-EXT-008": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/remote_extensions.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-EXT-009": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/remote_extensions.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-EXT-010": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/remote_extensions.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-GLB-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-web/tests/a11y-localization.test.ts"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-GLB-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-web/tests/a11y-localization.test.ts"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-GLB-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-web/tests/a11y-localization.test.ts"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-GLB-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-web/tests/a11y-localization.test.ts"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-GRT-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/capability_grants.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-GRT-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/capability_grants.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-GRT-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/capability_grants.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-GRT-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/capability_grants.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-GRT-005": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/capability_grants.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-GRT-006": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/capability_grants.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-GRT-007": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/capability_grants.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-GRT-008": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/capability_grants.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-HND-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/provider_capability_proofs.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-HND-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/provider_capability_proofs.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-HND-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/provider_capability_proofs.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-HND-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/provider_capability_proofs.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-ID-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/user_context.rs",
+        "vox-web/tests/consumer-auth-postgres.test.ts"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-ID-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/user_context.rs",
+        "vox-web/tests/consumer-auth-postgres.test.ts"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-ID-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/user_context.rs",
+        "vox-web/tests/consumer-auth-postgres.test.ts"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-ID-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/user_context.rs",
+        "vox-web/tests/consumer-auth-postgres.test.ts"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-ID-005": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/user_context.rs",
+        "vox-web/tests/consumer-auth-postgres.test.ts"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-INT-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/integration_registry.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-INT-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/integration_registry.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-INT-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/integration_registry.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-INT-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/integration_registry.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-INT-005": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/integration_registry.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-INT-006": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/integration_registry.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-INT-007": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/integration_registry.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-INT-008": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/integration_registry.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-INT-009": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/integration_registry.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-INT-010": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/integration_registry.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-INT-011": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/integration_registry.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-OSS-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-deploy/tests/self_hosted_stack_test.sh"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-OSS-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-deploy/tests/self_hosted_stack_test.sh"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-OSS-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-deploy/tests/self_hosted_stack_test.sh"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-OSS-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-deploy/tests/self_hosted_stack_test.sh"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-OSS-005": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-deploy/tests/self_hosted_stack_test.sh"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-OSS-006": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-deploy/tests/self_hosted_stack_test.sh"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-OSS-007": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-deploy/tests/self_hosted_stack_test.sh"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-PAY-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/execution_policy.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-PAY-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/execution_policy.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-PAY-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/execution_policy.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-PAY-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/execution_policy.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-PAY-005": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/execution_policy.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-PAY-006": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/execution_policy.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-PAY-007": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/execution_policy.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-PAY-008": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/execution_policy.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-PAY-009": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/execution_policy.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-PAY-010": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/execution_policy.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-PAY-011": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/execution_policy.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-PAY-012": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/execution_policy.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-PAY-013": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/execution_policy.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-PRF-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/preferences.rs",
+        "vox-web/tests/privacy-controls.test.ts"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-PRF-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/preferences.rs",
+        "vox-web/tests/privacy-controls.test.ts"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-PRF-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/preferences.rs",
+        "vox-web/tests/privacy-controls.test.ts"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-PRF-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/preferences.rs",
+        "vox-web/tests/privacy-controls.test.ts"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-PRF-005": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/preferences.rs",
+        "vox-web/tests/privacy-controls.test.ts"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-PRF-006": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/preferences.rs",
+        "vox-web/tests/privacy-controls.test.ts"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-PRF-007": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/preferences.rs",
+        "vox-web/tests/privacy-controls.test.ts"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-PRF-008": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/preferences.rs",
+        "vox-web/tests/privacy-controls.test.ts"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-PRT-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/privacy_lifecycle.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-PRT-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/privacy_lifecycle.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-PRT-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/privacy_lifecycle.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-PRT-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/privacy_lifecycle.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-PRT-005": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/privacy_lifecycle.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-PRT-006": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/privacy_lifecycle.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-REM-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/reminders.rs",
+        "vox-bridge/tests/notifications_delivery_test.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-REM-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/reminders.rs",
+        "vox-bridge/tests/notifications_delivery_test.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-REM-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/reminders.rs",
+        "vox-bridge/tests/notifications_delivery_test.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-REM-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/reminders.rs",
+        "vox-bridge/tests/notifications_delivery_test.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-REM-005": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/reminders.rs",
+        "vox-bridge/tests/notifications_delivery_test.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-REM-006": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/reminders.rs",
+        "vox-bridge/tests/notifications_delivery_test.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-REM-007": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/reminders.rs",
+        "vox-bridge/tests/notifications_delivery_test.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-REM-008": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/reminders.rs",
+        "vox-bridge/tests/notifications_delivery_test.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-REM-009": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/reminders.rs",
+        "vox-bridge/tests/notifications_delivery_test.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-TOL-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/protocol_adapters.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-TOL-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/protocol_adapters.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-TOL-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/protocol_adapters.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-TOL-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/protocol_adapters.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-TOL-005": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/protocol_adapters.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-TOL-006": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/protocol_adapters.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-TOL-007": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/protocol_adapters.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-TSK-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/durable_tasks.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-TSK-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/durable_tasks.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-TSK-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/durable_tasks.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-TSK-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/durable_tasks.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-TSK-005": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/durable_tasks.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-TSK-006": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/durable_tasks.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-TSK-007": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/durable_tasks.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-TSK-008": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/durable_tasks.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-TSK-009": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/durable_tasks.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-TSK-010": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/durable_tasks.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "FR-TSK-011": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/durable_tasks.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-ACC-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-web/tests/browser/app.spec.ts"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-ACC-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-web/tests/browser/app.spec.ts"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-ACC-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-web/tests/browser/app.spec.ts"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-ACC-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-web/tests/browser/app.spec.ts"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-EXT-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/remote_extensions.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-EXT-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/remote_extensions.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-EXT-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/remote_extensions.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-EXT-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/remote_extensions.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-EXT-005": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/remote_extensions.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-OPS-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/health.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-OPS-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/health.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-OPS-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/health.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-OPS-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/health.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-OPS-005": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/health.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-PER-001": {
+      "status": "unverified",
+      "candidate_test_files": [],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-PER-002": {
+      "status": "unverified",
+      "candidate_test_files": [],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-PER-003": {
+      "status": "unverified",
+      "candidate_test_files": [],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-PER-004": {
+      "status": "unverified",
+      "candidate_test_files": [],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-PER-005": {
+      "status": "unverified",
+      "candidate_test_files": [],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-PRI-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/privacy_lifecycle.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-PRI-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/privacy_lifecycle.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-PRI-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/privacy_lifecycle.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-PRI-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/privacy_lifecycle.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-PRI-005": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/privacy_lifecycle.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-REL-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/durable_tasks.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-REL-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/durable_tasks.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-REL-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/durable_tasks.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-REL-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/durable_tasks.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-REL-005": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/durable_tasks.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-REL-006": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/durable_tasks.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-SEC-001": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/release_conformance_test.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-SEC-002": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/release_conformance_test.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-SEC-003": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/release_conformance_test.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-SEC-004": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/release_conformance_test.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-SEC-005": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/release_conformance_test.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-SEC-006": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/release_conformance_test.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-SEC-007": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/release_conformance_test.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-SEC-008": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/release_conformance_test.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "NFR-SEC-009": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/release_conformance_test.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "RELEASE-19.1": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-web/tests/product-acceptance.test.ts"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "RELEASE-19.2": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/remote_extensions.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "RELEASE-19.3": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/release_conformance_test.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "RELEASE-19.4": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/durable_tasks.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "RELEASE-19.5": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-deploy/tests/self_hosted_stack_test.sh"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    },
+    "RELEASE-19.6": {
+      "status": "unverified",
+      "candidate_test_files": [
+        "vox-core/tests/provider_capability_proofs.rs"
+      ],
+      "required_evidence": "Named assertion and passing real-run log; human/provider sign-off where applicable"
+    }
+  }
+}
