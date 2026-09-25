@@ -38,14 +38,14 @@ The self-hosted reference stack runs entirely on open infrastructure without pro
         ┌─────────────┴─────────────┐
         ▼                           ▼
  ┌──────────────┐            ┌──────────────┐
- │ PostgreSQL 18│            │   Redis 7    │
+ │ PostgreSQL 18│            │  Redis 8.2   │
  │ (State Store)│            │(Queues/Cache)│
  └──────────────┘            └──────────────┘
 ```
 
 ### Components
 1. **`postgres` (PostgreSQL 18)**: Durable persistence with `pgvector` for tasks, conversations, connections, grants, audit events, and user preferences (`pgvector/pgvector:pg18`).
-2. **`redis` (Redis 7)**: Distributed locking, job queues, and transient session caching.
+2. **`redis` (Redis 8.2 LTS)**: Distributed locking, job queues, and transient session caching.
 3. **`core-api` (`vox-core`)**: Central platform authority exposing public REST contracts for tasks, proposals, approvals, connections, grants, privacy, and audit.
 4. **`core-worker` (`vox-core`)**: Background runner for durable task execution, reminder scheduling, and transactional outcome reconciliation.
 5. **`bridge` (`vox-bridge`)**: Telephony (Twilio) and messaging (WhatsApp) channel ingress and notification delivery.
@@ -76,7 +76,7 @@ Copy the self-hosted environment template and fill in your secrets. Ensure this 
 ```bash
 cp .env.self-hosted.example .env.self-hosted
 chmod 600 .env.self-hosted
-vim .env.self-hosted
+nvim .env.self-hosted
 ```
 
 Webhook subscriptions are optional. To enable them, generate a 32-byte key
@@ -168,8 +168,27 @@ Because PostgreSQL major versions do not permit mounting an older data directory
    docker compose -f compose.self-hosted.yml up -d
    ```
 
+### Cache & Queue Engine Upgrade (Redis 7 to Redis 8.2 LTS)
+Redis 8.2 LTS introduces single-allocation memory optimizations (25–37% RAM reduction) and backward-compatible RDB/AOF ingestion. However, persistence format changes in Redis 8.2 are a one-way ratchet:
+1. **Take a snapshot backup of Redis 7**:
+   ```bash
+   docker compose -f compose.self-hosted.yml exec -T redis redis-cli bgsave
+   docker run --rm -v vox-self-hosted_redis-data:/data:ro -v $(pwd)/backups:/backup alpine tar -czf /backup/redis-v7-backup.tar.gz -C /data .
+   ```
+2. **Update `compose.self-hosted.yml` to Redis 8.2 LTS**:
+   Ensure `image: redis:8.2-alpine` is configured.
+3. **Recreate the Redis container**:
+   ```bash
+   docker compose -f compose.self-hosted.yml up -d --no-deps redis
+   ```
+4. **Verify Redis health**:
+   ```bash
+   docker compose -f compose.self-hosted.yml exec -T redis redis-cli ping
+   ```
+
 ### Rollback (NFR-REL-004)
 If a rollout fails:
 1. Re-deploy the previously verified commit SHAs recorded in `manifest.json`.
 2. Existing PostgreSQL durable task states and Redis data are preserved.
 3. For major database rollbacks, reverting the Compose image tag to `pgvector/pgvector:pg17` allows re-attaching the preserved `postgres-data-pg17-backup` volume immediately without data loss.
+4. For Redis rollbacks, restore the volume from `redis-v7-backup.tar.gz` before starting `redis:7-alpine`, ensuring older engine versions do not encounter v8 RDB/AOF formats.

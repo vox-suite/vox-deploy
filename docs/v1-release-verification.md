@@ -1,6 +1,6 @@
 # Platform V1 release verification
 
-The checked-in test suite verifies code and fail-closed gate behavior. It does **not** certify a public release. Run the terminal gate on a disposable Linux rehearsal host with Docker Compose, exact built image digests, PostgreSQL 18, Redis 7, sibling checkouts of the five implementation repositories and `vox-contracts`, plus a separately tested second host. Record the host's CPU, RAM, OS, Docker version, model, and external provider versions. The single-user reference load is one active user and one request in flight; no capacity claim follows from it.
+The checked-in test suite verifies code and fail-closed gate behavior. It does **not** certify a public release. Run the terminal gate on a disposable Linux rehearsal host with Docker Compose, exact built image digests, PostgreSQL 18, Redis 8.2 LTS, sibling checkouts of the five implementation repositories and `vox-contracts`, plus a separately tested second host. Record the host's CPU, RAM, OS, Docker version, model, and external provider versions. The single-user reference load is one active user and one request in flight; no capacity claim follows from it.
 
 ## Evidence dossier
 

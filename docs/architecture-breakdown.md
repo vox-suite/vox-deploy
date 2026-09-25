@@ -13,16 +13,16 @@ Vox is a modular, self-hostable AI platform designed to execute everyday tasks t
 
 The architecture strictly decouples **six core concepts** to prevent them from ever collapsing into one another:
 ```
-┌────────────────────────────────────────────────────────────────────────────────────────┐
+┌───────────────────────────────────────────────────────────────────────────────────────┐
 │                                 SIX DECOUPLED CONCERNS                                 │
-├──────────────────────────┬─────────────────────────────────────────────────────────────┤
+├──────────────────────────┬────────────────────────────────────────────────────────────┤
 │ 1. User Identity         │ Person within deployment & host-app context (FR-IDN)        │
 │ 2. Agent                 │ Interprets intent and plans tasks; zero action rights (FR-AGT)│
 │ 3. Integration           │ Declares capabilities, schemas, and provider boundaries (FR-INT)│
 │ 4. Connection            │ Links a user to a specific external authenticated account (FR-CON)│
 │ 5. Capability Grant      │ Permitted pairing of (User, Agent, Connection, Capability) (FR-GRT)│
 │ 6. Action Approval       │ Single-use, non-replayable authorization for exact action (FR-ACT)│
-└──────────────────────────┴─────────────────────────────────────────────────────────────┘
+└──────────────────────────┴────────────────────────────────────────────────────────────┘
 ```
 
 The system is deployed as an open self-hosted reference stack consisting of 5 repositories plus independent reference hosts, operating strictly through authenticated public platform boundaries.
@@ -61,7 +61,7 @@ flowchart TD
 
   subgraph Durable Persistence & Queues
     Postgres[("PostgreSQL 18\n(Durable State & Audit)")]
-    Redis[("Redis 7\n(Distributed Queues & Locking)")]
+    Redis[("Redis 8.2 LTS\n(Distributed Queues & Locking)")]
   end
 
   subgraph External Providers
@@ -96,7 +96,7 @@ flowchart TD
 
 | Repository | Tech Stack | Role & Core Responsibilities | Public Boundary Contracts |
 | :--- | :--- | :--- | :--- |
-| [**`vox-core`**](https://github.com/vox-suite/vox-core) | Rust 1.85+, Axum 0.8, SQLx, Tokio, PostgreSQL 18, Redis 7 | Central platform authority: durable tasks, user context, connection custody, capability grants, proposal generation, exact approvals, policy enforcement, audit trails, and privacy/retention engines. | `/v1/durable-tasks`, `/v1/proposals`, `/v1/connections`, `/v1/grants`, `/v1/privacy`, `/v1/reminders` |
+| [**`vox-core`**](https://github.com/vox-suite/vox-core) | Rust 1.85+, Axum 0.8, SQLx, Tokio, PostgreSQL 18, Redis 8.2 LTS | Central platform authority: durable tasks, user context, connection custody, capability grants, proposal generation, exact approvals, policy enforcement, audit trails, and privacy/retention engines. | `/v1/durable-tasks`, `/v1/proposals`, `/v1/connections`, `/v1/grants`, `/v1/privacy`, `/v1/reminders` |
 | [**`vox-web`**](https://github.com/vox-suite/vox-web) | Next.js 16 (App Router), React 19, Better-Auth, Tailwind CSS, TypeScript | Consumer-facing portal & reference host: standalone authentication (OAuth + email OTP), connections manager, grant inspector, proposal approval UI, reminders UI, privacy controls, and accessible status presentation. | Communicates exclusively with Core via signed Ed25519 host context assertions; zero direct database or private crate access. |
 | [**`vox-bridge`**](https://github.com/vox-suite/vox-bridge) | Rust 1.85+, Axum, Tokio, DashMap, WebSockets | Ingress gateway for telephony (Twilio Voice) and messaging (WhatsApp/SMS): bi-directional audio streaming, phone-number-to-context resolution, delivery receipts, and truthful channel notifications. | Signed conversation ingress, `/v1/voice/inbound`, `/v1/messaging/inbound`, webhook signature verification. |
 | [**`agents`**](https://github.com/vox-suite/agents) | Python, FastAPI, OpenAI Agents SDK, Pydantic | Portable Core-backed agent package; legacy standalone `/chat` is disabled by default. The active Bridge voice path currently streams through Core's Rust conversation agent. | Calls documented Core public routes through a host-owned client; runtime deployment integration still needs end-to-end proof. |
@@ -151,7 +151,7 @@ The platform enforces six non-negotiable architectural invariants:
   │ Host App (vox-web)                                             │
   │   - Better-Auth Session                                        │
   │   - Ed25519 Key Pair                                           │
-  └────────────────┬───────────────────────────────────────────────┘
+  └──────────────────────────────┬─────────────────────────────────┘
                    │ Header: X-Vox-Host-Assertion: Ed25519 Signed JWT
                    │ Claims: { deployment_id, host_app_id, host_user_id, nonce, exp }
                    ▼
