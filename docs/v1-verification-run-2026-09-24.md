@@ -49,7 +49,9 @@ The release tracker is [`vox-deploy#3`](https://github.com/vox-suite/vox-deploy/
 
 ## Later E25 candidate, same release decision
 
-Core [PR #67](https://github.com/vox-suite/vox-core/pull/67) adds an encrypted webhook secret store, transactional status outbox,
+Core [PR #67](https://github.com/vox-suite/vox-core/pull/67), merged as
+`b36721feb477e033eb3b0b0a20f7e5b482a60a8b`, adds an encrypted webhook
+secret store, transactional status outbox,
 signed delivery with bounded retry, replay recording for verified provider
 events, and nonpublic destination rejection. Deploy
 [PR #6](https://github.com/vox-suite/vox-deploy/pull/6)
@@ -60,7 +62,3 @@ HTTPS receiver verified four synthetic signed hints across retry, service
 recreation, secret rotation, and duplicate lease recovery. This is webhook
 transport evidence, not a running Linux reference-stack or production-provider
 proof. E25 and E52 remain open for their consumer and release gates.
-
-GitHub SSH access was restored for the available repositories, but
-`vox-suite/feno-extension` still returned `Repository not found` on
-2026-09-24. That is a repository and independent-host gate, not a test skip.
