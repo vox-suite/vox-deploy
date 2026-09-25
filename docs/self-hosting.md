@@ -1,44 +1,50 @@
-# Vox Platform V1 — Self-Hosted Reference Stack Guide
+# Self-Hosted Reference Stack Guide
 
-This document describes the clean installation, operation, verification, and disaster recovery of the Vox Platform V1 open self-hostable reference stack, satisfying the acceptance criteria for [`vox-deploy#1`](https://github.com/vox-suite/vox-deploy/issues/1) (**E47**).
+This guide details the deployment, verification, backup, upgrade, and disaster recovery procedures for the Vox Platform V1 open reference stack (`compose.self-hosted.yml`).
 
 ---
 
-## 1. Architectural Overview
+## 1. Architecture Overview
 
-The self-hosted reference stack packages the full platform without any proprietary Vox-hosted dependencies:
+The self-hosted reference stack runs entirely on open infrastructure without proprietary cloud services or unvetted external dependencies.
 
 ```
-                          ┌───────────────────────────┐
-                          │   Caddy (TLS & Ingress)   │
-                          └─────────────┬─────────────┘
-                                        │
-           ┌────────────────────────────┼───────────────────────────┐
-           │ :3002                      │ :3001                     │ :3000
-           ▼                            ▼                           ▼
-    ┌───────────────┐           ┌───────────────┐           ┌───────────────┐
-    │    vox-web    │           │   core-api    │◄──────────│  vox-bridge   │
-    │  (Web Host)   │           │ (Coordinator) │           │ (Twilio/WA)   │
-    └───────────────┘           └───────┬───────┘           └───────────────┘
-                                        │
-                      ┌─────────────────┴─────────────────┐
-                      │                                   │
-                      ▼                                   ▼
-             ┌─────────────────┐                 ┌─────────────────┐
-             │   core-worker   │                 │ portable-agent  │
-             │ (Async Tasks)   │                 │ (Agent Package) │
-             └────────┬────────┘                 └─────────────────┘
+                           ┌──────────────┐
+                           │ User / Client│
+                           └──────┬───────┘
+                                  │
+                  ┌───────────────┴───────────────┐
+                  ▼                               ▼
+          ┌───────────────┐               ┌───────────────┐
+          │    vox-web    │               │    bridge     │
+          │ (Consumer UI) │               │(Voice/WhatsApp│
+          └───────┬───────┘               └───────┬───────┘
+                  │                               │
+                  └───────────────┬───────────────┘
+                                  ▼
+                         ┌─────────────────┐
+                         │    core-api     │
+                         │ (Authority API) │
+                         └────────┬────────┘
+                                  │
+                      ┌───────────┴───────────────────┐
+                      │                               │
+                      ▼                               ▼
+             ┌─────────────────┐             ┌─────────────────┐
+             │   core-worker   │             │ portable-agent  │
+             │ (Async Tasks)   │             │ (Agent Package) │
+             └────────┬────────┘             └─────────────────┘
                       │
         ┌─────────────┴─────────────┐
         ▼                           ▼
  ┌──────────────┐            ┌──────────────┐
- │ PostgreSQL 17│            │   Redis 7    │
+ │ PostgreSQL 18│            │   Redis 7    │
  │ (State Store)│            │(Queues/Cache)│
  └──────────────┘            └──────────────┘
 ```
 
 ### Components
-1. **`postgres` (PostgreSQL 17)**: Durable persistence for tasks, conversations, connections, grants, audit events, and user preferences.
+1. **`postgres` (PostgreSQL 18)**: Durable persistence with `pgvector` for tasks, conversations, connections, grants, audit events, and user preferences (`pgvector/pgvector:pg18`).
 2. **`redis` (Redis 7)**: Distributed locking, job queues, and transient session caching.
 3. **`core-api` (`vox-core`)**: Central platform authority exposing public REST contracts for tasks, proposals, approvals, connections, grants, privacy, and audit.
 4. **`core-worker` (`vox-core`)**: Background runner for durable task execution, reminder scheduling, and transactional outcome reconciliation.
@@ -120,9 +126,9 @@ The restore script verifies database integrity and proves that durable tasks, pr
 
 ---
 
-## 5. Upgrade and Rollback
+## 5. Upgrade, Database Migration, and Rollback
 
-### Supported Upgrade
+### Supported Application Upgrade
 To upgrade to a newer verified manifest revision:
 1. Pull the updated `manifest.json`.
 2. Run database migrations:
@@ -134,7 +140,36 @@ To upgrade to a newer verified manifest revision:
    docker compose -f compose.self-hosted.yml up -d --no-deps core-api core-worker bridge vox-web
    ```
 
-### Rollback
+### Major Database Upgrade (PostgreSQL 17 to PostgreSQL 18)
+Because PostgreSQL major versions do not permit mounting an older data directory without upgrade tooling, major engine upgrades follow this migration procedure:
+1. **Take a complete backup of PostgreSQL 17**:
+   ```bash
+   bash scripts/backup.sh
+   # Verify the archive is created in backups/vox_backup_<timestamp>.sql.gz
+   ```
+2. **Stop the services**:
+   ```bash
+   docker compose -f compose.self-hosted.yml down
+   ```
+3. **Archive the existing PostgreSQL 17 volume**:
+   ```bash
+   docker volume create postgres-data-pg17-backup
+   # Preserve postgres-data intact for rollback
+   ```
+4. **Update `compose.self-hosted.yml` to PostgreSQL 18**:
+   Ensure `image: pgvector/pgvector:pg18` is configured.
+5. **Start the fresh PostgreSQL 18 container and restore state**:
+   ```bash
+   docker compose -f compose.self-hosted.yml up -d postgres
+   bash scripts/restore.sh backups/vox_backup_<timestamp>.sql.gz
+   ```
+6. **Start all platform services**:
+   ```bash
+   docker compose -f compose.self-hosted.yml up -d
+   ```
+
+### Rollback (NFR-REL-004)
 If a rollout fails:
 1. Re-deploy the previously verified commit SHAs recorded in `manifest.json`.
 2. Existing PostgreSQL durable task states and Redis data are preserved.
+3. For major database rollbacks, reverting the Compose image tag to `pgvector/pgvector:pg17` allows re-attaching the preserved `postgres-data-pg17-backup` volume immediately without data loss.

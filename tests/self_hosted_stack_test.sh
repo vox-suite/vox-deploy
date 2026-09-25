@@ -28,8 +28,8 @@ echo "✓ compose.self-hosted.yml defines all required open services"
 
 # Core's baseline migration executes CREATE EXTENSION vector. The reference
 # PostgreSQL service must include pgvector before any Core process starts.
-if ! grep -Eq '^[[:space:]]+image: pgvector/pgvector:pg17([[:space:]]|$)' "$COMPOSE_FILE"; then
-    echo "FAIL: PostgreSQL 17 reference image must include pgvector" >&2
+if ! grep -Eq '^[[:space:]]+image: pgvector/pgvector:pg18([[:space:]]|$)' "$COMPOSE_FILE"; then
+    echo "FAIL: PostgreSQL 18 reference image must include pgvector" >&2
     exit 1
 fi
 echo "✓ PostgreSQL reference image includes pgvector"

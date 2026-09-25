@@ -64,7 +64,7 @@ An exhaustive dependency audit was conducted across the exact verified commit re
 1. **Zero Copyleft**: No viral copyleft licenses (GPL v1/v2/v3, AGPL, SSPL, or LGPL with static linkage mandates) exist in any distributed library or container binary.
 2. **Dual-Licensed Crates & Modules**: Dependencies dual-licensed under `MIT OR Apache-2.0` are consumed under the Apache-2.0 license terms.
 3. **Database & Infrastructure Images**:
-   - `pgvector/pgvector:pg17`: PostgreSQL license and PostgreSQL open source extension license (compatible with Apache-2.0 redistribution).
+   - `pgvector/pgvector:pg18`: PostgreSQL license and PostgreSQL open source extension license (compatible with Apache-2.0 redistribution).
    - `redis:7-alpine`: BSD-3-Clause licensed open source release.
 4. **Third-Party Attribution**: All mandatory copyright statements and licenses are compiled in the root [`NOTICE`](../NOTICE) file.
 
