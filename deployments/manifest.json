@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "name": "vox-platform-v1-manifest",
   "version": "1.0.0",
-  "generated_at": "2026-09-25T06:15:00Z",
+  "generated_at": "2026-09-25T06:30:00Z",
   "description": "Source revision candidate; image digests and release evidence are recorded outside this repository after builds and rehearsals",
   "release_status": "pending_evidence",
   "repositories": {
@@ -50,7 +50,7 @@
     "databases": [
       {
         "engine": "postgresql",
-        "version": "17-alpine",
+        "version": "18-alpine",
         "role": "durable-state-store"
       },
       {

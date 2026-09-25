@@ -60,7 +60,7 @@ flowchart TD
   end
 
   subgraph Durable Persistence & Queues
-    Postgres[("PostgreSQL 17\n(Durable State & Audit)")]
+    Postgres[("PostgreSQL 18\n(Durable State & Audit)")]
     Redis[("Redis 7\n(Distributed Queues & Locking)")]
   end
 
@@ -96,7 +96,7 @@ flowchart TD
 
 | Repository | Tech Stack | Role & Core Responsibilities | Public Boundary Contracts |
 | :--- | :--- | :--- | :--- |
-| [**`vox-core`**](https://github.com/vox-suite/vox-core) | Rust 1.85+, Axum 0.8, SQLx, Tokio, PostgreSQL 17, Redis 7 | Central platform authority: durable tasks, user context, connection custody, capability grants, proposal generation, exact approvals, policy enforcement, audit trails, and privacy/retention engines. | `/v1/durable-tasks`, `/v1/proposals`, `/v1/connections`, `/v1/grants`, `/v1/privacy`, `/v1/reminders` |
+| [**`vox-core`**](https://github.com/vox-suite/vox-core) | Rust 1.85+, Axum 0.8, SQLx, Tokio, PostgreSQL 18, Redis 7 | Central platform authority: durable tasks, user context, connection custody, capability grants, proposal generation, exact approvals, policy enforcement, audit trails, and privacy/retention engines. | `/v1/durable-tasks`, `/v1/proposals`, `/v1/connections`, `/v1/grants`, `/v1/privacy`, `/v1/reminders` |
 | [**`vox-web`**](https://github.com/vox-suite/vox-web) | Next.js 16 (App Router), React 19, Better-Auth, Tailwind CSS, TypeScript | Consumer-facing portal & reference host: standalone authentication (OAuth + email OTP), connections manager, grant inspector, proposal approval UI, reminders UI, privacy controls, and accessible status presentation. | Communicates exclusively with Core via signed Ed25519 host context assertions; zero direct database or private crate access. |
 | [**`vox-bridge`**](https://github.com/vox-suite/vox-bridge) | Rust 1.85+, Axum, Tokio, DashMap, WebSockets | Ingress gateway for telephony (Twilio Voice) and messaging (WhatsApp/SMS): bi-directional audio streaming, phone-number-to-context resolution, delivery receipts, and truthful channel notifications. | Signed conversation ingress, `/v1/voice/inbound`, `/v1/messaging/inbound`, webhook signature verification. |
 | [**`agents`**](https://github.com/vox-suite/agents) | Python, FastAPI, OpenAI Agents SDK, Pydantic | Portable Core-backed agent package; legacy standalone `/chat` is disabled by default. The active Bridge voice path currently streams through Core's Rust conversation agent. | Calls documented Core public routes through a host-owned client; runtime deployment integration still needs end-to-end proof. |
@@ -334,7 +334,7 @@ User Prompt: "Book Hyatt hotel in Seattle for tomorrow under $250"
 | **Security** | `NFR-SEC-001` Fail-Closed | All routers enforce authorization layers before domain execution. Unauthenticated calls return `401 Unauthorized` / `403 Forbidden`. |
 | **Security** | `NFR-SEC-002` Secret Isolation | AES-256-GCM encryption for stored tokens. Environment variables for master secrets. Zero credentials in client-facing bundles or logs. |
 | **Security** | `NFR-SEC-004` Host Assertion Integrity | Ed25519 asymmetric signature verification with nonce replay cache and 5-minute expiry windows. |
-| **Reliability**| `NFR-REL-001` Durable State Survival | PostgreSQL 17 ACID persistence with strict foreign keys. Worker process can restart mid-task and resume safely. |
+| **Reliability**| `NFR-REL-001` Durable State Survival | PostgreSQL 18 ACID persistence with strict foreign keys. Worker process can restart mid-task and resume safely. |
 | **Reliability**| `NFR-REL-004` Rollback State Preservation | Rollback automation restores binary images without touching or rolling back PostgreSQL database tables. |
 | **Accessibility**| `WCAG 2.2 AA` Non-Color Reliance | All badges pair color with text markers (`"✓ APPROVED"`, `"⏳ PENDING"`, `"⚠️ EXPIRED"`) and distinct ARIA labels. |
 | **Localization**| Locale & Value Integrity | `formatAuthoritativeCurrency` and `formatAuthoritativeDistance` preserve provider values without silent currency conversion or regional shifting. |
