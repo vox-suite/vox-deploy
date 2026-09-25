@@ -2,12 +2,12 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "name": "vox-platform-v1-manifest",
   "version": "1.0.0",
-  "generated_at": "2026-09-25T06:30:00Z",
+  "generated_at": "2026-09-25T08:55:00Z",
   "description": "Source revision candidate; image digests and release evidence are recorded outside this repository after builds and rehearsals",
   "release_status": "pending_evidence",
   "repositories": {
     "vox-core": {
-      "commit": "a4129c128a03b772f6bcfc339ad11ae60d41dd78",
+      "commit": "d41555cddfc6ce607f26d3578387bd6152689f6c",
       "branch": "main",
       "role": "platform-core-and-coordination",
       "services": ["core-api", "core-worker", "conformance-sandbox"]
@@ -38,7 +38,7 @@
       "services": ["portable-agent"]
     },
     "vox-contracts": {
-      "commit": "119f2ea7ac53ebcf2d5150a488997ec49ceaca6c",
+      "commit": "25da9a0605a6547d40d728dc3f73aad9a27a7f23",
       "branch": "main",
       "role": "shared-product-contract-and-decisions",
       "services": []
@@ -55,7 +55,7 @@
       },
       {
         "engine": "redis",
-        "version": "7-alpine",
+        "version": "8.2-alpine",
         "role": "cache-and-queues"
       }
     ]

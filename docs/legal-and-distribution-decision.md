@@ -65,7 +65,7 @@ An exhaustive dependency audit was conducted across the exact verified commit re
 2. **Dual-Licensed Crates & Modules**: Dependencies dual-licensed under `MIT OR Apache-2.0` are consumed under the Apache-2.0 license terms.
 3. **Database & Infrastructure Images**:
    - `pgvector/pgvector:pg18`: PostgreSQL license and PostgreSQL open source extension license (compatible with Apache-2.0 redistribution).
-   - `redis:7-alpine`: BSD-3-Clause licensed open source release.
+   - `redis:8.2-alpine`: Redis 8.2 LTS container image (RSALv2 / SSPLv1 source-available); operated as an independent, network-isolated service over standard RESP wire protocol, without static linkage or derivative obligations on the Apache-2.0 codebase.
 4. **Third-Party Attribution**: All mandatory copyright statements and licenses are compiled in the root [`NOTICE`](../NOTICE) file.
 
 ---

@@ -34,6 +34,13 @@ if ! grep -Eq '^[[:space:]]+image: pgvector/pgvector:pg18([[:space:]]|$)' "$COMP
 fi
 echo "✓ PostgreSQL reference image includes pgvector"
 
+# Redis 8.2 LTS reference image check
+if ! grep -Eq '^[[:space:]]+image: redis:8.2-alpine([[:space:]]|$)' "$COMPOSE_FILE"; then
+    echo "FAIL: Redis reference image must be redis:8.2-alpine" >&2
+    exit 1
+fi
+echo "✓ Redis reference image is redis:8.2-alpine"
+
 # 2. Manifest integrity check
 MANIFEST="deployments/manifest.json"
 if [ ! -f "$MANIFEST" ]; then
@@ -57,6 +64,14 @@ for r in "vox-core" "vox-bridge" "vox-web" "agents" "vox-contracts"; do
     fi
 done
 echo "✓ deployments/manifest.json contains all six Vox repository entries with valid pinned commits"
+
+# Check database versions in manifest
+redis_version=$(python3 -c "import json; print(next(d['version'] for d in json.load(open('$MANIFEST'))['stack']['databases'] if d['engine'] == 'redis'))")
+if [ "$redis_version" != "8.2-alpine" ]; then
+    echo "FAIL: Redis version in $MANIFEST must be 8.2-alpine, got $redis_version" >&2
+    exit 1
+fi
+echo "✓ deployments/manifest.json specifies Redis 8.2-alpine"
 
 # 3. Secret isolation check: ensure no secrets are hardcoded in compose or manifest
 PROHIBITED_STRINGS=("sk_live_" "ghp_" "supersecret")
