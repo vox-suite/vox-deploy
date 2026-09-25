@@ -9,6 +9,7 @@ bash tests/compose_test.sh
 bash tests/deploy_test.sh
 bash tests/workflow_test.sh
 bash tests/self_hosted_stack_test.sh
+bash tests/license_readiness_test.sh
 bash tests/terminal_release_gate_test.sh
 python3 tests/latency_gate_test.py
 if command -v shellcheck >/dev/null 2>&1; then
