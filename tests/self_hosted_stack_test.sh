@@ -48,7 +48,15 @@ for r in "${REQUIRED_REPOS[@]}"; do
         exit 1
     fi
 done
-echo "✓ deployments/manifest.json contains all six Vox repository entries (release evidence still required)"
+
+for r in "vox-core" "vox-bridge" "vox-web" "agents" "vox-contracts"; do
+    commit=$(python3 -c "import json; print(json.load(open('$MANIFEST'))['repositories']['$r']['commit'])")
+    if [[ ! "$commit" =~ ^[0-9a-f]{40}$ ]]; then
+        echo "FAIL: repository '$r' does not have a 40-character git commit in $MANIFEST"
+        exit 1
+    fi
+done
+echo "✓ deployments/manifest.json contains all six Vox repository entries with valid pinned commits"
 
 # 3. Secret isolation check: ensure no secrets are hardcoded in compose or manifest
 PROHIBITED_STRINGS=("sk_live_" "ghp_" "supersecret")
