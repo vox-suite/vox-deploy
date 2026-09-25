@@ -73,6 +73,13 @@ chmod 600 .env.self-hosted
 vim .env.self-hosted
 ```
 
+Webhook subscriptions are optional. To enable them, generate a 32-byte key
+with `openssl rand -hex 32`, retain it in an operator-managed secret store,
+and export the same `VOX_STATUS_WEBHOOK_KEY` into the Compose process on every
+start. Keep it out of `.env.self-hosted`, which is shared with other services.
+Only Core API and Core Worker receive this variable. Losing the key makes
+existing subscriptions unreadable; cursor polling remains available.
+
 ### Step 3: Launch the Stack
 ```bash
 docker compose -f compose.self-hosted.yml up -d

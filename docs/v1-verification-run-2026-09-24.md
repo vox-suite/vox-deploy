@@ -46,3 +46,19 @@ Keep task, grant, connection, approval, proposal, and policy reads authoritative
 - Production webhook secret custody, delivery/retry, and audit sink proof. Core status and audit issues remain open.
 
 The release tracker is [`vox-deploy#3`](https://github.com/vox-suite/vox-deploy/issues/3). Candidate source fixes are tracked in the existing Core issues for [context migration](https://github.com/vox-suite/vox-core/issues/4), [execution policy](https://github.com/vox-suite/vox-core/issues/14), [execution](https://github.com/vox-suite/vox-core/issues/15), [status](https://github.com/vox-suite/vox-core/issues/25), [audit](https://github.com/vox-suite/vox-core/issues/28), [privacy/export](https://github.com/vox-suite/vox-core/issues/29), and [security conformance](https://github.com/vox-suite/vox-core/issues/30).
+
+## Later E25 candidate, same release decision
+
+Core [PR #67](https://github.com/vox-suite/vox-core/pull/67), merged as
+`b36721feb477e033eb3b0b0a20f7e5b482a60a8b`, adds an encrypted webhook
+secret store, transactional status outbox,
+signed delivery with bounded retry, replay recording for verified provider
+events, and nonpublic destination rejection. Deploy
+[PR #6](https://github.com/vox-suite/vox-deploy/pull/6)
+passes the optional custody key only to Core API and worker services. Fresh
+PostgreSQL status, RLS, and migration tests, the Core non-ignored suite,
+formatting, Clippy, and Deploy static tests passed locally. A controlled public
+HTTPS receiver verified four synthetic signed hints across retry, service
+recreation, secret rotation, and duplicate lease recovery. This is webhook
+transport evidence, not a running Linux reference-stack or production-provider
+proof. E25 and E52 remain open for their consumer and release gates.
