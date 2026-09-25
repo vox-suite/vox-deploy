@@ -74,6 +74,7 @@ services:
     environment:
       VOX_CORE_BIND_ADDRESS: 0.0.0.0:3001
       VOX_BRIDGE_URL: http://bridge:3000
+      VOX_CORE_API_URL: http://core-api:3001
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
     depends_on:
       core-api:
