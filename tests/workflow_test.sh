@@ -28,7 +28,7 @@ ruby -ryaml -e '
   raise "wrong concurrency group" unless concurrency.fetch("group") == "production"
   raise "deployment cancellation enabled" unless concurrency.fetch("cancel-in-progress") == false
   job = deploy.fetch("jobs").fetch("deploy")
-  raise "release build is not native ARM64" unless job.fetch("runs-on") == "ubuntu-24.04-arm"
+  raise "release build is not native ARM64" unless job.fetch("runs-on") =~ /(?:ubuntu-24\.04-arm|blacksmith-.*-arm)/
   raise "missing production environment" unless job.fetch("environment") == "production"
   step_names = job.fetch("steps").map { |step| step["name"] }.compact
   raise "Core is not built centrally" unless step_names.include?("Build and publish Core")
