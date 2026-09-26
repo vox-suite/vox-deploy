@@ -33,7 +33,12 @@ services:
     image: ${CORE_IMAGE:?CORE_IMAGE is required}
     command: ["/usr/local/bin/vox-core-api"]
     restart: unless-stopped
-    env_file: ${VOX_ENV_FILE:-/etc/vox.env}
+    env_file:
+      - ${VOX_ENV_FILE:-/etc/vox.env}
+      # Secrets generated on the server itself (never in Secret Manager or
+      # logs), e.g. VOX_CREDENTIAL_KEY. Survives sync-secrets-from-gsm.
+      - path: ${VOX_LOCAL_ENV_FILE:-/etc/vox.local.env}
+        required: false
     environment:
       VOX_CORE_BIND_ADDRESS: 0.0.0.0:3001
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
@@ -72,7 +77,12 @@ services:
     image: ${CORE_IMAGE:?CORE_IMAGE is required}
     command: ["/usr/local/bin/vox-core-worker"]
     restart: unless-stopped
-    env_file: ${VOX_ENV_FILE:-/etc/vox.env}
+    env_file:
+      - ${VOX_ENV_FILE:-/etc/vox.env}
+      # Secrets generated on the server itself (never in Secret Manager or
+      # logs), e.g. VOX_CREDENTIAL_KEY. Survives sync-secrets-from-gsm.
+      - path: ${VOX_LOCAL_ENV_FILE:-/etc/vox.local.env}
+        required: false
     environment:
       VOX_CORE_BIND_ADDRESS: 0.0.0.0:3001
       VOX_BRIDGE_URL: http://bridge:3000
