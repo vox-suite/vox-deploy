@@ -44,7 +44,11 @@ Optional:
 
 ```text
 SUPABASE_JWT_SECRET
+VOX_CREDENTIAL_KEY
+VOX_MCP_OAUTH_CLIENTS
 ```
+
+`VOX_CREDENTIAL_KEY` (32-byte hex) encrypts connected-app OAuth tokens; without it, connecting apps is unavailable. Create it with the `generate-secret` workflow so no one sees the value, and never rotate it in place: tokens encrypted with the old key become unreadable and users must reconnect. `VOX_MCP_OAUTH_CLIENTS` is a JSON map from MCP endpoint host to an OAuth client, for apps without dynamic client registration, for example `{"mcp-gateway-external-pilot.spotify.net": {"client_id": "..."}}`.
 
 `SUPABASE_URL` is required for desktop and other clients that exchange Supabase sessions via `/v1/auth/exchange` and `/v1/me`. Core verifies access tokens against `{SUPABASE_URL}/auth/v1/.well-known/jwks.json` (ES256 signing keys). Keep `SUPABASE_JWT_SECRET` only if you still issue legacy HS256 tokens. Caddy routes `/v1/*` to Core and `/bridge/*` to Bridge.
 

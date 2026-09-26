@@ -38,6 +38,8 @@ services:
       VOX_CORE_BIND_ADDRESS: 0.0.0.0:3001
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
       VOX_VOICE_SIMILARITY_THRESHOLD: ${VOX_VOICE_SIMILARITY_THRESHOLD:-0.50}
+      # Only callback Web may use for connected-app OAuth sign-ins.
+      VOX_MCP_OAUTH_REDIRECT_URIS: ${VOX_MCP_OAUTH_REDIRECT_URIS:-https://app.voxagent.in/apps/oauth/callback}
     ports:
       - "127.0.0.1:3001:3001"
     depends_on:
