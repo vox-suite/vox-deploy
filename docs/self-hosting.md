@@ -44,7 +44,7 @@ The self-hosted reference stack runs entirely on open infrastructure without pro
 ```
 
 ### Components
-1. **`postgres` (PostgreSQL 18)**: Durable persistence with `pgvector` for tasks, conversations, connections, grants, audit events, and user preferences (`pgvector/pgvector:pg18`).
+1. **`postgres` (PostgreSQL 18)**: Durable persistence with `pgvector` for tasks, conversations, connections, grants, audit events, and user preferences (`pgvector/pgvector:pg18`). Its dedicated `postgres-data-pg18` volume mounts at `/var/lib/postgresql`, the PostgreSQL 18 image's data parent.
 2. **`redis` (Redis 8.2 LTS)**: Distributed locking, job queues, and transient session caching.
 3. **`core-api` (`vox-core`)**: Central platform authority exposing public REST contracts for tasks, proposals, approvals, connections, grants, privacy, and audit.
 4. **`core-worker` (`vox-core`)**: Background runner for durable task execution, reminder scheduling, and transactional outcome reconciliation.
@@ -122,7 +122,7 @@ This dumps the PostgreSQL durable state into `backups/vox_backup_<timestamp>.sql
 ```bash
 bash scripts/restore.sh backups/vox_backup_<timestamp>.sql.gz
 ```
-The restore script verifies database integrity and proves that durable tasks, proposals, and audit records remain intact.
+The restore script checks counts for spans, jobs, and audit events. Compare these counts and representative identifiers with the source database before allowing application writes.
 
 ---
 
@@ -141,32 +141,32 @@ To upgrade to a newer verified manifest revision:
    ```
 
 ### Major Database Upgrade (PostgreSQL 17 to PostgreSQL 18)
-Because PostgreSQL major versions do not permit mounting an older data directory without upgrade tooling, major engine upgrades follow this migration procedure:
-1. **Take a complete backup of PostgreSQL 17**:
+PostgreSQL 18 cannot start on a PostgreSQL 17 data directory. The Compose image also changed its data mount from `/var/lib/postgresql/data` to `/var/lib/postgresql`. The reference stack therefore uses a **new** `postgres-data-pg18` volume and leaves the old `postgres-data` volume untouched. Perform this procedure during an outage, before any PG18 application writes. A database already running PG18 with the former mount must also be backed up from its running container before changing Compose; its data may be in an anonymous Docker volume.
+
+1. **While the old database is still running, stop application writers and take a logical backup using the old Compose revision**:
    ```bash
    bash scripts/backup.sh
-   # Verify the archive is created in backups/vox_backup_<timestamp>.sql.gz
+   gzip -t backups/vox_backup_<timestamp>.sql.gz
    ```
-2. **Stop the services**:
+   Keep the backup outside the Docker host as well. Record the current span, job, and audit row counts for comparison after restore.
+2. **Stop the old stack, without removing its volumes**:
    ```bash
    docker compose -f compose.self-hosted.yml down
    ```
-3. **Archive the existing PostgreSQL 17 volume**:
-   ```bash
-   docker volume create postgres-data-pg17-backup
-   # Preserve postgres-data intact for rollback
-   ```
-4. **Update `compose.self-hosted.yml` to PostgreSQL 18**:
-   Ensure `image: pgvector/pgvector:pg18` is configured.
-5. **Start the fresh PostgreSQL 18 container and restore state**:
+   Do not use `down -v`. Retain the old Compose revision for a PG17 rollback.
+3. **Check out this revision with `pgvector/pgvector:pg18` and the dedicated `postgres-data-pg18:/var/lib/postgresql` mount. Start the new database and restore the logical backup**:
    ```bash
    docker compose -f compose.self-hosted.yml up -d postgres
+   docker compose -f compose.self-hosted.yml exec -T postgres \
+     psql -U "${POSTGRES_USER:-vox}" -d "${POSTGRES_DB:-vox}" -Atc 'SHOW server_version_num'
    bash scripts/restore.sh backups/vox_backup_<timestamp>.sql.gz
    ```
-6. **Start all platform services**:
+   Confirm the server version begins with `18`, the `vector` extension exists, and the restored span, job, and audit counts match the recorded counts. If restore fails, leave application writers stopped and investigate before retrying against a fresh PG18 database.
+4. **Start all platform services**:
    ```bash
    docker compose -f compose.self-hosted.yml up -d
    ```
+   Retain the PG17 volume and backup until the new stack has passed operational checks. A rollback to PG17 is safe only before writes occur on PG18; later writes require an explicit reverse migration or restore plan.
 
 ### Cache & Queue Engine Upgrade (Redis 7 to Redis 8.2 LTS)
 Redis 8.2 LTS introduces single-allocation memory optimizations (25–37% RAM reduction) and backward-compatible RDB/AOF ingestion. However, persistence format changes in Redis 8.2 are a one-way ratchet:
@@ -190,5 +190,5 @@ Redis 8.2 LTS introduces single-allocation memory optimizations (25–37% RAM re
 If a rollout fails:
 1. Re-deploy the previously verified commit SHAs recorded in `manifest.json`.
 2. Existing PostgreSQL durable task states and Redis data are preserved.
-3. For major database rollbacks, reverting the Compose image tag to `pgvector/pgvector:pg17` allows re-attaching the preserved `postgres-data-pg17-backup` volume immediately without data loss.
+3. For a PG18 cutover failure before any PG18 writes, restore the old Compose revision, which still mounts the preserved `postgres-data` volume at `/var/lib/postgresql/data`. Do not attach the PG18 volume to PG17 or claim that writes made after cutover are present on PG17.
 4. For Redis rollbacks, restore the volume from `redis-v7-backup.tar.gz` before starting `redis:7-alpine`, ensuring older engine versions do not encounter v8 RDB/AOF formats.

@@ -31,7 +31,7 @@ cat <<EOF > "$METADATA_FILE"
   "timestamp": "${TIMESTAMP}",
   "backup_file": "${BACKUP_FILE}",
   "type": "full-durable-state",
-  "databases": ["postgres"]
+  "databases": ["${POSTGRES_DB:-vox}"]
 }
 EOF
 
