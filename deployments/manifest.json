@@ -50,7 +50,7 @@
     "databases": [
       {
         "engine": "postgresql",
-        "version": "18-alpine",
+        "version": "pg18",
         "role": "durable-state-store"
       },
       {

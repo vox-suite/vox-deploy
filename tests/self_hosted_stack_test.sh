@@ -33,6 +33,25 @@ if ! grep -Eq '^[[:space:]]+image: pgvector/pgvector:pg18([[:space:]]|$)' "$COMP
     exit 1
 fi
 echo "✓ PostgreSQL reference image includes pgvector"
+if ! grep -Eq '^[[:space:]]+- postgres-data-pg18:/var/lib/postgresql([[:space:]]|$)' "$COMPOSE_FILE"; then
+    echo "FAIL: PostgreSQL 18 data must use its own volume at /var/lib/postgresql" >&2
+    exit 1
+fi
+if grep -Eq 'postgres-data:/var/lib/postgresql/data' "$COMPOSE_FILE"; then
+    echo "FAIL: PostgreSQL 17 data volume cannot be mounted into PostgreSQL 18" >&2
+    exit 1
+fi
+echo "✓ PostgreSQL 18 data has a dedicated volume at the supported mount path"
+if ! grep -q "FROM spans" scripts/restore.sh || ! grep -q "FROM jobs" scripts/restore.sh; then
+    echo "FAIL: restore integrity checks must use the current Core schema" >&2
+    exit 1
+fi
+for role in anon authenticated service_role; do
+    if ! grep -q "CREATE ROLE $role NOLOGIN" scripts/restore.sh; then
+        echo "FAIL: restore must bootstrap the $role role before replaying pg_dump" >&2
+        exit 1
+    fi
+done
 
 # Redis 8.2 LTS reference image check
 if ! grep -Eq '^[[:space:]]+image: redis:8.2-alpine([[:space:]]|$)' "$COMPOSE_FILE"; then
@@ -66,6 +85,12 @@ done
 echo "✓ deployments/manifest.json contains all six Vox repository entries with valid pinned commits"
 
 # Check database versions in manifest
+postgres_version=$(python3 -c "import json; print(next(d['version'] for d in json.load(open('$MANIFEST'))['stack']['databases'] if d['engine'] == 'postgresql'))")
+if [ "$postgres_version" != "pg18" ]; then
+    echo "FAIL: PostgreSQL version in $MANIFEST must match the pg18 image, got $postgres_version" >&2
+    exit 1
+fi
+echo "✓ deployments/manifest.json specifies PostgreSQL pg18"
 redis_version=$(python3 -c "import json; print(next(d['version'] for d in json.load(open('$MANIFEST'))['stack']['databases'] if d['engine'] == 'redis'))")
 if [ "$redis_version" != "8.2-alpine" ]; then
     echo "FAIL: Redis version in $MANIFEST must be 8.2-alpine, got $redis_version" >&2
