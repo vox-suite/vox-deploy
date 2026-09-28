@@ -92,36 +92,6 @@ jobs:
           token: ${{ secrets.SOURCE_REPO_TOKEN }}
           persist-credentials: false
 
-      - name: Check out Core dependencies
-        env:
-          GH_TOKEN: ${{ secrets.SOURCE_REPO_TOKEN }}
-        run: |
-          connections_sha=$(gh api repos/vox-suite/vox-connections/commits/main --jq .sha)
-          shared_sha=$(gh api repos/vox-suite/vox-shared/commits/main --jq .sha)
-          echo "CONNECTIONS_SHA=$connections_sha" >>"$GITHUB_ENV"
-          echo "SHARED_SHA=$shared_sha" >>"$GITHUB_ENV"
-
-      - name: Check out Connections
-        uses: useblacksmith/checkout@v1
-        with:
-          repository: vox-suite/vox-connections
-          ref: ${{ env.CONNECTIONS_SHA }}
-          path: sources/vox-connections
-          token: ${{ secrets.SOURCE_REPO_TOKEN }}
-          persist-credentials: false
-
-      - name: Check out Shared
-        uses: useblacksmith/checkout@v1
-        with:
-          repository: vox-suite/vox-shared
-          ref: ${{ env.SHARED_SHA }}
-          path: sources/vox-shared
-          token: ${{ secrets.SOURCE_REPO_TOKEN }}
-          persist-credentials: false
-
-      - name: Arrange Core source context
-        run: mv sources/core sources/vox-core
-
       - name: Check out Bridge
         uses: useblacksmith/checkout@v1
         with:
@@ -146,15 +116,11 @@ jobs:
         if: github.event_name == 'repository_dispatch' || inputs.reuse_images != true
         uses: useblacksmith/build-push-action@v2
         with:
-          context: sources
-          file: sources/vox-core/Dockerfile
+          context: sources/core
           platforms: linux/arm64
           push: true
           tags: ghcr.io/vox-suite/vox-deploy/core:${{ env.CORE_SHA }}
-          labels: |
-            org.opencontainers.image.source=https://github.com/vox-suite/vox-deploy
-            vox.connections.sha=${{ env.CONNECTIONS_SHA }}
-            vox.shared.sha=${{ env.SHARED_SHA }}
+          labels: org.opencontainers.image.source=https://github.com/vox-suite/vox-deploy
 
       - name: Build and publish Bridge
         id: bridge
