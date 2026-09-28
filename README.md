@@ -79,3 +79,7 @@ Use `workflow_dispatch` with the Core and Bridge SHAs recorded by the last healt
 ```sh
 tests/run.sh
 ```
+
+## Library defaults
+
+Every backend rollout runs `vox-core-defaults` after Core migrations. It publishes six curated, declarative skills for each configured deployment by immutable content digest. Rerunning it does not install skills, enable them for agents, or create new versions when content is unchanged. Operator registration also seeds defaults for a newly created deployment. Core's `Cargo.lock` pins the exact Connections and Shared Git revisions used in the image. Starter service apps remain unpublished until real OAuth configuration and live provider evidence exist.

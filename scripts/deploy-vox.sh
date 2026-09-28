@@ -184,6 +184,9 @@ docker --config "$docker_config" compose --env-file "$env_file" -f "$compose_fil
 compose config --quiet
 
 compose up -d --wait redis core-api
+# Default publication is idempotent and never installs or enables a skill for
+# a user. Run it after migrations and before marking a release healthy.
+compose exec -T core-api /usr/local/bin/vox-core-defaults
 
 if systemctl is-active --quiet vox-bridge.service; then
   systemd_was_active=1
