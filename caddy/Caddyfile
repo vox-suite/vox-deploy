@@ -5,12 +5,6 @@ api.voxagent.in {
 	respond @probe_paths 403
 	respond @probe_headers 403
 
-	# Admin routes to core-api
-	handle /v1/admin/redis* {
-		header Cache-Control "no-store"
-		reverse_proxy core-api:3001
-	}
-
 	# Host & Docker system telemetry
 	handle /v1/admin/system* {
 		header Cache-Control "no-store"
@@ -26,26 +20,12 @@ api.voxagent.in {
 	handle /bridge/* {
 		reverse_proxy bridge:3000
 	}
-	handle /auth/* {
-		reverse_proxy bridge:3000
-	}
-	handle /twilio/* {
-		reverse_proxy bridge:3000
-	}
-	handle /health* {
-		reverse_proxy bridge:3000
-	}
-	# Root landing route: strictly GET/HEAD to bridge
-	@root_get {
-		method GET HEAD
-		path /
-	}
-	handle @root_get {
-		reverse_proxy bridge:3000
+	handle /health {
+		respond "ok" 200
 	}
 
-	# Default catch-all. /internal/* and /channels/* (service-to-service) are
-	# deliberately not proxied: they are reachable only on the Docker network.
+	# Default catch-all. /internal/* (service-to-service) is
+	# deliberately not proxied: it is reachable only on the Docker network.
 	handle {
 		respond 404
 	}

@@ -95,7 +95,7 @@ docker compose -f compose.self-hosted.yml up -d
 ```bash
 docker compose -f compose.self-hosted.yml ps
 curl -f http://localhost:3001/health/ready
-curl -f http://localhost:3000/health
+curl -f http://localhost:3000/health/ready
 ```
 
 ---

@@ -41,6 +41,6 @@ jq -e '.services["core-api"].environment.REDIS_URL == "redis://redis:6379"' "$te
 jq -e '.services.bridge.environment.VOX_CORE_URL == "http://core-api:3001"' "$test_dir/compose.json" >/dev/null
 jq -e '.services["core-worker"].environment.VOX_BRIDGE_URL == "http://bridge:3000"' "$test_dir/compose.json" >/dev/null
 jq -e '.services["core-api"].healthcheck.test == ["CMD", "curl", "--fail", "http://localhost:3001/health/ready"]' "$test_dir/compose.json" >/dev/null
-jq -e '.services.bridge.healthcheck.test == ["CMD", "curl", "--fail", "http://localhost:3000/health"]' "$test_dir/compose.json" >/dev/null
+jq -e '.services.bridge.healthcheck.test == ["CMD", "curl", "--fail", "http://localhost:3000/health/ready"]' "$test_dir/compose.json" >/dev/null
 
 echo "compose tests passed"
