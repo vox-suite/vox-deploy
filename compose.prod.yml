@@ -59,7 +59,10 @@ services:
   bridge:
     image: ${BRIDGE_IMAGE:?BRIDGE_IMAGE is required}
     restart: unless-stopped
-    env_file: ${VOX_ENV_FILE:-/etc/vox.env}
+    env_file:
+      - ${VOX_ENV_FILE:-/etc/vox.env}
+      - path: ${VOX_BRIDGE_ENV_FILE:-/etc/vox.bridge.env}
+        required: false
     environment:
       VOX_CORE_URL: http://core-api:3001
     ports:

@@ -5,7 +5,7 @@ repo_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 test_root=$(mktemp -d)
 trap 'rm -rf "$test_root"' EXIT
 
-for command in docker curl systemctl flock; do
+for command in docker curl systemctl flock python3; do
   ln -s "$repo_dir/tests/fakes/command" "$test_root/$command"
 done
 
@@ -144,5 +144,18 @@ fi
 grep -q "BRIDGE_IMAGE=$image_bridge" "$case_dir/root/state/current.env" || fail "previous release was not restored"
 rollback_count=$(grep -c 'compose.*up -d --wait.*redis core-api bridge' "$command_log")
 [[ $rollback_count -eq 1 ]] || fail "Compose rollback did not run exactly once"
+grep -Fq "docker-env CORE_IMAGE=$image_core BRIDGE_IMAGE=$image_bridge" "$command_log" || fail "rollback lost migration-compatible Core"
+
+setup_case
+write_full_release "$sha_core" "$image_core" "$sha_bridge" "$image_bridge" "$case_dir/root/state/current.env"
+if VOX_SYSTEMD_ACTIVE=0 VOX_FAKE_FAILURE=host-bootstrap deploy \
+  --component bridge \
+  --sha "$sha_bridge_next" \
+  --image "$image_bridge_next" \
+  --ghcr-user vox-deploy \
+  --ghcr-token-file "$token_file"; then
+  fail "failed host bootstrap was accepted"
+fi
+grep -Fq "docker-env CORE_IMAGE=$image_core BRIDGE_IMAGE=$image_bridge" "$command_log" || fail "bootstrap failure did not preserve Core and restore Bridge"
 
 echo "deployment tests passed"

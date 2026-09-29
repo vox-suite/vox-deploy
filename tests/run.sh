@@ -16,6 +16,7 @@ python3 tests/github_oauth_config_test.py
 python3 tests/github_oauth_vm_test.py
 python3 tests/vm_database_probe_test.py
 python3 tests/vm_database_configuration_test.py
+python3 tests/bridge_host_config_test.py
 if command -v shellcheck >/dev/null 2>&1; then
     shellcheck -x -P scripts scripts/*.sh tests/*.sh tests/fakes/command
 fi
