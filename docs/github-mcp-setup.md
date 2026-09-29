@@ -46,10 +46,16 @@ Google Secret Manager is optional. For the reference VM, dispatch `configure-git
 
 Inspection also tests the encrypted production `DATABASE_URL`, when supplied, against the same database target with a fresh client and `SELECT 1`. It reports only whether it matches the VM and whether authentication succeeds; it does not update the database setting. The client verifies TLS and hostname. For Supabase it loads the vendor CA identified by Supabase's official Studio configuration into a temporary, client-scoped certificate file and removes it after the probe; it does not modify system trust or disable certificate verification. A successful existing API health response alone is insufficient evidence that a newly started worker can authenticate.
 
+### Recover a reset database password
+
+After the administrator completes the Supabase password reset, transfer the approved new password through SSH stdin to `sudo -n python3 -B configure-vm-database.py --apply`, with the helper scripts staged in a private temporary directory. Never enter it as a command argument or paste it into a log. This reference-only helper preserves the database host, user, port, database name and query settings, percent-encodes password characters, and verifies a fresh TLS-authenticated `SELECT 1` before changing `/etc/vox.local.env`. The same protected atomic update and file lock used for OAuth preserve unrelated settings, including `VOX_CREDENTIAL_KEY`. Failed authentication, insecure files, duplicate entries, or concurrent changes stop the update.
+
+With approval for that destination, synchronize the resulting `DATABASE_URL` into the encrypted `production` GitHub Actions secret via stdin, without printing it. Keep the local override: it survives GSM sync while the Google service account is unavailable. Recreate Core through the release procedure and verify both API readiness and sustained worker operation; storing a password alone does not activate it in existing containers.
+
 ## Live acceptance
 
 1. Choose a non-production test repository and obtain explicit approval to install the app for that repository. Avoid selecting all repositories for the test.
-2. Publish and promote a reviewed immutable package for `https://api.githubcopilot.com/mcp/x/all/readonly`. Pin protocol and exact read tool schemas; declare recipients and effects. A read-only endpoint does not independently restrict a stolen token.
+2. Publish and promote a reviewed immutable package for `https://api.githubcopilot.com/mcp/x/repos/readonly`. Pin protocol and exact read tool schemas; declare recipients and effects. A read-only endpoint does not independently restrict a stolen token.
 3. From Vox Library, install that package, complete the actual browser OAuth flow, and grant one reviewed read to one selected agent. Execute that read and record redacted evidence.
 4. Prove a second agent and a different user context cannot use the connection. Verify expiry, refresh rotation, revocation, endpoint/schema drift, and package withdrawal remove readiness or prevent dispatch.
 5. Record package digest, Core/Web versions, tested tool inventory, and live evidence in the tracking issue. Protocol reachability and local fixture tests alone do not satisfy this gate.

@@ -77,7 +77,7 @@ def merge_text(base, local, secret):
     return "".join(lines)
 
 
-def configure(base_path, local_path, secret):
+def update_configuration(base_path, local_path, transform):
     # Keep cooperating updates serialized, and never follow a lock symlink.
     lock = os.open(str(local_path) + ".lock", os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600)
     with os.fdopen(lock, "w") as handle:
@@ -86,17 +86,16 @@ def configure(base_path, local_path, secret):
             raise RuntimeError("Configuration lock is not owner-only; left unchanged.")
         fcntl.flock(handle, fcntl.LOCK_EX)
         base, local = protected_text(base_path), protected_text(local_path)
-        updated = merge_text(base, local, secret)
+        updated = transform(base, local)
         if updated == local:
-            print("GitHub OAuth configuration already matches; no file changed.")
-            return
+            return False
         fd, temporary = tempfile.mkstemp(prefix=".vox-local-env-", dir=local_path.parent)
         try:
             with os.fdopen(fd, "w") as output:
                 output.write(updated)
                 output.flush()
                 os.fsync(output.fileno())
-            if protected_text(local_path) != local:
+            if protected_text(base_path) != base or protected_text(local_path) != local:
                 raise RuntimeError("Configuration changed concurrently; left unchanged.")
             os.replace(temporary, local_path)
             directory = os.open(local_path.parent, os.O_RDONLY | os.O_DIRECTORY)
@@ -107,7 +106,13 @@ def configure(base_path, local_path, secret):
         finally:
             if os.path.exists(temporary):
                 os.unlink(temporary)
-        print("GitHub OAuth stored in the protected local configuration; recreate Core to activate.")
+        return True
+
+
+def configure(base_path, local_path, secret):
+    changed = update_configuration(base_path, local_path, lambda base, local: merge_text(base, local, secret))
+    print("GitHub OAuth stored in the protected local configuration; recreate Core to activate."
+          if changed else "GitHub OAuth configuration already matches; no file changed.")
 
 
 if __name__ == "__main__":
