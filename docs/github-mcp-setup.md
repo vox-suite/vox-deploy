@@ -60,4 +60,8 @@ With approval for that destination, synchronize the resulting `DATABASE_URL` int
 4. Prove a second agent and a different user context cannot use the connection. Verify expiry, refresh rotation, revocation, endpoint/schema drift, and package withdrawal remove readiness or prevent dispatch.
 5. Record package digest, Core/Web versions, tested tool inventory, and live evidence in the tracking issue. Protocol reachability and local fixture tests alone do not satisfy this gate.
 
-The app registration is complete. Credential custody, test installation, package conformance, and the complete live Vox journey still require evidence before this is a ready default integration.
+## Reference deployment status (2026-09-29)
+
+The App client secret is stored in the reference VM's protected local configuration, and the temporary encrypted GitHub Actions transfer secret has been removed. The database password reset was verified with a fresh TLS `verify-full` connection. [Release run 36538449960](https://github.com/vox-suite/vox-deploy/actions/runs/36538449960) deployed Core `4bd3a9fcf8181fc8a5f9f83114363f2118c1f7bb` and Bridge `5e1449675e0a490d3604606b47efdcdd23d90184`; Core and Bridge readiness, public API health, and a later zero-restart check across all five containers passed. The Bridge host credential is root-owned mode 0600 in `/etc/vox.bridge.env`.
+
+The GitHub App private key was generated but its PEM file was not retained by the operator. The test-repository installation, package conformance, and complete live Vox journey above remain unverified. The candidate package is intentionally unpublished and must not be presented as a ready default integration. The separate Google Secret Manager service account still returns `invalid_grant`; this VM release does not use it.
