@@ -28,8 +28,9 @@ class BridgeHostTests(unittest.TestCase):
             with patch.object(module, "request", return_value={"credential": CREDENTIAL}) as request:
                 module.configure(base, bridge)
                 request.assert_called_once_with("/v1/host-apps", "fixture-bootstrap", {
-                    "deployment_external_key": "production", "host_app_external_key": "vox-bridge", "allowed_origins": [],
+                    "deployment_external_key": "vox.standalone.deployment", "host_app_external_key": "vox.standalone.bridge", "allowed_origins": [],
                 })
+                self.assertEqual(module.AUDIENCE, "vox-host:vox.standalone.deployment:vox.standalone.bridge")
                 self.assertEqual(bridge.stat().st_mode & 0o777, 0o600)
                 self.assertEqual(base.read_bytes(), original)
                 inode = bridge.stat().st_ino

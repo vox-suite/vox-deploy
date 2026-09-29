@@ -16,7 +16,9 @@ spec = importlib.util.spec_from_file_location(
 vm = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(vm)
 API = "http://127.0.0.1:3001"
-AUDIENCE = "vox-host:production:vox-bridge"
+DEPLOYMENT_KEY = "vox.standalone.deployment"
+HOST_KEY = "vox.standalone.bridge"
+AUDIENCE = "vox-host:vox.standalone.deployment:vox.standalone.bridge"
 FIELDS = ("VOX_HOST_CREDENTIAL_ID", "VOX_HOST_AUDIENCE", "VOX_HOST_SECRET")
 
 
@@ -58,7 +60,7 @@ def configure(base_path, bridge_path):
         if not token:
             raise RuntimeError("Core bootstrap credential is missing; left unchanged.")
         result = request("/v1/host-apps", token, {
-            "deployment_external_key": "production", "host_app_external_key": "vox-bridge",
+            "deployment_external_key": DEPLOYMENT_KEY, "host_app_external_key": HOST_KEY,
             "allowed_origins": [],
         })
         credential = result["credential"]
