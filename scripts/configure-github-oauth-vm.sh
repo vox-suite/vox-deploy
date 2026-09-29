@@ -26,7 +26,7 @@ unset SSH_PRIVATE_KEY
 remote_dir=$(ssh "${ssh_args[@]}" "$destination" 'umask 077; mktemp -d /tmp/vox-github-configuration.XXXXXX')
 [[ $remote_dir =~ ^/tmp/vox-github-configuration\.[a-zA-Z0-9]+$ ]]
 scp "${ssh_args[@]}" "$repo_dir/scripts/configure-github-oauth.py" \
-  "$repo_dir/scripts/configure-github-oauth-vm.py" "$destination:$remote_dir/"
+  "$repo_dir/scripts/configure-github-oauth-vm.py" "$repo_dir/scripts/check-vm-database.py" "$destination:$remote_dir/"
 if [[ $mode == --apply ]]; then
   # The secret is only a protected pipe's stdin, never an argument or log.
   # Only the validated temporary path is expanded on the client.
@@ -36,4 +36,9 @@ if [[ $mode == --apply ]]; then
 else
   # shellcheck disable=SC2029
   ssh "${ssh_args[@]}" "$destination" "sudo -n python3 '$remote_dir/configure-github-oauth-vm.py' --inspect"
+  if [[ -n ${DATABASE_URL:-} ]]; then
+    # shellcheck disable=SC2029
+    python3 -c 'import os,sys; sys.stdout.write(os.environ["DATABASE_URL"])' |
+      ssh "${ssh_args[@]}" "$destination" "sudo -n python3 '$remote_dir/check-vm-database.py'"
+  fi
 fi
