@@ -10,6 +10,17 @@ SECRET_NAME = "VOX_MCP_OAUTH_CLIENTS"
 CLIENT_ID = "Iv23liz7tKHVAjCoBD2W"
 
 
+def inspection_failure_reason(stderr):
+    """Report only allowlisted diagnostics, never arbitrary credential errors."""
+    for reason in ("SERVICE_DISABLED", "ACCESS_TOKEN_SCOPE_INSUFFICIENT",
+                   "PERMISSION_DENIED", "UNAUTHENTICATED", "INVALID_ARGUMENT"):
+        if reason.encode() in stderr:
+            return reason
+    if b"has not been used" in stderr or b"is disabled" in stderr:
+        return "SERVICE_DISABLED"
+    return "unclassified failure"
+
+
 def merged_configuration(existing, secret):
     if not isinstance(existing, dict) or any(
         not isinstance(value, dict) for value in existing.values()
@@ -42,7 +53,8 @@ def configure(project, secret, run=subprocess.run):
     )
     exists = described.returncode == 0
     if not exists and b"NOT_FOUND" not in described.stderr:
-        raise RuntimeError("Cannot inspect GSM secret; configuration left unchanged.")
+        reason = inspection_failure_reason(described.stderr)
+        raise RuntimeError(f"Cannot inspect GSM secret ({reason}); configuration left unchanged.")
     existing = {}
     if exists:
         current = run(

@@ -13,6 +13,11 @@ FIXTURE_SECRET = "test-secret-12345678901234567890"
 
 
 class ConfigurationTests(unittest.TestCase):
+    def test_diagnostics_never_echo_arbitrary_error_content(self):
+        error = b"PERMISSION_DENIED sensitive-provider-response"
+        self.assertEqual(module.inspection_failure_reason(error), "PERMISSION_DENIED")
+        self.assertEqual(module.inspection_failure_reason(b"sensitive-provider-response"), "unclassified failure")
+
     def test_preserves_other_providers_and_applies_least_scope(self):
         original = {"other.example": {"client_id": "other", "client_secret": "fixture"}}
         merged = module.merged_configuration(original, FIXTURE_SECRET)
