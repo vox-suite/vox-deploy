@@ -131,7 +131,7 @@ verify_worker_startup() {
   }
   # A running container can still be initializing its database connection.
   # Observe startup before committing the release; any exit or restart fails.
-  for attempt in 1 2 3; do
+  for ((attempt = 0; attempt < 3; attempt++)); do
     sleep 10
     state=$(docker inspect --format '{{.State.Status}} {{.RestartCount}}' "$worker_id")
     [[ $state == "$initial_state" ]] || {
