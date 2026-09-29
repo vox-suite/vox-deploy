@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 import sys
 from urllib.request import Request, urlopen
+from urllib.error import HTTPError
 from uuid import UUID
 
 spec = importlib.util.spec_from_file_location(
@@ -93,7 +94,14 @@ if __name__ == "__main__":
         if os.geteuid() != 0 or sys.argv[1:]:
             raise RuntimeError("Run through sudo on the reference VM without arguments.")
         configure(Path("/etc/vox.env"), Path("/etc/vox.bridge.env"))
-    except Exception:
-        # Registration responses, tokens, and OS errors never enter logs.
-        print("Bridge host configuration failed; credential values withheld.", file=sys.stderr)
+    except HTTPError as error:
+        # HTTP status is enough to distinguish rejected registration from
+        # protected-file failure. Never print bodies, URLs, or headers.
+        print("Bridge host configuration failed: Core HTTP " + str(error.code)
+              + "; credential values withheld.", file=sys.stderr)
+        sys.exit(1)
+    except Exception as error:
+        # Exception messages can embed tokens, response bodies or file values.
+        print("Bridge host configuration failed: " + type(error).__name__
+              + "; credential values withheld.", file=sys.stderr)
         sys.exit(1)
