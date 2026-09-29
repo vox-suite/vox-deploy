@@ -8,6 +8,9 @@ case $name in
   flock)
     exit 0
     ;;
+  sleep)
+    exit 0
+    ;;
   systemctl)
     if [[ ${1-} == is-active ]]; then
       [[ ${VOX_SYSTEMD_ACTIVE:-0} == 1 ]]
@@ -30,8 +33,17 @@ case $name in
     if [[ ${VOX_FAKE_FAILURE:-} == bridge-health && $* == *" up "*" bridge"* ]]; then
       exit 1
     fi
-    if [[ $* == *" ps --status running --services"* ]]; then
-      echo core-worker
+    if [[ $* == *" ps -q core-worker"* ]]; then
+      echo test-worker-container
+    fi
+    if [[ ${1-} == inspect ]]; then
+      if [[ ${VOX_FAKE_FAILURE:-} == worker-exit ]]; then
+        echo 'exited 0'
+      elif [[ ${VOX_FAKE_FAILURE:-} == worker-restart ]] && grep -q '^sleep 10' "$VOX_COMMAND_LOG"; then
+        echo 'running 1'
+      else
+        echo 'running 0'
+      fi
     fi
     ;;
   *)

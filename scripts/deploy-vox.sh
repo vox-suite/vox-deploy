@@ -117,6 +117,30 @@ compose() {
   docker compose --env-file "$env_file" -f "$compose_file" "$@"
 }
 
+verify_worker_startup() {
+  local worker_id initial_state state attempt
+  worker_id=$(compose ps -q core-worker)
+  [[ -n $worker_id && $worker_id != *$'\n'* ]] || {
+    echo "expected one Core worker container" >&2
+    return 1
+  }
+  initial_state=$(docker inspect --format '{{.State.Status}} {{.RestartCount}}' "$worker_id")
+  [[ $initial_state == running\ * ]] || {
+    echo "Core worker did not start" >&2
+    return 1
+  }
+  # A running container can still be initializing its database connection.
+  # Observe startup before committing the release; any exit or restart fails.
+  for attempt in 1 2 3; do
+    sleep 10
+    state=$(docker inspect --format '{{.State.Status}} {{.RestartCount}}' "$worker_id")
+    [[ $state == "$initial_state" ]] || {
+      echo "Core worker exited or restarted during startup" >&2
+      return 1
+    }
+  done
+}
+
 select_release() {
   load_release "$candidate_release"
   export CORE_IMAGE=$RELEASE_CORE_IMAGE
@@ -215,7 +239,7 @@ fi
 compose up -d --wait bridge
 compose up -d --build caddy
 compose up -d core-worker
-compose ps --status running --services | grep -Fx core-worker >/dev/null
+verify_worker_startup
 curl --fail --silent --show-error --max-time 15 "$public_health_url" >/dev/null
 
 if [[ -f $current_release ]]; then

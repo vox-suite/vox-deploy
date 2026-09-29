@@ -5,7 +5,7 @@ repo_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 test_root=$(mktemp -d)
 trap 'rm -rf "$test_root"' EXIT
 
-for command in docker curl systemctl flock python3; do
+for command in docker curl systemctl flock python3 sleep; do
   ln -s "$repo_dir/tests/fakes/command" "$test_root/$command"
 done
 
@@ -157,5 +157,20 @@ if VOX_SYSTEMD_ACTIVE=0 VOX_FAKE_FAILURE=host-bootstrap deploy \
   fail "failed host bootstrap was accepted"
 fi
 grep -Fq "docker-env CORE_IMAGE=$image_core BRIDGE_IMAGE=$image_bridge" "$command_log" || fail "bootstrap failure did not preserve Core and restore Bridge"
+
+for failure in worker-exit worker-restart; do
+  setup_case
+  write_full_release "$sha_core" "$image_core" "$sha_bridge" "$image_bridge" "$case_dir/root/state/current.env"
+  if VOX_FAKE_FAILURE="$failure" deploy \
+    --component bridge \
+    --sha "$sha_bridge_next" \
+    --image "$image_bridge_next" \
+    --ghcr-user vox-deploy \
+    --ghcr-token-file "$token_file"; then
+    fail "failed worker startup was accepted: $failure"
+  fi
+  grep -q "BRIDGE_SHA=$sha_bridge" "$case_dir/root/state/current.env" || fail "worker failure promoted the candidate release"
+  grep -Fq "docker-env CORE_IMAGE=$image_core BRIDGE_IMAGE=$image_bridge" "$command_log" || fail "worker failure lost migration-compatible recovery"
+done
 
 echo "deployment tests passed"
