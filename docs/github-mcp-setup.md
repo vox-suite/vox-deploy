@@ -1,0 +1,45 @@
+# GitHub MCP release setup
+
+Tracking: https://github.com/vox-suite/vox-deploy/issues/19.
+
+## Registered app
+
+The `vox-suite` organization owns [Vox Connections](https://github.com/apps/vox-connections), registered on 2026-09-29. Its App ID is `5116898`; its public client ID is `Iv23liz7tKHVAjCoBD2W`.
+
+- Callback: `https://app.voxagent.in/apps/oauth/callback`, without wildcards.
+- Repository permissions: Contents, Issues, Pull requests and mandatory Metadata, all read-only.
+- Expiring user tokens enabled; device flow and webhook delivery disabled.
+- Any account can install; each account must authorize installation and select repositories. Registration itself grants no repository access.
+
+## Credentials and Core configuration
+
+An organization administrator generates the OAuth client secret and the private key in [App settings](https://github.com/organizations/vox-suite/settings/apps/vox-connections). GitHub requires a private key before installation. Keep that key in protected operator custody; the current Core user OAuth flow uses the client secret and does not consume the private key. Never paste either credential into an issue, PR, chat, or log.
+
+Set `VOX_MCP_OAUTH_CLIENTS` in the server's root-owned mode-0600 `/etc/vox.local.env`, or as a Google Secret Manager secret consumed by the existing `sync-secrets-from-gsm` workflow. Preserve other provider entries and the existing `VOX_CREDENTIAL_KEY`. Use hidden input or a secure editor; never put a real secret into shell arguments. The JSON structure is:
+
+```json
+{
+  "api.githubcopilot.com": {
+    "issuer": "https://github.com/login/oauth",
+    "client_id": "Iv23liz7tKHVAjCoBD2W",
+    "client_secret": "REPLACE_IN_SECRET_STORE_ONLY",
+    "token_endpoint_auth_method": "client_secret_post",
+    "scopes": [],
+    "send_resource": true
+  }
+}
+```
+
+Do not install the example placeholder. The Core revision must pin Connections' explicit token authentication support. GitHub's documented token exchange sends client credentials in the form; [GitHub App user tokens](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-a-user-access-token-for-a-github-app) use app permissions rather than OAuth scopes. Do not add `repo` scopes. Vox sends PKCE and the challenged MCP resource; test provider acceptance before release.
+
+Confirm `VOX_CREDENTIAL_KEY` is set, backed up, and retained across service recreation. Keep the callback in `VOX_MCP_OAUTH_REDIRECT_URIS`; Vox Web must use the same callback. Syncing a secret file does not change an existing container's environment: recreate the Core service through the normal deployment procedure, then verify health and configured-provider availability without displaying secret values.
+
+## Live acceptance
+
+1. Choose a non-production test repository and obtain explicit approval to install the app for that repository. Avoid selecting all repositories for the test.
+2. Publish and promote a reviewed immutable package for `https://api.githubcopilot.com/mcp/x/all/readonly`. Pin protocol and exact read tool schemas; declare recipients and effects. A read-only endpoint does not independently restrict a stolen token.
+3. From Vox Library, install that package, complete the actual browser OAuth flow, and grant one reviewed read to one selected agent. Execute that read and record redacted evidence.
+4. Prove a second agent and a different user context cannot use the connection. Verify expiry, refresh rotation, revocation, endpoint/schema drift, and package withdrawal remove readiness or prevent dispatch.
+5. Record package digest, Core/Web versions, tested tool inventory, and live evidence in the tracking issue. Protocol reachability and local fixture tests alone do not satisfy this gate.
+
+The app registration is complete. Credential custody, test installation, package conformance, and the complete live Vox journey still require evidence before this is a ready default integration.
