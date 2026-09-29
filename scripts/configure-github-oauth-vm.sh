@@ -32,13 +32,13 @@ if [[ $mode == --apply ]]; then
   # Only the validated temporary path is expanded on the client.
   # shellcheck disable=SC2029
   python3 -c 'import os,sys; sys.stdout.write(os.environ["VOX_GITHUB_OAUTH_CLIENT_SECRET"])' |
-    ssh "${ssh_args[@]}" "$destination" "sudo -n python3 '$remote_dir/configure-github-oauth-vm.py' --apply"
+    ssh "${ssh_args[@]}" "$destination" "sudo -n python3 -B '$remote_dir/configure-github-oauth-vm.py' --apply"
 else
   # shellcheck disable=SC2029
-  ssh "${ssh_args[@]}" "$destination" "sudo -n python3 '$remote_dir/configure-github-oauth-vm.py' --inspect"
+  ssh "${ssh_args[@]}" "$destination" "sudo -n python3 -B '$remote_dir/configure-github-oauth-vm.py' --inspect"
   if [[ -n ${DATABASE_URL:-} ]]; then
     # shellcheck disable=SC2029
     python3 -c 'import os,sys; sys.stdout.write(os.environ["DATABASE_URL"])' |
-      ssh "${ssh_args[@]}" "$destination" "sudo -n python3 '$remote_dir/check-vm-database.py'"
+      ssh "${ssh_args[@]}" "$destination" "sudo -n python3 -B '$remote_dir/check-vm-database.py'"
   fi
 fi
