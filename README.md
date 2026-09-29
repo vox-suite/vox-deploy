@@ -56,6 +56,8 @@ sudo sh -c 'umask 077; [ -s /etc/vox.local.env ] || printf "VOX_CREDENTIAL_KEY=%
 
 Back up `/etc/vox.local.env` with the database: losing it disconnects every app. `VOX_MCP_OAUTH_CLIENTS` is a JSON map from MCP endpoint host to an OAuth client, for apps without dynamic client registration, for example `{"mcp-gateway-external-pilot.spotify.net": {"client_id": "..."}}`.
 
+For the registered Vox Connections GitHub App, use [GitHub MCP setup](docs/github-mcp-setup.md). It records the exact callback, least-privilege app permissions, token authentication configuration, secure credential custody, and live release gates.
+
 `SUPABASE_URL` is required for desktop and other clients that exchange Supabase sessions via `/v1/auth/exchange` and `/v1/me`. Core verifies access tokens against `{SUPABASE_URL}/auth/v1/.well-known/jwks.json` (ES256 signing keys). Keep `SUPABASE_JWT_SECRET` only if you still issue legacy HS256 tokens. Caddy routes `/v1/*` to Core and `/bridge/*` to Bridge.
 
 The deployment supplies all internal service URLs. Do not put `REDIS_URL`, `VOX_CORE_URL`, or `VOX_BRIDGE_URL` in `/etc/vox.env`.
