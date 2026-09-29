@@ -34,6 +34,12 @@ Do not install the example placeholder. The Core revision must pin Connections' 
 
 Confirm `VOX_CREDENTIAL_KEY` is set, backed up, and retained across service recreation. Keep the callback in `VOX_MCP_OAUTH_REDIRECT_URIS`; Vox Web must use the same callback. Syncing a secret file does not change an existing container's environment: recreate the Core service through the normal deployment procedure, then verify health and configured-provider availability without displaying secret values.
 
+### Transfer through the deployment service account
+
+When the operator's interactive Google account lacks project access, the manual `configure-github-oauth` workflow can use the existing deployment service account. Supply the already-generated App client secret as the encrypted repository secret `VOX_GITHUB_OAUTH_CLIENT_SECRET` in `vox-suite/vox-deploy`, then dispatch the workflow. It validates the input, preserves other provider entries, and writes a new `VOX_MCP_OAUTH_CLIENTS` version through standard input. A missing secret is created only after an explicit not-found response; access failures and unreadable or malformed existing configuration stop the operation. An identical configuration adds no version.
+
+After a successful transfer, remove the temporary encrypted GitHub secret, run `sync-secrets-from-gsm`, and deploy/recreate Core. On failure retain the transfer secret until the failure is resolved. This workflow configures the reference deployment's registered App; it grants no new IAM roles or repository access and does not publish a connector package.
+
 ## Live acceptance
 
 1. Choose a non-production test repository and obtain explicit approval to install the app for that repository. Avoid selecting all repositories for the test.
