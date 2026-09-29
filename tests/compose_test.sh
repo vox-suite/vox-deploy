@@ -25,7 +25,7 @@ export BRIDGE_IMAGE="ghcr.io/vox-suite/vox-deploy/bridge@sha256:$digest_bridge"
 export VOX_ENV_FILE="$test_dir/vox.env"
 cat >"$test_dir/bridge.env" <<'EOF'
 VOX_HOST_CREDENTIAL_ID=12345678-1234-4234-9234-123456789abc
-VOX_HOST_AUDIENCE=vox-host:production:vox-bridge
+VOX_HOST_AUDIENCE=vox-host:vox.standalone.deployment:vox.standalone.bridge
 VOX_HOST_SECRET=fixture-only
 EOF
 export VOX_BRIDGE_ENV_FILE="$test_dir/bridge.env"

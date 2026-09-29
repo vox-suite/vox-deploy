@@ -17,7 +17,7 @@ Core and Bridge each need `VOX_DEPLOY_DISPATCH_TOKEN`, scoped to send repository
 
 ## Server bootstrap
 
-The production release provisions Bridge as a registered `vox-bridge` host app after the new Core has migrated and passed readiness. Core issues a host signing credential once; the release stores it in root-owned mode-0600 `/etc/vox.bridge.env`, which only Bridge loads. Later releases reuse it and do not register another credential. Back up this protected file alongside `/etc/vox.local.env`. If host registration or protected storage fails, rollout stops. A failed rollout after Core migrations keeps the migration-compatible Core running while restoring the previous Bridge image; migration history must never be rolled back by running an older Core binary.
+The production release provisions Bridge as the registered `vox.standalone.bridge` host app within `vox.standalone.deployment` after Core has migrated and passed readiness. This is Core's canonical trusted channel host, so verified phone and account identities can resolve to the same user context. Core issues a host signing credential once; the release stores it in root-owned mode-0600 `/etc/vox.bridge.env`, which only Bridge loads. Later releases reuse it and do not register another credential. Back up this protected file alongside `/etc/vox.local.env`. If host registration or protected storage fails, rollout stops. A failed rollout after Core migrations keeps the migration-compatible Core running while restoring the previous Bridge image; migration history must never be rolled back by running an older Core binary.
 
 Install Docker Engine, the Compose plugin, Caddy, `curl`, and `flock`. Create the production configuration without placing values in this repository:
 
