@@ -23,6 +23,12 @@ digest_bridge=$(printf 'b%.0s' {1..64})
 export CORE_IMAGE="ghcr.io/vox-suite/vox-deploy/core@sha256:$digest_core"
 export BRIDGE_IMAGE="ghcr.io/vox-suite/vox-deploy/bridge@sha256:$digest_bridge"
 export VOX_ENV_FILE="$test_dir/vox.env"
+cat >"$test_dir/bridge.env" <<'EOF'
+VOX_HOST_CREDENTIAL_ID=12345678-1234-4234-9234-123456789abc
+VOX_HOST_AUDIENCE=vox-host:production:vox-bridge
+VOX_HOST_SECRET=fixture-only
+EOF
+export VOX_BRIDGE_ENV_FILE="$test_dir/bridge.env"
 
 if ! command -v docker >/dev/null 2>&1; then
     echo "docker command not available; skipping live compose schema check"
@@ -39,7 +45,8 @@ jq -e '.services["core-api"].ports == [{"mode":"ingress","target":3001,"publishe
 jq -e '.services["core-worker"].ports == null' "$test_dir/compose.json" >/dev/null
 jq -e '.services["core-api"].environment.REDIS_URL == "redis://redis:6379"' "$test_dir/compose.json" >/dev/null
 jq -e '.services.bridge.environment.VOX_CORE_URL == "http://core-api:3001"' "$test_dir/compose.json" >/dev/null
-jq -e '.services.bridge.env_file[1].path == "/etc/vox.bridge.env" and .services.bridge.env_file[1].required == false' "$test_dir/compose.json" >/dev/null
+jq -e '.services.bridge.environment.VOX_HOST_CREDENTIAL_ID == "12345678-1234-4234-9234-123456789abc"' "$test_dir/compose.json" >/dev/null
+jq -e '.services["core-api"].environment.VOX_HOST_CREDENTIAL_ID == null and .services["core-worker"].environment.VOX_HOST_CREDENTIAL_ID == null' "$test_dir/compose.json" >/dev/null
 jq -e '.services["core-worker"].environment.VOX_BRIDGE_URL == "http://bridge:3000"' "$test_dir/compose.json" >/dev/null
 jq -e '.services["core-api"].healthcheck.test == ["CMD", "curl", "--fail", "http://localhost:3001/health/ready"]' "$test_dir/compose.json" >/dev/null
 jq -e '.services.bridge.healthcheck.test == ["CMD", "curl", "--fail", "http://localhost:3000/health/ready"]' "$test_dir/compose.json" >/dev/null
