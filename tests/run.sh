@@ -13,6 +13,7 @@ bash tests/license_readiness_test.sh
 bash tests/terminal_release_gate_test.sh
 python3 tests/latency_gate_test.py
 python3 tests/github_oauth_config_test.py
+python3 tests/github_oauth_vm_test.py
 if command -v shellcheck >/dev/null 2>&1; then
     shellcheck -x -P scripts scripts/*.sh tests/*.sh tests/fakes/command
 fi

@@ -40,6 +40,10 @@ When the operator's interactive Google account lacks project access, the manual 
 
 After a successful transfer, remove the temporary encrypted GitHub secret, run `sync-secrets-from-gsm`, and deploy/recreate Core. On failure retain the transfer secret until the failure is resolved. This workflow configures the reference deployment's registered App; it grants no new IAM roles or repository access and does not publish a connector package.
 
+### Direct VM configuration
+
+Google Secret Manager is optional. For the reference VM, dispatch `configure-github-oauth-vm` with `apply=false` to inspect only presence of the encryption key and OAuth settings. With approval to store the App secret on that VM, dispatch with `apply=true`. The workflow uses the existing encrypted GitHub transfer secret and SSH deployment credential, verifies the pinned reference VM host key, and passes the App secret only through encrypted SSH stdin. It atomically updates root-owned mode-0600 `/etc/vox.local.env`, preserves the encryption key and effective provider configuration, and refuses malformed, duplicate, or insecure configuration. It does not rotate credentials or restart services. Remove the temporary GitHub transfer secret after successful storage, and activate through the tested release procedure. This protected local file survives GSM synchronization.
+
 ## Live acceptance
 
 1. Choose a non-production test repository and obtain explicit approval to install the app for that repository. Avoid selecting all repositories for the test.
