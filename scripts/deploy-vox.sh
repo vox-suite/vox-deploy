@@ -14,6 +14,7 @@ current_release=$state_dir/current.env
 previous_release=$state_dir/previous.env
 candidate_release=$state_dir/candidate.env
 rollback_needed=0
+core_activated=0
 systemd_was_active=0
 docker_config=
 
@@ -125,10 +126,16 @@ select_release() {
 
 restore_release() {
   set +e
-  echo "deployment failed; restoring the last healthy release" >&2
+  echo "deployment failed; recovering available services" >&2
   if [[ -f $current_release ]]; then
     load_release "$current_release"
-    export CORE_IMAGE=$RELEASE_CORE_IMAGE
+    # A healthy new Core may already have applied forward-only migrations.
+    # Preserve it: an old binary can reject the newer migration inventory.
+    if [[ $core_activated == 0 ]]; then
+      export CORE_IMAGE=$RELEASE_CORE_IMAGE
+    else
+      echo "retaining the healthy migration-compatible Core; release remains uncommitted" >&2
+    fi
     export BRIDGE_IMAGE=$RELEASE_BRIDGE_IMAGE
     compose up -d --wait redis core-api bridge
     compose up -d --build caddy
@@ -184,9 +191,13 @@ docker --config "$docker_config" compose --env-file "$env_file" -f "$compose_fil
 compose config --quiet
 
 compose up -d --wait redis core-api
+core_activated=1
+# Establish recovery before defaults or host provisioning can fail.
+[[ ! -f $current_release ]] || rollback_needed=1
 # Default publication is idempotent and never installs or enables a skill for
 # a user. Run it after migrations and before marking a release healthy.
 compose exec -T core-api /usr/local/bin/vox-core-defaults
+python3 -B "$script_dir/configure-bridge-host.py"
 
 if systemctl is-active --quiet vox-bridge.service; then
   systemd_was_active=1

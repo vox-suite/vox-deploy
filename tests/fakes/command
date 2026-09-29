@@ -16,7 +16,11 @@ case $name in
   curl)
     [[ ${VOX_FAKE_FAILURE:-} != public-health ]]
     ;;
+  python3)
+    [[ ${VOX_FAKE_FAILURE:-} != host-bootstrap ]]
+    ;;
   docker)
+    printf 'docker-env CORE_IMAGE=%s BRIDGE_IMAGE=%s\n' "${CORE_IMAGE:-}" "${BRIDGE_IMAGE:-}" >>"$VOX_COMMAND_LOG"
     if [[ $* == *" login "* ]]; then
       read -r _ || true
     fi
