@@ -26,7 +26,7 @@ def connection_environment(candidate, current):
         "PGHOST": proposed.hostname, "PGPORT": str(proposed.port or 5432),
         "PGUSER": unquote(proposed.username), "PGPASSWORD": unquote(proposed.password),
         "PGDATABASE": unquote(proposed.path.lstrip("/")), "PGCONNECT_TIMEOUT": "10",
-        "PGSSLMODE": "require",
+        "PGSSLMODE": "verify-full", "PGSSLROOTCERT": "system",
     }
 
 
