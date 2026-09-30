@@ -1,6 +1,12 @@
 # Vox Deploy
 
-`vox-deploy` is the production release authority for the Vox backend. It deploys immutable Core and Bridge images with Redis through Docker Compose, verifies the complete backend, and restores the last healthy release when a rollout fails. Vox Web remains on Vercel.
+The active Vox backend runs in [Railway project `vox`](https://railway.com/project/00945ffa-7a84-4615-87e1-f37022b106ce), production environment `5d93ef9e-01d6-43e0-93ad-aaba101db6e9`. Core API, Core worker, Bridge, Redis and Caddy are online there. Vox Web remains on Vercel and PostgreSQL remains external; moving the backend does not move every dependency into Railway.
+
+Core API and worker deploy from `vox-suite/vox-core`; Bridge deploys from `vox-suite/vox-bridge`. On 2026-09-30 the dashboard showed Core PR 110 and Bridge PR 13 active. Core API deployment details bind to `e946cb1114ff0834cbd35af97e095c92de7033ec`. Its startup accessed the migrations table successfully and reached the listening state. See [current verification and gaps](docs/railway-deployment.md).
+
+**Do not run the VM release or password-repair workflow as the current Railway deployment procedure.** The SSH/Compose/GSM instructions below describe the prior VM route. They remain historical recovery documentation while their retirement is tracked; they do not establish current Railway health or authorization readiness. Self-hosted Compose is a separate supported distribution concern.
+
+## Prior VM route (historical)
 
 ## GitHub configuration
 
