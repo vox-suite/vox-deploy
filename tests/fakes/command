@@ -33,6 +33,9 @@ case $name in
     if [[ ${VOX_FAKE_FAILURE:-} == bridge-health && $* == *" up "*" bridge"* ]]; then
       exit 1
     fi
+    if [[ ${VOX_FAKE_FAILURE:-} == database-preflight && $* == *"vox-core-check-database"* ]]; then
+      exit 1
+    fi
     if [[ $* == *" ps -q core-worker"* ]]; then
       echo test-worker-container
     fi
