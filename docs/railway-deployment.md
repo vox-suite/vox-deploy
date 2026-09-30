@@ -1,0 +1,29 @@
+# Active Railway deployment
+
+Observed 2026-09-30 through the operator's signed-in project dashboard.
+
+- Project: `00945ffa-7a84-4615-87e1-f37022b106ce`.
+- Production environment: `5d93ef9e-01d6-43e0-93ad-aaba101db6e9`.
+- Core API: `f57eb9c3-3cf0-495b-b956-0f42a5634632`.
+- Core worker: `ea0fa725-45c7-4239-a99f-2c9804b28761`.
+- Bridge: `7e55f3a0-dd8f-4b59-bdb8-972ffb9cffec`.
+- Redis: `cd005786-226c-47d5-a694-d3bf9b5223f9`, with persistent volume.
+- Caddy: `460d4fa7-e25b-43ac-8115-d2a5e13f1d5f`, serving `api.voxagent.in`.
+
+All five displayed Online. Core API and worker displayed PR 110 active; API deployment details bind to commit `e946cb1114ff0834cbd35af97e095c92de7033ec`, deployment `19793f27-160c-41a0-bd5c-18cda54430af`. Bridge displayed PR 13 active. These observations prove source selection and process deployment, not complete connector certification.
+
+The public `/health` returns `ok` from Caddy. It is gateway liveness, not a database probe. Public `/health/ready` returns 404. API startup accessed the migrations table and listened on port 8080; that is fresh database startup evidence, not continuing readiness. API settings did not show a configured healthcheck, and Wait for CI was off. Configure API `/health/ready`, Bridge `/health/ready`, and CI gating before treating automatic deployments as a verified release pipeline. Worker readiness requires its own evidence rather than assigning it an HTTP check it does not serve.
+
+## Connector configuration
+
+Core API variable names did not include `VOX_CREDENTIAL_KEY` or `VOX_MCP_OAUTH_CLIENTS` at initial inspection. The operator approved transferring the existing key and registered GitHub OAuth client configuration from the protected prior VM files into the Railway Core services. Preserve the encryption key: replacing it would make existing encrypted tokens unreadable. No database password reset is inferred from the old VM's failed login.
+
+Bridge lists its host credential ID, audience and secret. Variable names alone do not prove that the host registration matches Core or that an authenticated conversation succeeds. Keep host signing credentials private to Bridge; keep OAuth clients and connection encryption keys private to Core. The shared variable set currently includes broad provider/database secrets across services; reduce each service's recipients deliberately after verifying its real dependencies.
+
+Track completion and current evidence in [Deploy issue 19](https://github.com/vox-suite/vox-deploy/issues/19). Web PR 33 remains held until current host/runtime configuration is verified. Actual GitHub install, consent, inventory, granted read, denied second actor/context, refresh and revoke tests remain required. No reviewed package may be presented as ready merely because its code deployed.
+
+## Retirement and recovery
+
+The repository still contains SSH/GSM/VM release automation. Those are not the active Railway release path. Retire the old operational entry points separately from supported self-hosting and retain any required recovery evidence. Do not delete the old encryption key, backups or infrastructure while credential custody and live cutover are unverified.
+
+Before rollback, check database migration compatibility. Reverting a Railway deployment does not revert PostgreSQL migrations and must not activate an incompatible old binary. Preserve exact source revisions and sanitized retained health, worker, host-boundary and connector evidence for every accepted release.
