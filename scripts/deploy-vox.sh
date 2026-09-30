@@ -213,6 +213,9 @@ chmod 700 "$docker_config"
 docker --config "$docker_config" login ghcr.io --username "$ghcr_user" --password-stdin <"$ghcr_token_file"
 docker --config "$docker_config" compose --env-file "$env_file" -f "$compose_file" pull
 compose config --quiet
+# Check new database authentication before replacing a healthy API or applying
+# forward-only migrations. Compose resolves the same env sources as the service.
+compose run --rm --no-deps --entrypoint /usr/local/bin/vox-core-check-database core-api
 
 compose up -d --wait redis core-api
 core_activated=1

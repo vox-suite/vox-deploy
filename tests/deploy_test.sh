@@ -91,6 +91,14 @@ fi
 ! grep -q '^systemctl stop' "$command_log" || fail "pull failure stopped systemd"
 
 setup_case
+if VOX_FAKE_FAILURE=database-preflight deploy_full; then
+  fail "database preflight failure was accepted"
+fi
+! grep -q 'compose.*up -d' "$command_log" || fail "database failure replaced a running service"
+! grep -q '^systemctl stop' "$command_log" || fail "database failure stopped systemd"
+[[ ! -f $case_dir/root/state/current.env ]] || fail "database failure promoted a release"
+
+setup_case
 VOX_SYSTEMD_ACTIVE=1 deploy_full
 core_line=$(grep -n 'compose.*up -d --wait.*redis core-api' "$command_log" | cut -d: -f1)
 stop_line=$(grep -n '^systemctl stop vox-bridge.service' "$command_log" | cut -d: -f1)
