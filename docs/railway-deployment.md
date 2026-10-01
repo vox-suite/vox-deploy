@@ -24,6 +24,6 @@ Track completion and current evidence in [Deploy issue 19](https://github.com/vo
 
 ## Retirement and recovery
 
-The repository still contains SSH/GSM/VM release automation. Those are not the active Railway release path. Retire the old operational entry points separately from supported self-hosting and retain any required recovery evidence. Do not delete the old encryption key, backups or infrastructure while credential custody and live cutover are unverified.
+The five VM/GSM GitHub Actions operational entry points have been retired. Railway owns hosted releases; Compose and protected-file helpers remain for standalone operation and recovery. Historical VM evidence does not establish current Railway readiness. Do not delete the old encryption key, backups or infrastructure while credential custody and live cutover are unverified.
 
 Before rollback, check database migration compatibility. Reverting a Railway deployment does not revert PostgreSQL migrations and must not activate an incompatible old binary. Preserve exact source revisions and sanitized retained health, worker, host-boundary and connector evidence for every accepted release.

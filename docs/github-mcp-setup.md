@@ -15,7 +15,7 @@ The `vox-suite` organization owns [Vox Connections](https://github.com/apps/vox-
 
 An organization administrator generates the OAuth client secret and the private key in [App settings](https://github.com/organizations/vox-suite/settings/apps/vox-connections). GitHub requires a private key before installation. Keep that key in protected operator custody; the current Core user OAuth flow uses the client secret and does not consume the private key. Never paste either credential into an issue, PR, chat, or log.
 
-Set `VOX_MCP_OAUTH_CLIENTS` in the server's root-owned mode-0600 `/etc/vox.local.env`, or as a Google Secret Manager secret consumed by the existing `sync-secrets-from-gsm` workflow. Preserve other provider entries and the existing `VOX_CREDENTIAL_KEY`. Use hidden input or a secure editor; never put a real secret into shell arguments. The JSON structure is:
+Set `VOX_MCP_OAUTH_CLIENTS` as a protected Railway variable on Core API and worker only. For standalone Compose, use a root-owned mode-0600 protected environment file. Preserve other provider entries and the existing `VOX_CREDENTIAL_KEY`. Use hidden input or a secure editor; never put a real secret into shell arguments. The JSON structure is:
 
 ```json
 {
@@ -32,25 +32,13 @@ Set `VOX_MCP_OAUTH_CLIENTS` in the server's root-owned mode-0600 `/etc/vox.local
 
 Do not install the example placeholder. The Core revision must pin Connections' explicit token authentication support. GitHub's documented token exchange sends client credentials in the form; [GitHub App user tokens](https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-a-user-access-token-for-a-github-app) use app permissions rather than OAuth scopes. Do not add `repo` scopes. Vox sends PKCE and the challenged MCP resource; test provider acceptance before release.
 
-Confirm `VOX_CREDENTIAL_KEY` is set, backed up, and retained across service recreation. Keep the callback in `VOX_MCP_OAUTH_REDIRECT_URIS`; Vox Web must use the same callback. Syncing a secret file does not change an existing container's environment: recreate the Core service through the normal deployment procedure, then verify health and configured-provider availability without displaying secret values.
+Confirm `VOX_CREDENTIAL_KEY` is set, backed up, and retained across service recreation. Keep the callback in `VOX_MCP_OAUTH_REDIRECT_URIS`; Vox Web must use the same callback. Changing stored configuration does not prove it is active: redeploy the affected Core services, then verify readiness and configured-provider availability without displaying secret values.
 
-### Transfer through the deployment service account
+### Railway credential custody
 
-When the operator's interactive Google account lacks project access, the manual `configure-github-oauth` workflow can use the existing deployment service account. Supply the already-generated App client secret as the encrypted repository secret `VOX_GITHUB_OAUTH_CLIENT_SECRET` in `vox-suite/vox-deploy`, then dispatch the workflow. It validates the input, preserves other provider entries, and writes a new `VOX_MCP_OAUTH_CLIENTS` version through standard input. A missing secret is created only after an explicit not-found response; access failures and unreadable or malformed existing configuration stop the operation. An identical configuration adds no version.
+The operator approved transferring the existing encryption key and GitHub client configuration from protected prior VM storage into Railway Core API and worker. That transfer remains pending; do not regenerate the key or infer completion from approval. Use only the approved protected destinations and preserve unrelated provider configuration. Never expose values in logs, issues, source control or command arguments.
 
-After a successful transfer, remove the temporary encrypted GitHub secret, run `sync-secrets-from-gsm`, and deploy/recreate Core. On failure retain the transfer secret until the failure is resolved. This workflow configures the reference deployment's registered App; it grants no new IAM roles or repository access and does not publish a connector package.
-
-### Direct VM configuration
-
-Google Secret Manager is optional. For the reference VM, dispatch `configure-github-oauth-vm` with `apply=false` to inspect configuration presence and database authentication. With approval to store the App secret on that VM, dispatch with `apply=true`. The workflow uses the existing encrypted GitHub transfer secret and SSH deployment credential, verifies the pinned reference VM host key, and passes the App secret only through encrypted SSH stdin. It atomically updates root-owned mode-0600 `/etc/vox.local.env`, preserves the encryption key and effective provider configuration, and refuses malformed, duplicate, or insecure configuration. It does not rotate credentials or restart services. Remove the temporary GitHub transfer secret after successful storage, and activate through the tested release procedure. This protected local file survives GSM synchronization.
-
-Inspection also tests the encrypted production `DATABASE_URL`, when supplied, against the same database target with a fresh client and `SELECT 1`. It reports only whether it matches the VM and whether authentication succeeds; it does not update the database setting. The client verifies TLS and hostname. For Supabase it loads the vendor CA identified by Supabase's official Studio configuration into a temporary, client-scoped certificate file and removes it after the probe; it does not modify system trust or disable certificate verification. A successful existing API health response alone is insufficient evidence that a newly started worker can authenticate.
-
-### Recover a reset database password
-
-After the administrator completes the Supabase password reset, transfer the approved new password through SSH stdin to `sudo -n python3 -B configure-vm-database.py --apply`, with the helper scripts staged in a private temporary directory. Never enter it as a command argument or paste it into a log. This reference-only helper preserves the database host, user, port, database name and query settings, percent-encodes password characters, and verifies a fresh TLS-authenticated `SELECT 1` before changing `/etc/vox.local.env`. The same protected atomic update and file lock used for OAuth preserve unrelated settings, including `VOX_CREDENTIAL_KEY`. Failed authentication, insecure files, duplicate entries, or concurrent changes stop the update.
-
-With approval for that destination, synchronize the resulting `DATABASE_URL` into the encrypted `production` GitHub Actions secret via stdin, without printing it. Keep the local override: it survives GSM sync while the Google service account is unavailable. Recreate Core through the release procedure and verify both API readiness and sustained worker operation; storing a password alone does not activate it in existing containers.
+VM/GSM GitHub Actions entry points have been retired. Prior VM recovery evidence below is historical and does not establish Railway readiness. Do not reset the database password or run VM release commands as part of the Railway cutover.
 
 ## Live acceptance
 
@@ -60,7 +48,7 @@ With approval for that destination, synchronize the resulting `DATABASE_URL` int
 4. Prove a second agent and a different user context cannot use the connection. Verify expiry, refresh rotation, revocation, endpoint/schema drift, and package withdrawal remove readiness or prevent dispatch.
 5. Record package digest, Core/Web versions, tested tool inventory, and live evidence in the tracking issue. Protocol reachability and local fixture tests alone do not satisfy this gate.
 
-## Reference deployment status (2026-09-29)
+## Historical VM evidence (2026-09-29)
 
 The App client secret is stored in the reference VM's protected local configuration, and the temporary encrypted GitHub Actions transfer secret has been removed. After the operator reset and saved the database password, a fresh TLS `verify-full` login succeeded before the protected VM configuration was updated. The verified database URL was synchronized into the encrypted production GitHub Actions secret. [Read-only verification run 36574193728](https://github.com/vox-suite/vox-deploy/actions/runs/36574193728) confirmed that the two settings match and authenticate; the credential encryption key and OAuth clients remain configured.
 

@@ -1,68 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
-
 repo_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-deploy_workflow="$repo_dir/.github/workflows/deploy.yml"
-gsm_workflow="$repo_dir/.github/workflows/sync-secrets-from-gsm.yml"
-
-if [[ ! -f $deploy_workflow ]]; then
-  echo "deploy workflow is missing" >&2
-  exit 1
-fi
-
-if [[ ! -f $gsm_workflow ]]; then
-  echo "secrets sync workflow is missing" >&2
-  exit 1
-fi
 
 ruby -ryaml -e '
-  deploy = YAML.load_file(ARGV[0])
-  deploy_on = deploy["on"] || deploy[true]
-  raise "missing repository dispatch" unless deploy_on.fetch("repository_dispatch").fetch("types") == ["component_ready"]
-  raise "missing manual dispatch" unless deploy_on.key?("workflow_dispatch")
-  manual_inputs = deploy_on.fetch("workflow_dispatch").fetch("inputs")
-  raise "manual deploy is not safe by default" unless manual_inputs.fetch("deploy").fetch("default") == false
-  raise "published image reuse is not safe by default" unless manual_inputs.fetch("reuse_images").fetch("default") == false
-  raise "wrong permissions" unless deploy.fetch("permissions") == {"contents" => "read", "packages" => "write"}
-  concurrency = deploy.fetch("concurrency")
-  raise "wrong concurrency group" unless concurrency.fetch("group") == "production"
-  raise "deployment cancellation enabled" unless concurrency.fetch("cancel-in-progress") == false
-  job = deploy.fetch("jobs").fetch("deploy")
-  raise "release build is not native ARM64" unless job.fetch("runs-on") =~ /(?:ubuntu-24\.04-arm|blacksmith-.*-arm)/
-  raise "missing production environment" unless job.fetch("environment") == "production"
-  step_names = job.fetch("steps").map { |step| step["name"] }.compact
-  raise "Core is not built centrally" unless step_names.include?("Build and publish Core")
-  raise "Bridge is not built centrally" unless step_names.include?("Build and publish Bridge")
-  raise "published images cannot be reused" unless step_names.include?("Select release images")
-  deploy_step = job.fetch("steps").find { |step| step["name"] == "Deploy complete backend" }
-  raise "production deploy is not explicitly gated" unless deploy_step.fetch("if").include?("inputs.deploy")
-  raise "credentials removed before release summary" unless step_names.index("Record release") < step_names.index("Remove runner credentials")
-' "$deploy_workflow"
-
-ruby -ryaml -e '
-  gsm = YAML.load_file(ARGV[0])
-  gsm_on = gsm["on"] || gsm[true]
-  raise "gsm sync must be manual-only" unless gsm_on.keys == ["workflow_dispatch"]
-  raise "wrong gsm permissions" unless gsm.fetch("permissions") == {"contents" => "read"}
-  job = gsm.fetch("jobs").fetch("sync-secrets")
-  raise "gsm sync must use production environment" unless job.fetch("environment") == "production"
-' "$gsm_workflow"
-
-grep -q 'VOX_DEPLOY_REQUEST' "$deploy_workflow"
-grep -q 'rm -f /tmp/vox-release-request /tmp/vox-ghcr-token' "$deploy_workflow"
-if grep -Eq 'ssh .*\$\{\{ *secrets\.' "$deploy_workflow"; then
-  echo "secret interpolation found in SSH arguments" >&2
-  exit 1
-fi
-
-for key in SERVER_HOST SERVER_USER SSH_PRIVATE_KEY; do
-  grep -q "$key" "$repo_dir/README.md"
-done
-if grep -q 'GHCR_PULL_TOKEN' "$repo_dir/README.md"; then
-  echo "README requires a persistent GHCR token" >&2
-  exit 1
-fi
-grep -q '/etc/vox.env' "$repo_dir/README.md"
-grep -q 'workflow_dispatch' "$repo_dir/README.md"
+  paths = Dir.glob(File.join(ARGV[0], ".github/workflows/*.{yml,yaml}"))
+  raise "unexpected operational workflow" unless paths.map { |p| File.basename(p) } == ["pr-checks.yml"]
+  checks = YAML.load_file(paths.fetch(0))
+  triggers = checks["on"] || checks[true]
+  raise "missing PR validation" unless triggers.key?("pull_request")
+  raise "missing main validation" unless triggers.fetch("push").fetch("branches") == ["main"]
+  raise "excess workflow permissions" unless checks.fetch("permissions") == {"contents" => "read"}
+  steps = checks.fetch("jobs").fetch("deploy").fetch("steps")
+  raise "missing complete verification" unless steps.any? { |step| step["run"] == "bash tests/run.sh" }
+' "$repo_dir"
 
 echo "workflow tests passed"
