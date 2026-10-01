@@ -39,6 +39,7 @@ services:
     env_file: ${VOX_ENV_FILE:-.env.self-hosted}
     environment:
       VOX_CORE_BIND_ADDRESS: 0.0.0.0:3001
+      VOX_BRIDGE_URL: http://bridge:3000
       DATABASE_URL: ${DATABASE_URL:-postgres://${POSTGRES_USER:-vox}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-vox}}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
       VOX_STATUS_WEBHOOK_KEY: ${VOX_STATUS_WEBHOOK_KEY:-}
