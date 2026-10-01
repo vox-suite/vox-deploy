@@ -41,7 +41,7 @@ The entire runnable self-hostable reference stack (`vox-core`, `vox-web`, `vox-b
   - `agents`: Model-neutral portable agent package delegating authority to Core.
   - `conformance-sandbox`: Hermetic, deterministic sandbox for testing provider integrations and fault scenarios without live external accounts.
 - **Out-of-Scope / Separately Governed Elements**:
-  - **Provider Credentials**: Self-hosting confers no API keys, accounts, or carrier numbers for third-party services (Twilio, Amazon, Google Maps, Exa, AssemblyAI, Sarvam, Uber, Expedia). Operators must supply their own legitimate API credentials.
+  - **Provider Credentials**: Self-hosting confers no API keys, accounts, or carrier numbers for third-party services (Twilio, Amazon, Google Maps, Exa, AssemblyAI, ElevenLabs, Uber, Expedia). Operators must supply their own legitimate API credentials.
   - **Commercial Partnerships**: Self-hosting does not grant any special status, quota, or bypass of external provider terms of service.
   - **Proprietary Integrations**: Any separately distributed remote extensions run strictly behind public platform boundaries, subject to user consent, capability grants, and policy checks. They receive zero elevated privileges (FR-OSS-007).
 

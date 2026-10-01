@@ -95,7 +95,7 @@ require_configuration() {
     EXA_API_KEY \
     TWILIO_AUTH_TOKEN \
     ASSEMBLYAI_API_KEY \
-    SARVAM_API_KEY; do
+    ELEVENLABS_API_KEY; do
     grep -Eq "^${key}=.+$" "$env_file" || {
       echo "required configuration is missing: $key" >&2
       return 1

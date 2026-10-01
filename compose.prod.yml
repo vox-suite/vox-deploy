@@ -42,7 +42,7 @@ services:
       - path: ${VOX_LOCAL_ENV_FILE:-/etc/vox.local.env}
         required: false
     environment:
-      VOX_CORE_BIND_ADDRESS: 0.0.0.0:3001
+      PORT: "3001"
       VOX_BRIDGE_URL: http://bridge:3000
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
       VOX_VOICE_SIMILARITY_THRESHOLD: ${VOX_VOICE_SIMILARITY_THRESHOLD:-0.50}
@@ -90,7 +90,7 @@ services:
       - path: ${VOX_LOCAL_ENV_FILE:-/etc/vox.local.env}
         required: false
     environment:
-      VOX_CORE_BIND_ADDRESS: 0.0.0.0:3001
+      PORT: "3001"
       VOX_BRIDGE_URL: http://bridge:3000
       VOX_CORE_API_URL: http://core-api:3001
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}

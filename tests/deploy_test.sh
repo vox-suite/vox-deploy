@@ -40,7 +40,7 @@ TWILIO_ACCOUNT_SID=test-sid
 TWILIO_AUTH_TOKEN=test-auth
 TWILIO_FROM_NUMBER=+10000000000
 ASSEMBLYAI_API_KEY=test-assembly
-SARVAM_API_KEY=test-sarvam
+ELEVENLABS_API_KEY=test-elevenlabs
 EOF
   chmod 600 "$env_file"
 }
