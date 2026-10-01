@@ -1,95 +1,31 @@
 # Vox Deploy
 
-The active Vox backend runs in [Railway project `vox`](https://railway.com/project/00945ffa-7a84-4615-87e1-f37022b106ce), production environment `5d93ef9e-01d6-43e0-93ad-aaba101db6e9`. Core API, Core worker, Bridge, Redis and Caddy are online there. Vox Web remains on Vercel and PostgreSQL remains external; moving the backend does not move every dependency into Railway.
+The active backend runs in [Railway project vox](https://railway.com/project/00945ffa-7a84-4615-87e1-f37022b106ce): Core API, Core worker, Bridge, Redis and Caddy. Vox Web runs on Vercel; PostgreSQL remains external.
 
-Core API and worker deploy from `vox-suite/vox-core`; Bridge deploys from `vox-suite/vox-bridge`. On 2026-09-30 the dashboard showed Core PR 110 and Bridge PR 13 active. Core API deployment details bind to `e946cb1114ff0834cbd35af97e095c92de7033ec`. Its startup accessed the migrations table successfully and reached the listening state. See [current verification and gaps](docs/railway-deployment.md).
+## Railway releases
 
-**Do not run the VM release or password-repair workflow as the current Railway deployment procedure.** The SSH/Compose/GSM instructions below describe the prior VM route. They remain historical recovery documentation while their retirement is tracked; they do not establish current Railway health or authorization readiness. Self-hosted Compose is a separate supported distribution concern.
+Core API and worker deploy from `vox-suite/vox-core`; Bridge deploys from `vox-suite/vox-bridge`. Railway owns the runtime deployment. This repository provides release verification, documentation and supported self-hosting; it no longer provides VM or Google Secret Manager GitHub Actions workflows.
 
-## Prior VM route (historical)
+See [deployment topology, current evidence and remaining gates](docs/railway-deployment.md). Require successful component CI and service readiness before accepting a release. Preserve the exact source revisions and sanitized verification evidence. Database migrations are not undone by a Railway rollback: verify compatibility before reverting a binary.
 
-## GitHub configuration
+## Connector configuration
 
-Create a protected `production` environment and add these encrypted secrets:
+Keep `VOX_CREDENTIAL_KEY` and `VOX_MCP_OAUTH_CLIENTS` restricted to Core API and worker. Preserve the existing encryption key and other provider entries during migration. Replacing or losing the key makes existing connected-account tokens unreadable. Back it up with the database in protected operator custody.
 
-- `SERVER_HOST`: production server host.
-- `SERVER_USER`: SSH user with passwordless sudo for the deployment commands.
-- `SSH_PRIVATE_KEY`: private key accepted by the production server.
-- `SOURCE_REPO_TOKEN`: token with read access to the private Core and Bridge repositories.
+See [GitHub MCP setup](docs/github-mcp-setup.md) for the registered App, callback, credential configuration and live acceptance gates. Deployment or account linking alone does not certify an integration.
 
-The deployment repository checks out the exact Core and Bridge commits, builds both ARM64 images, and publishes them under its own GHCR namespace. Its short-lived `GITHUB_TOKEN` publishes the images and pulls them on the server; no permanent server registry credential or cross-repository package permission is needed.
+## Self-hosting
 
-Core and Bridge each need `VOX_DEPLOY_DISPATCH_TOKEN`, scoped to send repository dispatches to this private repository. Keep the `VOX_AUTO_DEPLOY` repository variable set to `false` until the first manual release passes real incoming and outbound call checks.
-
-## Server bootstrap
-
-The production release provisions Bridge as the registered `vox.standalone.bridge` host app within `vox.standalone.deployment` after Core has migrated and passed readiness. This is Core's canonical trusted channel host, so verified phone and account identities can resolve to the same user context. Core issues a host signing credential once; the release stores it in root-owned mode-0600 `/etc/vox.bridge.env`, which only Bridge loads. Later releases reuse it and do not register another credential. Back up this protected file alongside `/etc/vox.local.env`. If host registration or protected storage fails, rollout stops. A failed rollout after Core migrations keeps the migration-compatible Core running while restoring the previous Bridge image; migration history must never be rolled back by running an older Core binary.
-
-Install Docker Engine, the Compose plugin, Caddy, `curl`, and `flock`. Create the production configuration without placing values in this repository:
-
-```sh
-sudo install -o root -g root -m 600 /dev/null /etc/vox.env
-sudoedit /etc/vox.env
-```
-
-The file requires non-empty values for:
-
-```text
-DATABASE_URL
-VOX_AUTH_TOKEN
-GEMINI_API_KEY
-EXA_API_KEY
-GOOGLE_MAPS_API_KEY
-TWILIO_ACCOUNT_SID
-TWILIO_AUTH_TOKEN
-TWILIO_FROM_NUMBER
-ASSEMBLYAI_API_KEY
-SARVAM_API_KEY
-SUPABASE_URL
-```
-
-Optional:
-
-```text
-SUPABASE_JWT_SECRET
-VOX_CREDENTIAL_KEY
-VOX_MCP_OAUTH_CLIENTS
-```
-
-`VOX_CREDENTIAL_KEY` (32-byte hex) encrypts connected-app OAuth tokens; without it, connecting apps is unavailable. Never rotate it in place: tokens encrypted with the old key become unreadable and users must reconnect. It may live in Secret Manager (create it with the `generate-secret` workflow, which needs `secretmanager.secrets.create`) or be generated on the server into `/etc/vox.local.env`, which Core services also load and which `sync-secrets-from-gsm` never overwrites:
-
-```sh
-sudo sh -c 'umask 077; [ -s /etc/vox.local.env ] || printf "VOX_CREDENTIAL_KEY=%s\n" "$(openssl rand -hex 32)" > /etc/vox.local.env'
-```
-
-Back up `/etc/vox.local.env` with the database: losing it disconnects every app. `VOX_MCP_OAUTH_CLIENTS` is a JSON map from MCP endpoint host to an OAuth client, for apps without dynamic client registration, for example `{"mcp-gateway-external-pilot.spotify.net": {"client_id": "..."}}`.
-
-For the registered Vox Connections GitHub App, use [GitHub MCP setup](docs/github-mcp-setup.md). It records the exact callback, least-privilege app permissions, token authentication configuration, secure credential custody, and live release gates.
-
-`SUPABASE_URL` is required for desktop and other clients that exchange Supabase sessions via `/v1/auth/exchange` and `/v1/me`. Core verifies access tokens against `{SUPABASE_URL}/auth/v1/.well-known/jwks.json` (ES256 signing keys). Keep `SUPABASE_JWT_SECRET` only if you still issue legacy HS256 tokens. Caddy routes `/v1/*` to Core and `/bridge/*` to Bridge.
-
-The deployment supplies all internal service URLs. Do not put `REDIS_URL`, `VOX_CORE_URL`, or `VOX_BRIDGE_URL` in `/etc/vox.env`.
-
-## First production release
-
-Run the `deploy-production` workflow through `workflow_dispatch`. Supply the full tested Core and Bridge commit SHAs and set `deploy` to `true`. Vox Deploy builds both images, pins their registry digests, and rolls them out as one backend release. Leave `deploy` at its safe default of `false` to verify checkout and image publication without touching production.
-
-The first release starts Redis and Core before stopping `vox-bridge.service`. If containerized Bridge fails, deployment automatically restarts the systemd service. After deployment passes, make one incoming call and trigger one autonomous outbound call before enabling automatic dispatch.
-
-## Automatic releases
-
-Set `VOX_AUTO_DEPLOY=true` in Core and Bridge after the first release is accepted. Each successful component validation then sends `component_ready`. Vox Deploy pairs that exact commit with the current main commit of the other backend repository, builds both images, and deploys the complete Compose model.
-
-## Rollback
-
-Use `workflow_dispatch` with the Core and Bridge SHAs recorded by the last healthy workflow. The deployment rebuilds those exact revisions, while the server retains `/opt/vox/state/previous.env` for automatic rollback. Deployment never removes `/etc/vox.env`, PostgreSQL data, or the Redis volume.
+See [self-hosting](docs/self-hosting.md) for the supported Compose distribution. The remaining protected-file helpers support standalone operation and recovery. They are not Railway release commands. Keep prior protected credentials and backups until cutover is verified; workflow retirement does not delete or rotate them.
 
 ## Local verification
 
 ```sh
-tests/run.sh
+bash tests/run.sh
 ```
+
+The only GitHub workflow in this repository validates pull requests and `main`. Hosted releases are managed in Railway.
 
 ## Library defaults
 
-Every backend rollout runs `vox-core-defaults` after Core migrations. It publishes six curated, declarative skills for each configured deployment by immutable content digest. Rerunning it does not install skills, enable them for agents, or create new versions when content is unchanged. Operator registration also seeds defaults for a newly created deployment. Core's `Cargo.lock` pins the exact Connections and Shared Git revisions used in the image. Starter service apps remain unpublished until real OAuth configuration and live provider evidence exist.
+`vox-core-defaults` publishes six curated declarative skills by immutable content digest after migrations. Publication does not install or enable them for agents. Operator registration also seeds defaults for a new deployment. Core's `Cargo.lock` pins Connections and Shared revisions. Service apps remain unpublished until provider configuration and live acceptance evidence exist.

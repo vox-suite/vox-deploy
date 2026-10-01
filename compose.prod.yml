@@ -36,7 +36,7 @@ services:
     env_file:
       - ${VOX_ENV_FILE:-/etc/vox.env}
       # Secrets generated on the server itself (never in Secret Manager or
-      # logs), e.g. VOX_CREDENTIAL_KEY. Survives sync-secrets-from-gsm.
+      # logs), e.g. VOX_CREDENTIAL_KEY. Keep protected overrides separate from base configuration.
       - path: ${VOX_LOCAL_ENV_FILE:-/etc/vox.local.env}
         required: false
     environment:
@@ -83,7 +83,7 @@ services:
     env_file:
       - ${VOX_ENV_FILE:-/etc/vox.env}
       # Secrets generated on the server itself (never in Secret Manager or
-      # logs), e.g. VOX_CREDENTIAL_KEY. Survives sync-secrets-from-gsm.
+      # logs), e.g. VOX_CREDENTIAL_KEY. Keep protected overrides separate from base configuration.
       - path: ${VOX_LOCAL_ENV_FILE:-/etc/vox.local.env}
         required: false
     environment:
