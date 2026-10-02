@@ -20,10 +20,12 @@ official Supabase CA passed `verify-full` TLS validation. Both database identity
 and `SUPABASE_URL` match the Vox project. No database password reset or Google
 service-account repair was necessary.
 
-The reviewed private identity-pin migration passed a remote dry run selecting
-only `20261001174921_consumer_session_identity_pins.sql`. Applying that migration,
-registering the custom access-token hook and proving live sign-in/refresh remain
-release gates for the strict Web/native consumer adapters. Native clients must
+The reviewed private identity-pin migration was applied through the official
+Supabase CLI after a dry run selecting only
+`20261001174921_consumer_session_identity_pins.sql`. The dashboard confirms
+`vox_auth.custom_access_token_hook` is registered and Enabled. The migration
+includes MFA continuity and explicit least-privilege grants. Live sign-in, MFA
+and refresh proof remain release gates for the strict Web/native adapters. Native clients must
 use exchange-issued opaque Vox sessions. Keep held Web changes separate from
 automatic production deployment until these gates pass.
 
