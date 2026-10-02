@@ -7,13 +7,20 @@ The official Railway CLI completed the approved transfer of the existing
 to Core API and worker through stdin. Values were neither displayed nor committed.
 Read-back checks confirmed both keys present, valid OAuth JSON and matching
 selected values across the two services. The encryption key was preserved.
-Updates used `--skip-deploys`; stored configuration is not proof of activation.
+Updates used `--skip-deploys`. Subsequent redeployments of the already reviewed
+Core revision `e4b05ee6718a53a28bf28f4f0c2604350927a980` succeeded: API
+`db301cb9-da61-49e2-8256-c3f08783d901` and worker
+`20d7ad6a-abb9-41e8-bc72-01b744adf5c0`. This proves deployment activation,
+not a successful external connector or worker/model journey.
 
-Wait for CI is enabled for Core API, worker and Bridge. Each has an active code
+Wait for CI is enabled for Core API, worker, Bridge and Caddy. Each has an active code
 checks workflow. Core API and Bridge use `/health/ready` with a 120-second startup
-timeout. The worker does not serve HTTP and has no HTTP healthcheck. The edge
-repository currently has a secret-sync workflow rather than a code-validation
-workflow, so its deployment gate requires separate work.
+timeout. The worker does not serve HTTP and has no HTTP healthcheck. Edge PR 2
+adds production-image Caddy routing checks, including WebSocket forwarding and
+private endpoint/probe rejection. Edge PR 4 makes the manual secret-sync workflow
+require an exact environment and explicit secret allowlist; unreadable selections
+prevent writes and partial writes fail honestly. No live secret-sync operation
+was performed as part of those changes.
 
 A fresh PostgreSQL connection using protected Railway configuration and the
 official Supabase CA passed `verify-full` TLS validation. Both database identity
@@ -28,6 +35,20 @@ includes MFA continuity and explicit least-privilege grants. Live sign-in, MFA
 and refresh proof remain release gates for the strict Web/native adapters. Native clients must
 use exchange-issued opaque Vox sessions. Keep held Web changes separate from
 automatic production deployment until these gates pass.
+
+Read-only live privilege checks confirmed the Auth role's required read/insert
+access, immutable pins, enabled row security and an invoker hook. Browser-facing
+and service roles cannot access the private pin schema. Core API now has the
+existing public `SUPABASE_PUBLISHABLE_KEY` for fresh-user verification; this
+configuration used `--skip-deploys` and does not prove the held native adapter is
+deployed. The worker does not need this public Auth API key.
+
+Vox Web remains on Vercel, in a team inaccessible to the connected operator.
+The account owner must verify Web's public Supabase configuration, matching
+Core-issued host credential pair, domain and exact OAuth callbacks, then rebuild
+the approved revision and exercise live sign-in. Railway backend work does not
+establish Web deployment readiness. Keep its authentication and delegation UI
+release stack held pending those checks.
 
 Current evidence and remaining connector certification are tracked in
 [Deploy issue 19](https://github.com/vox-suite/vox-deploy/issues/19#issuecomment-5944836304).
