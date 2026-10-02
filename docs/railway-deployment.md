@@ -1,5 +1,36 @@
 # Active Railway deployment
 
+## Verified configuration — 2026-10-02
+
+The official Railway CLI completed the approved transfer of the existing
+`VOX_CREDENTIAL_KEY` and GitHub `VOX_MCP_OAUTH_CLIENTS` from owner-only VM files
+to Core API and worker through stdin. Values were neither displayed nor committed.
+Read-back checks confirmed both keys present, valid OAuth JSON and matching
+selected values across the two services. The encryption key was preserved.
+Updates used `--skip-deploys`; stored configuration is not proof of activation.
+
+Wait for CI is enabled for Core API, worker and Bridge. Each has an active code
+checks workflow. Core API and Bridge use `/health/ready` with a 120-second startup
+timeout. The worker does not serve HTTP and has no HTTP healthcheck. The edge
+repository currently has a secret-sync workflow rather than a code-validation
+workflow, so its deployment gate requires separate work.
+
+A fresh PostgreSQL connection using protected Railway configuration and the
+official Supabase CA passed `verify-full` TLS validation. Both database identity
+and `SUPABASE_URL` match the Vox project. No database password reset or Google
+service-account repair was necessary.
+
+The reviewed private identity-pin migration passed a remote dry run selecting
+only `20261001174921_consumer_session_identity_pins.sql`. Applying that migration,
+registering the custom access-token hook and proving live sign-in/refresh remain
+release gates for the strict Web/native consumer adapters. Native clients must
+use exchange-issued opaque Vox sessions. Keep held Web changes separate from
+automatic production deployment until these gates pass.
+
+Current evidence and remaining connector certification are tracked in
+[Deploy issue 19](https://github.com/vox-suite/vox-deploy/issues/19#issuecomment-5944836304).
+The observations below are historical; they do not override this checkpoint.
+
 Observed 2026-09-30 through the operator's signed-in project dashboard.
 
 - Project: `00945ffa-7a84-4615-87e1-f37022b106ce`.
