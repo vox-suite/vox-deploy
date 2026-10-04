@@ -10,7 +10,7 @@
       "commit": "d41555cddfc6ce607f26d3578387bd6152689f6c",
       "branch": "main",
       "role": "platform-core-and-coordination",
-      "services": ["core-api", "core-worker", "conformance-sandbox"]
+      "services": ["core-api", "core-worker"]
     },
     "vox-bridge": {
       "commit": "e186a3fd436c4428db2ddf203a8820987c703dc2",
@@ -21,7 +21,7 @@
     "vox-web": {
       "commit": "3d8a957510fd9682612ebc106ebb7dbb356a9bf0",
       "branch": "main",
-      "role": "consumer-portal-and-host-app",
+      "role": "public-website",
       "services": ["vox-web"]
     },
     "vox-deploy": {

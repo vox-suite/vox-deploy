@@ -1,6 +1,10 @@
 # Active Railway deployment
 
-## Verified configuration — 2026-10-02
+## Connections source update — 2026-10-04
+
+The current source retires GitHub MCP and consumer website authentication. Core owns the Google Calendar and PlayStation connection endpoints. The configuration and release gates below apply to this source update; the October 2 checkpoint records earlier deployed behavior. This source update does not establish a new deployment or live provider validation.
+
+## Historical verified configuration — 2026-10-02
 
 The official Railway CLI completed the approved transfer of the existing
 `VOX_CREDENTIAL_KEY` and GitHub `VOX_MCP_OAUTH_CLIENTS` from owner-only VM files
@@ -70,11 +74,11 @@ The public `/health` returns `ok` from Caddy. It is gateway liveness, not a data
 
 ## Connector configuration
 
-Core API variable names did not include `VOX_CREDENTIAL_KEY` or `VOX_MCP_OAUTH_CLIENTS` at initial inspection. The operator approved transferring the existing key and registered GitHub OAuth client configuration from the protected prior VM files into the Railway Core services. Preserve the encryption key: replacing it would make existing encrypted tokens unreadable. No database password reset is inferred from the old VM's failed login.
+The earlier GitHub MCP configuration is retired. The Connections candidate requires `VOX_CREDENTIAL_KEY`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and a public `VOX_CORE_API_URL` on Core API and worker. Preserve the existing encryption key. These are candidate requirements, not evidence of a current Railway configuration or deployment.
 
 Bridge lists its host credential ID, audience and secret. Variable names alone do not prove that the host registration matches Core or that an authenticated conversation succeeds. Keep host signing credentials private to Bridge; keep OAuth clients and connection encryption keys private to Core. The shared variable set currently includes broad provider/database secrets across services; reduce each service's recipients deliberately after verifying its real dependencies.
 
-Track completion and current evidence in [Deploy issue 19](https://github.com/vox-suite/vox-deploy/issues/19). Web PR 33 remains held until current host/runtime configuration is verified. Actual GitHub install, consent, inventory, granted read, denied second actor/context, refresh and revoke tests remain required. No reviewed package may be presented as ready merely because its code deployed.
+Track current operational evidence in [Deploy issue 19](https://github.com/vox-suite/vox-deploy/issues/19). Real Google Calendar and PlayStation linking, refresh, preference enforcement, disconnect, and native recovery are mandatory release gates. The public website no longer hosts account authentication or connector callbacks.
 
 ## Retirement and recovery
 

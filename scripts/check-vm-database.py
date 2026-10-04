@@ -15,7 +15,7 @@ from urllib.request import urlopen
 SUPABASE_CA_URL = "https://supabase-downloads.s3-ap-southeast-1.amazonaws.com/prod/ssl/prod-ca-2021.crt"
 
 spec = importlib.util.spec_from_file_location(
-    "vm_configuration", Path(__file__).with_name("configure-github-oauth-vm.py")
+    "vm_configuration", Path(__file__).with_name("protected-vm-config.py")
 )
 vm = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(vm)

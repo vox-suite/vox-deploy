@@ -12,8 +12,6 @@ bash tests/self_hosted_stack_test.sh
 bash tests/license_readiness_test.sh
 bash tests/terminal_release_gate_test.sh
 python3 tests/latency_gate_test.py
-python3 tests/github_oauth_config_test.py
-python3 tests/github_oauth_vm_test.py
 python3 tests/vm_database_probe_test.py
 python3 tests/vm_database_configuration_test.py
 python3 tests/bridge_host_config_test.py

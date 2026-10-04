@@ -16,8 +16,6 @@ services:
         condition: service_healthy
       core-api:
         condition: service_healthy
-      connections:
-        condition: service_healthy
 
   redis:
     image: redis@sha256:becdda6c7f4b3fb42e42fd7f120bbf5c54c4caaaf16f26da24e4563d2c1f0576
@@ -46,8 +44,6 @@ services:
       VOX_BRIDGE_URL: http://bridge:3000
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
       VOX_VOICE_SIMILARITY_THRESHOLD: ${VOX_VOICE_SIMILARITY_THRESHOLD:-0.50}
-      # Only callback Web may use for connected-app OAuth sign-ins.
-      VOX_MCP_OAUTH_REDIRECT_URIS: ${VOX_MCP_OAUTH_REDIRECT_URIS:-https://app.voxagent.in/apps/oauth/callback}
     ports:
       - "127.0.0.1:3001:3001"
     depends_on:
@@ -92,34 +88,12 @@ services:
     environment:
       PORT: "3001"
       VOX_BRIDGE_URL: http://bridge:3000
-      VOX_CORE_API_URL: http://core-api:3001
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
     depends_on:
       core-api:
         condition: service_healthy
       bridge:
         condition: service_healthy
-
-  connections:
-    image: ${CONNECTIONS_IMAGE:-ghcr.io/vox-suite/vox-deploy/connections:latest}
-    command: ["/usr/local/bin/vox-connections-service"]
-    restart: unless-stopped
-    env_file:
-      - ${VOX_ENV_FILE:-/etc/vox.env}
-      - path: ${VOX_LOCAL_ENV_FILE:-/etc/vox.local.env}
-        required: false
-    environment:
-      VOX_CONNECTIONS_BIND_ADDRESS: 0.0.0.0:3003
-      VOX_CONNECTIONS_HMAC_SECRET: ${VOX_CONNECTIONS_HMAC_SECRET:-}
-      DATABASE_URL: ${DATABASE_URL:-}
-      VOX_CONNECTIONS_MAX_CLOCK_SKEW_SECS: ${VOX_CONNECTIONS_MAX_CLOCK_SKEW_SECS:-300}
-    ports:
-      - "127.0.0.1:3003:3003"
-    healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:3003/health/ready"]
-      interval: 10s
-      timeout: 3s
-      retries: 12
 
 volumes:
   caddy-data:

@@ -17,7 +17,7 @@ if [ ! -f "$COMPOSE_FILE" ]; then
     exit 1
 fi
 
-REQUIRED_SERVICES=("postgres" "redis" "core-api" "core-worker" "bridge" "vox-web" "conformance-sandbox" "portable-agent")
+REQUIRED_SERVICES=("postgres" "redis" "core-api" "core-worker" "bridge" "vox-web" "portable-agent")
 for s in "${REQUIRED_SERVICES[@]}"; do
     if ! grep -q "^  ${s}:" "$COMPOSE_FILE"; then
         echo "FAIL: required service '${s}' missing from $COMPOSE_FILE"

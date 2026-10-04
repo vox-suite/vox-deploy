@@ -11,7 +11,7 @@ from urllib.error import HTTPError
 from uuid import UUID
 
 spec = importlib.util.spec_from_file_location(
-    "vm_configuration", Path(__file__).with_name("configure-github-oauth-vm.py")
+    "vm_configuration", Path(__file__).with_name("protected-vm-config.py")
 )
 vm = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(vm)

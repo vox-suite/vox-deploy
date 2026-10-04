@@ -10,7 +10,7 @@ See [deployment topology, current evidence and remaining gates](docs/railway-dep
 
 ## Connector configuration
 
-Keep `VOX_CREDENTIAL_KEY` and `VOX_MCP_OAUTH_CLIENTS` restricted to Core API and worker. Preserve the existing encryption key and other provider entries during migration. Replacing or losing the key makes existing connected-account tokens unreadable. Back it up with the database in protected operator custody.
+For self-hosting, place connection variables in the optional Core-only `.env.connections` file using `.env.connections.example`; for production Compose use the protected Core override. Keep `VOX_CREDENTIAL_KEY`, `GOOGLE_CLIENT_ID`, and `GOOGLE_CLIENT_SECRET` restricted to Core API and worker. Preserve the existing encryption key and other provider entries during migration. Replacing or losing the key makes existing connected-account tokens unreadable. Back it up with the database in protected operator custody.
 
 See [GitHub MCP setup](docs/github-mcp-setup.md) for the registered App, callback, credential configuration and live acceptance gates. Deployment or account linking alone does not certify an integration.
 
@@ -29,3 +29,5 @@ The only GitHub workflow in this repository validates pull requests and `main`. 
 ## Library defaults
 
 `vox-core-defaults` publishes six curated declarative skills by immutable content digest after migrations. Publication does not install or enable them for agents. Operator registration also seeds defaults for a new deployment. Core's `Cargo.lock` pins Connections and Shared revisions. Service apps remain unpublished until provider configuration and live acceptance evidence exist.
+
+Connected Apps use a configured `VOX_CORE_API_URL` Google callback and the Core worker. No standalone Connections daemon or consumer web app is deployed. Vox-web hosts the public website. Real account linking and sync on desktop and Android are mandatory release gates.

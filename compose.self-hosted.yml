@@ -36,7 +36,10 @@ services:
     image: ${CORE_IMAGE:-vox-suite/vox-core:latest}
     command: ["/usr/local/bin/vox-core-api"]
     restart: unless-stopped
-    env_file: ${VOX_ENV_FILE:-.env.self-hosted}
+    env_file:
+      - ${VOX_ENV_FILE:-.env.self-hosted}
+      - path: ${VOX_LOCAL_ENV_FILE:-.env.connections}
+        required: false
     environment:
       PORT: "3001"
       VOX_BRIDGE_URL: http://bridge:3000
@@ -60,7 +63,10 @@ services:
     image: ${CORE_IMAGE:-vox-suite/vox-core:latest}
     command: ["/usr/local/bin/vox-core-worker"]
     restart: unless-stopped
-    env_file: ${VOX_ENV_FILE:-.env.self-hosted}
+    env_file:
+      - ${VOX_ENV_FILE:-.env.self-hosted}
+      - path: ${VOX_LOCAL_ENV_FILE:-.env.connections}
+        required: false
     environment:
       PORT: "3001"
       DATABASE_URL: ${DATABASE_URL:-postgres://${POSTGRES_USER:-vox}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-vox}}
@@ -101,25 +107,10 @@ services:
       core-api:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:3002/api/health"]
+      test: ["CMD", "curl", "--fail", "http://localhost:3002/"]
       interval: 10s
       timeout: 3s
       retries: 12
-
-  conformance-sandbox:
-    image: ${CORE_IMAGE:-vox-suite/vox-core:latest}
-    command: ["/usr/local/bin/vox-core-sandbox"]
-    restart: unless-stopped
-    environment:
-      PORT: 3004
-      SANDBOX_SEED: ${SANDBOX_SEED:-seed-2026}
-    ports:
-      - "127.0.0.1:3004:3004"
-    healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:3004/health"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   portable-agent:
     image: ${AGENT_IMAGE:-vox-suite/agents:latest}
@@ -132,27 +123,6 @@ services:
     depends_on:
       core-api:
         condition: service_healthy
-
-  connections:
-    image: ${CONNECTIONS_IMAGE:-vox-suite/vox-connections:latest}
-    command: ["/usr/local/bin/vox-connections-service"]
-    restart: unless-stopped
-    env_file: ${VOX_ENV_FILE:-.env.self-hosted}
-    environment:
-      VOX_CONNECTIONS_BIND_ADDRESS: 0.0.0.0:3003
-      VOX_CONNECTIONS_HMAC_SECRET: ${VOX_CONNECTIONS_HMAC_SECRET:-connections-dev-hmac-secret-change-me}
-      DATABASE_URL: ${DATABASE_URL:-postgres://${POSTGRES_USER:-vox}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-vox}}
-      VOX_CONNECTIONS_MAX_CLOCK_SKEW_SECS: 300
-    ports:
-      - "127.0.0.1:3005:3003"
-    depends_on:
-      postgres:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:3003/health/ready"]
-      interval: 10s
-      timeout: 3s
-      retries: 12
 
 volumes:
   postgres-data-pg18:
