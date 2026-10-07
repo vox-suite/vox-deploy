@@ -87,7 +87,7 @@ In accordance with PRD NFR-SEC-002 and NFR-SEC-003:
 
 ## 5. Security and Maintenance Expectations
 
-1. **Security Reporting**: Detailed in [`SECURITY.md`](../SECURITY.md). Coordinated disclosure email is `security@voxagent.in` with a 48-hour SLA for initial acknowledgment.
+1. **Security Reporting**: Detailed in [`SECURITY.md`](../SECURITY.md). Coordinated disclosure email is `rahul.id39@gmail.com` with a 48-hour SLA for initial acknowledgment.
 2. **Supported Releases**: Security patches and critical CVE remediations are provided for the active `1.0.x` release stream.
 3. **Disclosure Window**: Standard 90-day embargo period prior to public CVE publication, or earlier upon mutual coordinator agreement.
 

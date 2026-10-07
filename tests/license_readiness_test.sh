@@ -39,7 +39,7 @@ if [ ! -f "SECURITY.md" ]; then
     echo "FAIL: SECURITY.md file missing" >&2
     exit 1
 fi
-if ! grep -q "security@voxagent.in" "SECURITY.md"; then
+if ! grep -q "rahul.id39@gmail.com" "SECURITY.md"; then
     echo "FAIL: SECURITY.md missing reporting email" >&2
     exit 1
 fi

@@ -53,7 +53,7 @@ deploy() {
     VOX_COMPOSE_FILE="$repo_dir/compose.prod.yml" \
     VOX_COMMAND_LOG="$command_log" \
     VOX_SKIP_FILE_SECURITY_CHECK=1 \
-    VOX_PUBLIC_HEALTH_URL=https://api.voxagent.in/health \
+    VOX_PUBLIC_HEALTH_URL=https://api.callvox.in/health \
     "$repo_dir/scripts/deploy-vox.sh" "$@"
 }
 

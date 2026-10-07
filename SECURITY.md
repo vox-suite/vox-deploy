@@ -17,7 +17,7 @@ The Vox security team takes all security vulnerabilities seriously. We ask that 
 Please do **NOT** report security vulnerabilities through public GitHub issues.
 
 Instead, please report potential security vulnerabilities to:
-- **Email**: `security@voxagent.in`
+- **Email**: `rahul.id39@gmail.com`
 - **PGP Key**: Fingerprint available on official project security advisory page.
 
 ### What to Include

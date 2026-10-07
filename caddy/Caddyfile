@@ -1,4 +1,4 @@
-api.voxagent.in {
+api.callvox.in {
 	# Block scanner / bot probes
 	@probe_paths path /.env* /.git* /wp-* *.php /admin/*
 	@probe_headers header Next-Action *

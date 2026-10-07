@@ -66,7 +66,7 @@ Observed 2026-09-30 through the operator's signed-in project dashboard.
 - Core worker: `ea0fa725-45c7-4239-a99f-2c9804b28761`.
 - Bridge: `7e55f3a0-dd8f-4b59-bdb8-972ffb9cffec`.
 - Redis: `cd005786-226c-47d5-a694-d3bf9b5223f9`, with persistent volume.
-- Caddy: `460d4fa7-e25b-43ac-8115-d2a5e13f1d5f`, serving `api.voxagent.in`.
+- Caddy: `460d4fa7-e25b-43ac-8115-d2a5e13f1d5f`, serving `api.callvox.in`.
 
 All five displayed Online. Core API and worker displayed PR 110 active; API deployment details bind to commit `e946cb1114ff0834cbd35af97e095c92de7033ec`, deployment `19793f27-160c-41a0-bd5c-18cda54430af`. Bridge displayed PR 13 active. These observations prove source selection and process deployment, not complete connector certification.
 

@@ -27,7 +27,7 @@ The server stores the active release in `/opt/vox/state/current.env` and the pre
 
 ## Production topology
 
-Caddy remains a host service and proxies `api.voxagent.in` to `127.0.0.1:3000`.
+Caddy remains a host service and proxies `api.callvox.in` to `127.0.0.1:3000`.
 
 Docker Compose runs:
 
@@ -67,7 +67,7 @@ GitHub stores server SSH credentials, the cross-repository source-read credentia
 6. Start Redis and Core API. Core applies its backward-compatible migrations during startup. Wait for Redis and Core readiness.
 7. On the first container deployment, leave the systemd Bridge running until Core is ready, stop and disable `vox-bridge.service`, then start the Bridge container. On later deployments, Compose replaces the Bridge container normally.
 8. Wait for local Bridge health, then start Core Worker.
-9. Verify Redis health, Core readiness, Bridge health, worker running state, and `https://api.voxagent.in/health`.
+9. Verify Redis health, Core readiness, Bridge health, worker running state, and `https://api.callvox.in/health`.
 10. Atomically promote the candidate release to `current.env`, retain the former current release as `previous.env`, and prune only unused images older than the retained releases.
 
 The worker starts last so it cannot dispatch autonomous calls through an unhealthy Bridge.
