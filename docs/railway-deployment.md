@@ -1,6 +1,62 @@
 # Active Railway deployment
 
-## Connections source update — 2026-10-04
+## Recovery rollout checkpoint — 2026-10-08
+
+Connections PR 30 and Core PR 122 are merged. Core revision
+`efd312d8f9663912cec4ddcf53f7818be7dc1abe` restores the extensible platform
+alongside the curated providers and pins Connections
+`4136e1020fb8e01fde13215afa2eb4e7daeb0a59`. Merged-main Core CI passed.
+The October 4 retirement below is historical and is superseded by this recovery.
+
+The automatic Railway rollout did **not** activate the recovered services:
+
+- API deployment `a95541bc-df41-44c5-a9ad-b3d7d3fc9566` built successfully,
+  then failed readiness because the assembled router registered the same
+  authenticated reassociation endpoint twice. Startup logs show migrations ran
+  before the router panic; a failed deployment does not mean the database stayed
+  on its previous schema.
+- Worker deployment `5de5ad9c-8b5f-478a-bb8e-7c707216ab51` failed its image
+  build because `Dockerfile.worker` copied the removed local `defaults` directory.
+- The previous API and worker remain active. Bridge, Redis and Caddy displayed
+  Online. This is process status, not provider certification.
+- API variable names include `VOX_CREDENTIAL_KEY`, `VOX_MCP_OAUTH_CLIENTS`,
+  `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` and `VOX_CORE_API_URL`. Values were
+  not revealed or changed. Names alone do not validate provider configuration.
+- Public gateway `/health` returned 200 and `/health/ready` returned 404.
+  The current edge routing protocol deliberately keeps per-service readiness
+  private. Use Railway's direct API and Bridge `/health/ready` probes; do not
+  replace them with gateway liveness or expose private service routes.
+
+### Recovery acceptance sequence
+
+1. Require green checks for the corrective source revision, including production
+   API router assembly and both Docker images. Record exact API/worker revisions.
+2. Verify protected database and encryption-key backup custody, current migration
+   versions, and compatibility of the previous binaries with the already-applied
+   schema. Preserve credentials and history. Do not edit migration checksums or
+   replay historical migrations. For additional schema changes, quiesce writers
+   and take a coordinated backup before applying them.
+3. Release the corrected API and worker together. Require direct API database
+   readiness, stable worker startup without restart loops, and successful sync
+   checkpoints. A worker Online badge is insufficient. Verify Bridge readiness
+   and private authenticated connectivity to Core.
+4. Exercise native sign-in/session exchange, connected-account listing,
+   configured provider callbacks, import/sync, disabled preferences, grant
+   revocation and isolation across two same-user host contexts. Use designated
+   test accounts; retain sanitized evidence without tokens or personal history.
+5. Validate PlayStation history as observed first/last-played ranges, and test
+   calendar read/sync plus malformed and valid empty provider responses. Linking
+   and provider access require separate real-account deployment evidence.
+6. Measure live voice latency against the prior active revision and verify
+   native desktop/Android compatibility. Keep unsupported approval adapters,
+   ambiguous ownership and uncertified provider capabilities unavailable.
+
+Core recovery tracking: https://github.com/vox-suite/vox-core/issues/121.
+Connections recovery tracking: https://github.com/vox-suite/vox-connections/issues/29.
+Host UI blocker: https://github.com/vox-suite/vox-web/issues/27.
+Do not declare the recovery released until the relevant live gates pass.
+
+## Historical Connections source update — 2026-10-04
 
 The current source retires GitHub MCP and consumer website authentication. Core owns the Google Calendar and PlayStation connection endpoints. The configuration and release gates below apply to this source update; the October 2 checkpoint records earlier deployed behavior. This source update does not establish a new deployment or live provider validation.
 
@@ -74,7 +130,7 @@ The public `/health` returns `ok` from Caddy. It is gateway liveness, not a data
 
 ## Connector configuration
 
-The earlier GitHub MCP configuration is retired. The Connections candidate requires `VOX_CREDENTIAL_KEY`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and a public `VOX_CORE_API_URL` on Core API and worker. Preserve the existing encryption key. These are candidate requirements, not evidence of a current Railway configuration or deployment.
+The recovered platform retains GitHub MCP configuration alongside curated providers. Google connections require `VOX_CREDENTIAL_KEY`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and a public `VOX_CORE_API_URL` on Core API and worker. Preserve the existing encryption key. Presence of configuration does not establish provider or callback validation.
 
 Bridge lists its host credential ID, audience and secret. Variable names alone do not prove that the host registration matches Core or that an authenticated conversation succeeds. Keep host signing credentials private to Bridge; keep OAuth clients and connection encryption keys private to Core. The shared variable set currently includes broad provider/database secrets across services; reduce each service's recipients deliberately after verifying its real dependencies.
 
