@@ -1,0 +1,74 @@
+// Paste inside `impl TimelineIngestor for CoreIngestor` in vox-core/src/fresh_connections.rs,
+// and add `playstation::PlayStationGame` to the vox_connections::providers import.
+// Requires the vox-connections change that adds `TimelineIngestor::game_history`.
+
+    async fn game_history(
+        &self,
+        tx: &mut sqlx::Transaction<'_, sqlx::Postgres>,
+        user_id: Uuid,
+        connection_id: Uuid,
+        games: &[PlayStationGame],
+    ) -> Result<usize, FreshConnectionError> {
+        let mut written = 0;
+        for game in games {
+            let (Some(first), Some(last)) = (game.first_played_at, game.last_played_at) else {
+                continue;
+            };
+            let end = last.max(first);
+            let source_ref = format!("history:{}", game.title_id);
+            let hours = game.play_duration_seconds as f64 / 3600.0;
+            let data = json!({
+                "game": game.name,
+                "platform": game.platform,
+                "title_id": game.title_id,
+                "total_seconds": game.play_duration_seconds,
+                "total_display": format!("{:.1}h", hours),
+                "play_count": game.play_count,
+                "timing": "first_to_last_played",
+                "connection_id": connection_id,
+            });
+            let title = format!("PlayStation: {}", game.name);
+            let notes = format!(
+                "Played on {} · {:.1}h in total across {} sessions",
+                game.platform, hours, game.play_count
+            );
+            let existing = sqlx::query_scalar::<_, Uuid>(
+                "SELECT id FROM spans WHERE user_id = $1 AND source = 'playstation' AND source_ref = $2",
+            )
+            .bind(user_id)
+            .bind(&source_ref)
+            .fetch_optional(&mut **tx)
+            .await?;
+            if let Some(id) = existing {
+                sqlx::query(
+                    "UPDATE spans SET title = $2, notes = $3, start_at = $4, end_at = $5, data = $6, version = version + 1, updated_at = now() \
+                     WHERE id = $1 AND (start_at IS DISTINCT FROM $4 OR end_at IS DISTINCT FROM $5 OR data IS DISTINCT FROM $6)",
+                )
+                .bind(id)
+                .bind(&title)
+                .bind(&notes)
+                .bind(first)
+                .bind(end)
+                .bind(&data)
+                .execute(&mut **tx)
+                .await?;
+            } else {
+                sqlx::query(
+                    "INSERT INTO spans (user_id, title, notes, category, source, source_ref, status, start_at, end_at, execution_type, data, version, created_at, updated_at) \
+                     VALUES ($1, $2, $3, 'gaming', 'playstation', $4, 'done', $5, $6, 'manual_human', $7, 1, now(), now())",
+                )
+                .bind(user_id)
+                .bind(&title)
+                .bind(&notes)
+                .bind(&source_ref)
+                .bind(first)
+                .bind(end)
+                .bind(&data)
+                .execute(&mut **tx)
+                .await?;
+                written += 1;
+            }
+        }
+        notify(tx, user_id).await?;
+        Ok(written)
+    }
