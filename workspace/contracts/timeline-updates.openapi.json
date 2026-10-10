@@ -384,157 +384,6 @@
         ],
         "type": "object"
       },
-      "DeviceAccessResponse": {
-        "properties": {
-          "access_token": {
-            "type": "string"
-          },
-          "expires_in": {
-            "format": "int64",
-            "type": "integer"
-          }
-        },
-        "required": [
-          "access_token",
-          "expires_in"
-        ],
-        "type": "object"
-      },
-      "DeviceHistoricalAttachmentItem": {
-        "properties": {
-          "content_base64": {
-            "type": "string"
-          },
-          "filename": {
-            "type": "string"
-          },
-          "mime_type": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "filename",
-          "mime_type",
-          "content_base64"
-        ],
-        "type": "object"
-      },
-      "DeviceHistoricalImportItem": {
-        "properties": {
-          "attachments": {
-            "items": {
-              "$ref": "#/components/schemas/DeviceHistoricalAttachmentItem"
-            },
-            "type": [
-              "array",
-              "null"
-            ]
-          },
-          "body_text": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "date": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "from": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "internal_date": {
-            "format": "int64",
-            "type": [
-              "integer",
-              "null"
-            ]
-          },
-          "message_id": {
-            "type": "string"
-          },
-          "proposed_event": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/ProposedEventItem"
-              }
-            ]
-          },
-          "snippet": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "subject": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "uncertainty": {
-            "type": "boolean"
-          },
-          "user_reviewed": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "message_id",
-          "user_reviewed",
-          "uncertainty"
-        ],
-        "type": "object"
-      },
-      "DeviceHistoricalImportRequest": {
-        "properties": {
-          "messages": {
-            "items": {
-              "$ref": "#/components/schemas/DeviceHistoricalImportItem"
-            },
-            "type": "array"
-          }
-        },
-        "required": [
-          "messages"
-        ],
-        "type": "object"
-      },
-      "DeviceHistoricalImportResponse": {
-        "properties": {
-          "attachments_queued": {
-            "minimum": 0,
-            "type": "integer"
-          },
-          "events_created": {
-            "minimum": 0,
-            "type": "integer"
-          },
-          "imported_records": {
-            "minimum": 0,
-            "type": "integer"
-          },
-          "uncertain_count": {
-            "minimum": 0,
-            "type": "integer"
-          }
-        },
-        "required": [
-          "imported_records",
-          "events_created",
-          "attachments_queued",
-          "uncertain_count"
-        ],
-        "type": "object"
-      },
       "DiscoveryInput": {
         "additionalProperties": false,
         "properties": {
@@ -1051,38 +900,6 @@
             ]
           }
         },
-        "type": "object"
-      },
-      "ProposedEventItem": {
-        "properties": {
-          "content": {},
-          "event_type_value": {
-            "type": "string"
-          },
-          "group_value": {
-            "type": "string"
-          },
-          "occurred_at": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "summary": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "title": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "event_type_value",
-          "group_value",
-          "title",
-          "occurred_at",
-          "content"
-        ],
         "type": "object"
       },
       "PubSubPushMessage": {
@@ -2977,6 +2794,165 @@
           "history"
         ],
         "type": "object"
+      },
+      "HistoricalCandidate": {
+        "properties": {
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/ExtractedEvent"
+            },
+            "type": "array"
+          },
+          "from": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "message_id": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "subject": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "uncertainty": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "message_id",
+          "reason",
+          "uncertainty",
+          "events"
+        ],
+        "type": "object"
+      },
+      "HistoricalPageRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "end_date": {
+            "type": "string"
+          },
+          "page_token": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "start_date": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "start_date",
+          "end_date"
+        ],
+        "type": "object"
+      },
+      "HistoricalPageResponse": {
+        "properties": {
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/HistoricalCandidate"
+            },
+            "type": "array"
+          },
+          "excluded": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "next_page_token": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "candidates",
+          "excluded"
+        ],
+        "type": "object"
+      },
+      "HistoricalImportRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "message_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "message_ids"
+        ],
+        "type": "object"
+      },
+      "HistoricalImportResponse": {
+        "properties": {
+          "imported_records": {
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "imported_records"
+        ],
+        "type": "object"
+      },
+      "ExtractedEvent": {
+        "additionalProperties": false,
+        "properties": {
+          "amount_text": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "content": {},
+          "event_type_value": {
+            "type": "string"
+          },
+          "evidence_text": {
+            "type": "string"
+          },
+          "group_value": {
+            "type": "string"
+          },
+          "occurred_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "source_date": {
+            "type": "string"
+          },
+          "summary": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "event_type_value",
+          "group_value",
+          "title",
+          "occurred_at",
+          "content",
+          "evidence_text",
+          "source_date"
+        ],
+        "type": "object"
       }
     },
     "securitySchemes": {
@@ -3330,68 +3306,6 @@
         },
         "tags": [
           "collections"
-        ]
-      }
-    },
-    "/v1/connectors/gmail/device-access": {
-      "post": {
-        "operationId": "device_access",
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DeviceAccessResponse"
-                }
-              }
-            },
-            "description": ""
-          },
-          "409": {
-            "description": "Gmail connection required"
-          }
-        },
-        "tags": [
-          "crate::routes::gmail"
-        ]
-      }
-    },
-    "/v1/connectors/gmail/device-historical-import": {
-      "post": {
-        "operationId": "gmail_device_historical_import",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DeviceHistoricalImportRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DeviceHistoricalImportResponse"
-                }
-              }
-            },
-            "description": ""
-          },
-          "400": {
-            "description": "Invalid or unreviewed import"
-          },
-          "409": {
-            "description": "Gmail connection required"
-          },
-          "422": {
-            "description": "Invalid timeline event"
-          }
-        },
-        "tags": [
-          "crate::routes::gmail"
         ]
       }
     },
@@ -5779,6 +5693,84 @@
         },
         "tags": [
           "updates"
+        ]
+      }
+    },
+    "/v1/connectors/gmail/history/import": {
+      "post": {
+        "operationId": "historical_import",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HistoricalImportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistoricalImportResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid message IDs"
+          },
+          "409": {
+            "description": "Enable Gmail timeline sync"
+          },
+          "503": {
+            "description": "Import failed; safe to retry"
+          }
+        },
+        "tags": [
+          "crate::routes::gmail"
+        ]
+      }
+    },
+    "/v1/connectors/gmail/history/page": {
+      "post": {
+        "operationId": "historical_page",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HistoricalPageRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistoricalPageResponse"
+                }
+              }
+            },
+            "description": ""
+          },
+          "400": {
+            "description": "Invalid date range"
+          },
+          "409": {
+            "description": "Enable Gmail timeline sync"
+          },
+          "503": {
+            "description": "Server extraction unavailable"
+          }
+        },
+        "tags": [
+          "crate::routes::gmail"
         ]
       }
     }

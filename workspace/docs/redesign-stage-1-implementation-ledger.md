@@ -19,7 +19,7 @@ Implementation is in progress. Earlier completion statements in this ledger were
 
 ## Still required before rollout
 - Validate seeded content schemas and every ingestion path; review connector provenance, cancellation, duplicates, Takeout limits/coverage and correction semantics.
-- Verify the implemented desktop Ollama and Android LiteRT-LM historical Gmail review flows with real accounts and local models. Device-only classification and selected-message upload are wired; actual model/device validation remains pending. Manual Takeout ZIP/JSON upload is wired on both clients.
+- Historical Gmail review now uses server-side fetching and Gemini classification. Desktop and Android require no local model; selected provider message IDs are imported by Core. Real provider/model verification remains required. Manual Takeout ZIP/JSON upload is wired on both clients.
 - Retire remaining legacy chart/query and goal paths, including Spaces and external integration references.
 - Finish job failure handling, attachment refetch and user-action state verification.
 - Add coverage-aware analytics presentation, resource limits and verify large annual data. No scalability claim is based on the earlier 1,000-row benchmark.
